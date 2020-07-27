@@ -157,7 +157,7 @@ After you instantiate the manager, at application startup, and you add assemblie
 * Configures the registered classes (based on extensions).
 * Runs the configurators. The configurators can't depend on one another because the manager doesn't know the order in which to run the configurators.
 
-Note: `Register` and `Configure` may be called multiple times, but the manager checks the consistency of the state of each type that was loaded with an `AddXXX` method. So, for example if you call `AddXXX`, then `Register`, then `AddXXX` again, an exception is thrown because you didn't call `Configure` after `Register`. On top of this, Microsoft's dependency injection container stops registering components once the service provider is built, without throwing an exception, so trying to register new types after `Configure` was called is pointless.
+Note: `Register` and `Configure` may be called multiple times, but the manager checks the consistency of the state of each type that was loaded (by the manager) with an `AddXXX` method. So, for example if you call `AddXXX`, then `Register`, then `AddXXX` again, an exception is thrown because you didn't call `Configure` after `Register`. On top of this, Microsoft's dependency injection container stops registering components once the service provider is built, without throwing an exception, so trying to register new types after `Configure` was called is pointless.
 
 
 ## PERFORMANCE CONSIDERATIONS
@@ -176,10 +176,12 @@ In the vast majority of cases, the performance would be fine without the `IProce
 ## SCOPES
 
 In applications which are not based on client requests, like test projects and desktop applications, the dependency injection container may throw exceptions if you try to instantiate dependencies which were registered to be instantiated per scope. This is because, in such a context, the instantiation per client request is meaningless, and those dependencies should be either:
-* Retrieved from a scope, which is recommended. This can be done by using the `IScopeManager` extension dependency, which can be passed to the manager through the `AddExtensionDependencyXXX` methods.
-* Registered to be instantiated per process. This can be done when you call `Register`, by passing `true` to the `instantiatePerContainerInsteadOfScope` parameter of the `InstantiationRegistry` constructor.
+* Retrieved from a scope, which is recommended.
+* Registered to be instantiated per container. This can be done when you call `Register`, by passing `true` to the `instantiatePerContainerInsteadOfScope` parameter of the `InstantiationRegistry` constructor.
 
-Note: Every client request from a WebApi application gets its own scope; this is accessible (even changed) through `IHttpContextAccessor.HttpContext.RequestServices`.
+Scopes can be managed with an implementation of `ScopeManager`. On the implementation, apply the `ScopeManagerAttribute` attribute so that ARCA can automatically add it to the dependency injection registry.
+
+Note: Every client request from a WebApi application gets its own scope; this is accessible (and even replaced) through `IHttpContextAccessor.HttpContext.RequestServices`.
 
 
 ## PACKAGE DESCRIPTIONS
