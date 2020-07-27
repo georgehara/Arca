@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Nullable>enable</Nullable>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageOutputPath>$(MSBuildThisFileDirectory)..\OutputPackages</PackageOutputPath>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Authors>Automated.Arca</Authors>
+		<Company>Automated.Arca</Company>
+		<Product>Automated.Arca</Product>
+		<Description>Automated registration and configuration of classes for dependency injection, CQRS.
+CQRS extensions for the CQRS attributes.</Description>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Automated.Arca.Abstractions.DependencyInjection\Automated.Arca.Abstractions.DependencyInjection.csproj" />
+		<ProjectReference Include="..\Automated.Arca.Abstractions.Cqrs\Automated.Arca.Abstractions.Cqrs.csproj" />
+		<ProjectReference Include="..\Automated.Arca.Abstractions.Core\Automated.Arca.Abstractions.Core.csproj" />
+		<ProjectReference Include="..\Automated.Arca.Attributes.Cqrs\Automated.Arca.Attributes.Cqrs.csproj" />
+		<ProjectReference Include="..\Automated.Arca.Libraries\Automated.Arca.Libraries.csproj" />
+	</ItemGroup>
+
+</Project>

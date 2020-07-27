@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="appsettings.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="appsettings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="3.1.5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.5" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
+		<PackageReference Include="NSubstitute" Version="4.2.2" />
+		<PackageReference Include="xunit" Version="2.4.1" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.2">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Automated.Arca.Abstractions.Core\Automated.Arca.Abstractions.Core.csproj" />
+		<ProjectReference Include="..\Automated.Arca.Attributes.DependencyInjection\Automated.Arca.Attributes.DependencyInjection.csproj" />
+		<ProjectReference Include="..\Automated.Arca.Extensions.DependencyInjection\Automated.Arca.Extensions.DependencyInjection.csproj" />
+		<ProjectReference Include="..\Automated.Arca.Extensions.Cqrs\Automated.Arca.Extensions.Cqrs.csproj" />
+		<ProjectReference Include="..\Automated.Arca.Implementations.ForMicrosoft\Automated.Arca.Implementations.ForMicrosoft.csproj" />
+		<ProjectReference Include="..\Automated.Arca.Manager\Automated.Arca.Manager.csproj" />
+		<ProjectReference Include="..\Tests.DummyAssembly\Tests.DummyAssembly.csproj" />
+	</ItemGroup>
+
+</Project>
