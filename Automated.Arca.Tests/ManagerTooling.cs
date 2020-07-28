@@ -98,7 +98,7 @@ namespace Automated.Arca.Tests
 				.AddAssembly( rootAssembly )
 				.AddAssemblyContainingType( typeof( ExtensionForInstantiatePerScopeAttribute ) )
 				.AddAssemblyContainingType( typeof( ExtensionForBoundedContextAttribute ) )
-				.AddExtensionDependency<IKeyedOptionsProvider>( new KeyedOptionsProvider( ApplicationOptionsProvider ) );
+				.AddKeyedOptionsProvider( ApplicationOptionsProvider );
 		}
 
 		private IServiceProvider BuildServiceProvider()

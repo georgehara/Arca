@@ -32,7 +32,7 @@ namespace Automated.Arca.Demo.WebApi
 				.AddEntryAssembly()
 				.AddAssemblyContainingType( typeof( ExtensionForInstantiatePerScopeAttribute ) )
 				.AddAssemblyContainingType( typeof( ExtensionForBoundedContextAttribute ) )
-				.AddExtensionDependency<IKeyedOptionsProvider>( new KeyedOptionsProvider( ApplicationOptionsProvider ) );
+				.AddKeyedOptionsProvider( ApplicationOptionsProvider );
 		}
 
 		// This method gets called by the runtime. Use this method to add services to the container.
