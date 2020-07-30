@@ -184,6 +184,15 @@ Scopes can be managed with an implementation of `ScopeManager`. On the implement
 Note: Every client request from a WebApi application gets its own scope; this is accessible (and even replaced) through `IHttpContextAccessor.HttpContext.RequestServices`.
 
 
+## DEPENDENCIES REGISTERED BY DEFAULT
+
+When dependency injection is used, ARCA adds the following components to the instantiation registry (`IServiceCollection`), to be instantiated per container through the instance provider (`IServiceProvider`):
+* `IGlobalInstanceProvider`
+* `IInstanceProvider`
+
+You can add any of these interfaces as parameters to the constructors of you classes, so they can be injected by the dependency injection container.
+
+
 ## PACKAGE DESCRIPTIONS
 
 * Automated.Arca.Abstractions.Core - Core abstractions. Contains `IProcessable`, so it's usually necessary. Use to create your own attributes and extensions.
