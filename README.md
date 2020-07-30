@@ -12,6 +12,7 @@
 [Inter-class dependencies](#inter-class-dependencies)<br/>
 [Performance considerations](#performance-considerations)<br/>
 [Scopes](#scopes)<br/>
+[Dependencies registered by default](#dependencies-registered-by-default)<br/>
 [Package descriptions](#package-descriptions)<br/>
 [Examples](#examples)<br/>
 
