@@ -50,9 +50,9 @@ namespace Automated.Arca.Tests
 
 			Assert.Equal( ((InstanceProvider)scopedProvider1).Dependency, ((InstanceProvider)scopedProvider2).Dependency );
 
-			var tenantResolver1 = scopedProvider1.GetRequiredInstance<ITenantResolver>();
-			var tenantResolver2 = scopedProvider2.GetRequiredInstance<ITenantResolver>();
-			Assert.Equal( tenantResolver1, tenantResolver2 );
+			var tenantHolder1 = scopedProvider1.GetRequiredInstance<ITenantHolder>();
+			var tenantHolder2 = scopedProvider2.GetRequiredInstance<ITenantHolder>();
+			Assert.Equal( tenantHolder1, tenantHolder2 );
 
 			SimulateTenantResolution( scopedProvider1, scopedProvider2 );
 
@@ -82,9 +82,9 @@ namespace Automated.Arca.Tests
 
 			Assert.NotEqual( ((InstanceProvider)scopedProvider1).Dependency, ((InstanceProvider)scopedProvider2).Dependency );
 
-			var tenantResolver1 = scopedProvider1.GetRequiredInstance<ITenantResolver>();
-			var tenantResolver2 = scopedProvider2.GetRequiredInstance<ITenantResolver>();
-			Assert.NotEqual( tenantResolver1, tenantResolver2 );
+			var tenantHolder1 = scopedProvider1.GetRequiredInstance<ITenantHolder>();
+			var tenantHolder2 = scopedProvider2.GetRequiredInstance<ITenantHolder>();
+			Assert.NotEqual( tenantHolder1, tenantHolder2 );
 
 			SimulateTenantResolution( scopedProvider1, scopedProvider2 );
 
@@ -111,9 +111,9 @@ namespace Automated.Arca.Tests
 		{
 			foreach( var scopedProvider in scopedProviders )
 			{
-				var tenantResolver = scopedProvider.GetRequiredInstance<ITenantResolver>();
+				var tenantHolder = scopedProvider.GetRequiredInstance<ITenantHolder>();
 
-				tenantResolver.SetScopeName( scopedProvider.ScopeName );
+				tenantHolder.ScopeName = scopedProvider.ScopeName;
 			}
 		}
 	}

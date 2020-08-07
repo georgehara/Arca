@@ -180,7 +180,7 @@ In applications which are not based on client requests, like test projects and d
 * Retrieved from a scope, which is recommended.
 * Registered to be instantiated per container. This can be done when you call `Register`, by passing `true` to the `instantiatePerContainerInsteadOfScope` parameter of the `InstantiationRegistry` constructor.
 
-Scopes can be managed with an implementation of `ScopeManager`. On the implementation, apply the `ScopeManagerAttribute` attribute so that ARCA can automatically add it to the dependency injection registry. Check the `TenantScopeUsage` test for a usage example.
+Scopes can be managed with an implementation of `ScopeManager`; you also have to implement either `IScopeHolder` (if the scope name is set from outside the holder) or `IScopeResolver` (if the scope name is set from inside the resolver). On the implementation, apply the `ScopeManagerAttribute` attribute so that ARCA can automatically add it to the dependency injection registry. Check the `TenantScopeUsage` test for a usage example.
 
 Note: Every client request from a WebApi application gets its own scope; this is accessible (and even replaceable) through `IHttpContextAccessor.HttpContext.RequestServices`.
 

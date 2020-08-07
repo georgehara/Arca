@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Automated.Arca.Libraries
 {
@@ -34,6 +35,29 @@ namespace Automated.Arca.Libraries
 				throw new InvalidCastException( $"Type '{implementationType.Name}' must derive from the generic interface" +
 					$" '{genericInterfaceType.Name}<{genericParameterType.FullName}>'" );
 			}
+		}
+
+		public static void EnsureDerivesFromGenericInterfaceWithSingleParameter( this Type implementationType,
+			Type genericInterfaceType )
+		{
+			if( !implementationType.DerivesFromGenericInterfaceWithSingleParameter( genericInterfaceType ) )
+			{
+				throw new InvalidCastException( $"Type '{implementationType.Name}' must derive from the generic interface" +
+					$" '{genericInterfaceType.Name}<TScopeName>'" );
+			}
+		}
+
+		public static bool DerivesFromGenericInterfaceWithSingleParameter( this Type implementationType, Type genericInterfaceType )
+		{
+			if( implementationType == null || genericInterfaceType == null )
+				return false;
+
+			if( genericInterfaceType == implementationType || !genericInterfaceType.IsInterface )
+				return false;
+
+			var extractedInterface = implementationType.GetInterfaces().FirstOrDefault( x => x.Name == genericInterfaceType.Name );
+
+			return extractedInterface != null && extractedInterface.GenericTypeArguments.Length == 1;
 		}
 	}
 }
