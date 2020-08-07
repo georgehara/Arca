@@ -188,6 +188,7 @@ namespace Automated.Arca.Tests
 			scopedProvider.GetRequiredInstance<SomeProcessableAttributeWithInstantiatePerScopeAttribute>();
 
 			scopedProvider.GetRequiredInstance<SomeScopedComponent>();
+			scopedProvider.GetRequiredInstance<SomeScopedComponentWithScopedComponent>();
 
 			if( includeDummyAssembly )
 				VerifyDummiesFromDummyAssembly( managerTooling );

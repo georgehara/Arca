@@ -4,8 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Automated.Arca.Implementations.ForMicrosoft
 {
-	public class ScopedInstanceProvider<TScopeName> : InstanceProvider,
-		IScopedInstanceProvider<TScopeName>
+	public class ScopedInstanceProvider<TScopeName> : InstanceProvider, IScopedInstanceProvider<TScopeName>
 	{
 		public ScopedInstanceProvider( TScopeName scopeName, IServiceProvider dependency )
 			: base( dependency )

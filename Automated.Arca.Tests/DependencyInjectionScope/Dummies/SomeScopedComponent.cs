@@ -6,11 +6,5 @@ namespace Automated.Arca.Tests.Dummies
 	[InstantiatePerScopeAttribute]
 	public class SomeScopedComponent : IProcessable
 	{
-		public readonly SomeInstantiatePerScopeComponent OtherComponent;
-
-		public SomeScopedComponent( SomeInstantiatePerScopeComponent otherComponent )
-		{
-			OtherComponent = otherComponent;
-		}
 	}
 }
