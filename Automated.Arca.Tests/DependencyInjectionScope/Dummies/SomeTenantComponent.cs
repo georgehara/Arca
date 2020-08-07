@@ -4,7 +4,7 @@ using Automated.Arca.Attributes.DependencyInjection;
 namespace Automated.Arca.Tests.Dummies
 {
 	[InstantiatePerScopeAttribute]
-	public class SomeScopedComponent : IProcessable
+	public class SomeTenantComponent : IProcessable
 	{
 	}
 }
