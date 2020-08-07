@@ -29,13 +29,14 @@ namespace Automated.Arca.Tests
 			var managerTooling = ManagerTooling.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
 				true, true );
 
-			var instance1 = managerTooling.GetRequiredInstance<ITenantRequestProcessor>();
-			var instance2 = managerTooling.GetRequiredInstance<ITenantRequestProcessor>();
+			var instance1 = managerTooling.GetRequiredInstance<ISomeTenantRequestProcessor>();
+			var instance2 = managerTooling.GetRequiredInstance<ISomeTenantRequestProcessor>();
 
 			Assert.Equal( instance1, instance2 );
 			Assert.Equal( "", instance1.ScopeName );
 			Assert.Equal( "", instance2.ScopeName );
-			Assert.Equal( instance1.OtherComponent, instance2.OtherComponent );
+			Assert.Equal( instance1.Level1, instance2.Level1 );
+			Assert.Equal( instance1.Level1.Level2, instance2.Level1.Level2 );
 		}
 
 		[Fact]
@@ -55,13 +56,14 @@ namespace Automated.Arca.Tests
 
 			SimulateTenantResolution( scopedProvider1, scopedProvider2 );
 
-			var instance1 = scopedProvider1.GetRequiredInstance<ITenantRequestProcessor>();
-			var instance2 = scopedProvider2.GetRequiredInstance<ITenantRequestProcessor>();
+			var instance1 = scopedProvider1.GetRequiredInstance<ISomeTenantRequestProcessor>();
+			var instance2 = scopedProvider2.GetRequiredInstance<ISomeTenantRequestProcessor>();
 
 			Assert.Equal( instance1, instance2 );
 			Assert.Equal( ScopeName1, instance1.ScopeName );
 			Assert.Equal( ScopeName1, instance2.ScopeName );
-			Assert.Equal( instance1.OtherComponent, instance2.OtherComponent );
+			Assert.Equal( instance1.Level1, instance2.Level1 );
+			Assert.Equal( instance1.Level1.Level2, instance2.Level1.Level2 );
 		}
 
 		[Fact]
@@ -86,13 +88,17 @@ namespace Automated.Arca.Tests
 
 			SimulateTenantResolution( scopedProvider1, scopedProvider2 );
 
-			var instance1 = scopedProvider1.GetRequiredInstance<ITenantRequestProcessor>();
-			var instance2 = scopedProvider2.GetRequiredInstance<ITenantRequestProcessor>();
+			var instance1 = scopedProvider1.GetRequiredInstance<ISomeTenantRequestProcessor>();
+			var instance2 = scopedProvider2.GetRequiredInstance<ISomeTenantRequestProcessor>();
 
 			Assert.NotEqual( instance1, instance2 );
 			Assert.Equal( ScopeName1, instance1.ScopeName );
 			Assert.Equal( ScopeName2, instance2.ScopeName );
-			Assert.NotEqual( instance1.OtherComponent, instance2.OtherComponent );
+			Assert.NotEqual( instance1.Level1, instance2.Level1 );
+			Assert.NotEqual( instance1.Level1.Level2, instance2.Level1.Level2 );
+
+			instance1.HandleRequest( new object() );
+			instance2.HandleRequest( new object() );
 		}
 
 		[Fact]
