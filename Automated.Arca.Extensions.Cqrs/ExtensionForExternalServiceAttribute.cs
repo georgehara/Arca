@@ -13,7 +13,7 @@ namespace Automated.Arca.Extensions.Cqrs
 		{
 			var attributeTyped = (ExternalServiceAttribute)attribute;
 
-			var interfaceType = attributeTyped.GetDefaultInterface( typeWithAttribute );
+			var interfaceType = attributeTyped.GetInterfaceOrDefault( typeWithAttribute );
 			var baseAddressConfigurationKey = attributeTyped.BaseAddressConfigurationKey;
 			var baseAddress = Options( context ).GetRequiredString( baseAddressConfigurationKey );
 			var retryCount = attributeTyped.RetryCount;

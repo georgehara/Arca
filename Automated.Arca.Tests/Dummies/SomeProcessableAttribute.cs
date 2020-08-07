@@ -24,7 +24,7 @@ namespace Automated.Arca.Tests.Dummies
 
 		public override void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
-			var interfaceType = ((ProcessableWithInterfaceAttribute)attribute).GetDefaultInterface( typeWithAttribute );
+			var interfaceType = ((ProcessableWithInterfaceAttribute)attribute).GetInterfaceOrDefault( typeWithAttribute );
 
 			typeWithAttribute.EnsureDerivesFromInterface( interfaceType );
 
@@ -33,7 +33,7 @@ namespace Automated.Arca.Tests.Dummies
 
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
-			var interfaceType = ((ProcessableWithInterfaceAttribute)attribute).GetDefaultInterface( typeWithAttribute );
+			var interfaceType = ((ProcessableWithInterfaceAttribute)attribute).GetInterfaceOrDefault( typeWithAttribute );
 
 			typeWithAttribute.EnsureDerivesFromInterface( interfaceType );
 			interfaceType.EnsureDerivesFromInterface( typeof( ISomeConfigurable ) );

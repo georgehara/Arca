@@ -15,7 +15,7 @@ namespace Automated.Arca.Extensions.Cqrs
 		{
 			typeWithAttribute.EnsureDerivesFrom( typeof( ICommandHandlerRegistry ) );
 
-			var interfaceType = ((ProcessableWithInterfaceAttribute)attribute).GetDefaultInterface( typeWithAttribute );
+			var interfaceType = ((ProcessableWithInterfaceAttribute)attribute).GetInterfaceOrDefault( typeWithAttribute );
 
 			ToInstantiatePerContainer( context, interfaceType, typeWithAttribute );
 		}

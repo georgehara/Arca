@@ -12,7 +12,7 @@ namespace Automated.Arca.Extensions.Cqrs
 
 		public override void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
-			var interfaceType = ((ProcessableWithInterfaceAttribute)attribute).GetDefaultInterface( typeWithAttribute );
+			var interfaceType = ((ProcessableWithInterfaceAttribute)attribute).GetInterfaceOrDefault( typeWithAttribute );
 
 			ToInstantiatePerContainer( context, interfaceType, typeWithAttribute );
 		}

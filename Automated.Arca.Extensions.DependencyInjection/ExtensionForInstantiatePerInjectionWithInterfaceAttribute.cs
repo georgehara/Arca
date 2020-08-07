@@ -11,7 +11,7 @@ namespace Automated.Arca.Extensions.DependencyInjection
 
 		public override void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
-			var interfaceType = ((ProcessableWithInterfaceAttribute)attribute).GetDefaultInterface( typeWithAttribute );
+			var interfaceType = ((ProcessableWithInterfaceAttribute)attribute).GetInterfaceOrDefault( typeWithAttribute );
 
 			ToInstantiatePerInjection( context, interfaceType, typeWithAttribute );
 		}
