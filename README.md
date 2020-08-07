@@ -182,7 +182,7 @@ In applications which are not based on client requests, like test projects and d
 
 Scopes can be managed with an implementation of `ScopeManager`. On the implementation, apply the `ScopeManagerAttribute` attribute so that ARCA can automatically add it to the dependency injection registry. Check the `TenantScopeUsage` test for a usage example.
 
-Note: Every client request from a WebApi application gets its own scope; this is accessible (and even replaced) through `IHttpContextAccessor.HttpContext.RequestServices`.
+Note: Every client request from a WebApi application gets its own scope; this is accessible (and even replaceable) through `IHttpContextAccessor.HttpContext.RequestServices`.
 
 
 ## DEPENDENCIES REGISTERED BY DEFAULT
