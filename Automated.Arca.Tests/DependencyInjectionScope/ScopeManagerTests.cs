@@ -71,8 +71,8 @@ namespace Automated.Arca.Tests
 		{
 			// This test proves that the (automatic) instantiation of the parameters of a class happens from the scope from which
 			// the class was (manually) instantiated. This allows the developer to manually create a tenant-scoped processor which
-			// has all its constructor parameters automatically instantiated. A request / message handling method can then be
-			// called on the tenant-scoped processor.
+			// has all its constructor parameters automatically instantiated, regardless of the level of imbrication. A request /
+			// message handling method can then be called on the tenant-scoped processor.
 
 			var managerTooling = ManagerTooling.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
 				true, false );

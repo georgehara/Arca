@@ -4,7 +4,7 @@ using Automated.Arca.Manager;
 
 namespace Automated.Arca.Demo.WebApi.Providers
 {
-	[InstantiatePerScope]
+	[InstantiatePerScopeAttribute]
 	public class LogsProvider : IProcessable
 	{
 		private readonly CollectorLogger ManagerLogger;
