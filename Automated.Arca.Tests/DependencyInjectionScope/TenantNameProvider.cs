@@ -3,12 +3,12 @@ using Automated.Arca.Attributes.DependencyInjection;
 
 namespace Automated.Arca.Tests
 {
-	public interface ITenantHolder : IScopeHolder<string>
+	public interface ITenantNameProvider : IScopeNameProvider<string>
 	{
 	}
 
-	[ScopeHolderAttribute]
-	public class TenantHolder : ITenantHolder
+	[ScopeNameProviderAttribute]
+	public class TenantNameProvider : ITenantNameProvider
 	{
 		public string ScopeName { get; set; } = "";
 	}

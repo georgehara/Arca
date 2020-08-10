@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Automated.Arca.Abstractions.Core;
@@ -22,27 +23,29 @@ namespace Automated.Arca.Tests
 		private IServiceProvider? ServiceProvider;
 
 		public ManagerTooling( Assembly rootAssembly, bool processOnlyTypesDerivedFromIProcessable,
-			bool instantiatePerContainerInsteadOfScope )
+			ICollection<Type>? excludeTypes, bool instantiatePerContainerInsteadOfScope )
 		{
 			InstantiatePerContainerInsteadOfScope = instantiatePerContainerInsteadOfScope;
 
 			ApplicationOptionsProvider = GetApplicationOptionsProvider();
-			Manager = GetManager( rootAssembly, processOnlyTypesDerivedFromIProcessable );
+			Manager = GetManager( rootAssembly, processOnlyTypesDerivedFromIProcessable, excludeTypes );
 
 			Services = new ServiceCollection();
 		}
 
 		public static ManagerTooling GetInstanceAndCallRegisterAndConfigure( Assembly rootAssembly,
-			bool processOnlyTypesDerivedFromIProcessable, bool instantiatePerContainerInsteadOfScope )
+			bool processOnlyTypesDerivedFromIProcessable, ICollection<Type>? excludeTypes,
+			bool instantiatePerContainerInsteadOfScope )
 		{
-			return new ManagerTooling( rootAssembly, processOnlyTypesDerivedFromIProcessable, instantiatePerContainerInsteadOfScope )
+			return new ManagerTooling( rootAssembly, processOnlyTypesDerivedFromIProcessable,
+					excludeTypes, instantiatePerContainerInsteadOfScope )
 				.Register()
 				.Configure();
 		}
 
-		public ManagerTooling AddAssemblyContainingType( Type type )
+		public ManagerTooling AddAssemblyContainingType<T>()
 		{
-			Manager.AddAssemblyContainingType( type );
+			Manager.AddAssemblyContainingType<T>();
 
 			return this;
 		}
@@ -86,13 +89,20 @@ namespace Automated.Arca.Tests
 				.Build();
 		}
 
-		private IManager GetManager( Assembly rootAssembly, bool processOnlyTypesDerivedFromIProcessable )
+		private IManager GetManager( Assembly rootAssembly, bool processOnlyTypesDerivedFromIProcessable,
+			ICollection<Type>? excludeTypes )
 		{
 			var managerOptions = new ManagerOptions()
 				.UseLogger( new TraceLogger() );
 
 			if( processOnlyTypesDerivedFromIProcessable )
 				managerOptions.UseOnlyClassesDerivedFromIProcessable();
+
+			if( excludeTypes != null )
+			{
+				foreach( var excludeType in excludeTypes )
+					managerOptions.Exclude( excludeType );
+			}
 
 			return new Manager.Manager( managerOptions )
 				.AddAssembly( rootAssembly )

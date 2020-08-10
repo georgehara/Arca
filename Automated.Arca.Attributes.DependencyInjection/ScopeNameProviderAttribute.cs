@@ -3,13 +3,13 @@
 namespace Automated.Arca.Attributes.DependencyInjection
 {
 	[AttributeUsage( validOn: AttributeTargets.Class, AllowMultiple = false )]
-	public class ScopeResolverAttribute : InstantiatePerScopeWithInterfaceAttribute
+	public class ScopeNameProviderAttribute : InstantiatePerScopeWithInterfaceAttribute
 	{
-		public ScopeResolverAttribute()
+		public ScopeNameProviderAttribute()
 		{
 		}
 
-		public ScopeResolverAttribute( Type interfaceType )
+		public ScopeNameProviderAttribute( Type interfaceType )
 			: base( interfaceType )
 		{
 		}

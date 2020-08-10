@@ -2,7 +2,7 @@
 
 namespace Automated.Arca.Abstractions.DependencyInjection
 {
-	public interface IScopeResolver<TScopeName> : IProcessable
+	public interface IScopeNameResolver<TScopeName> : IProcessable
 		where TScopeName : notnull
 	{
 		TScopeName GetScopeName();

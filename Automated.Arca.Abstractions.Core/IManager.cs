@@ -8,6 +8,7 @@ namespace Automated.Arca.Abstractions.Core
 		IManager AddAssembly( Assembly assembly );
 		IManager AddAssemblyFromFile( string assemblyFile );
 		IManager AddAssemblyContainingType( Type type );
+		IManager AddAssemblyContainingType<T>();
 		IManager AddEntryAssembly();
 		IManager AddAssembliesLoadedInProcess();
 		IManager AddExtensionDependency( Type baseType, IExtensionDependency baseTypeImplementation );

@@ -15,7 +15,7 @@ namespace Automated.Arca.Tests
 		public void InstantiatePerContainer_GetSameInstanceForGlobalScope()
 		{
 			var managerTooling = ManagerTooling.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
-				true, false );
+				true, null, false );
 
 			var instance1 = managerTooling.GetRequiredInstance<SomeInstantiatePerContainerComponent>();
 			var instance2 = managerTooling.GetRequiredInstance<SomeInstantiatePerContainerComponent>();
@@ -27,7 +27,7 @@ namespace Automated.Arca.Tests
 		public void InstantiatePerScope_GetSameInstanceForGlobalScope()
 		{
 			var managerTooling = ManagerTooling.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
-				true, true );
+				true, null, true );
 
 			var instance1 = managerTooling.GetRequiredInstance<ISomeTenantRequestProcessor>();
 			var instance2 = managerTooling.GetRequiredInstance<ISomeTenantRequestProcessor>();
@@ -43,16 +43,16 @@ namespace Automated.Arca.Tests
 		public void InstantiatePerScope_GetSameInstanceForSameScopeName()
 		{
 			var managerTooling = ManagerTooling.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
-				true, false );
+				true, null, false );
 
 			var scopedProvider1 = managerTooling.GetOrAddScopedProvider( ScopeName1 );
 			var scopedProvider2 = managerTooling.GetOrAddScopedProvider( ScopeName1 );
 
 			Assert.Equal( ((InstanceProvider)scopedProvider1).Dependency, ((InstanceProvider)scopedProvider2).Dependency );
 
-			var tenantHolder1 = scopedProvider1.GetRequiredInstance<ITenantHolder>();
-			var tenantHolder2 = scopedProvider2.GetRequiredInstance<ITenantHolder>();
-			Assert.Equal( tenantHolder1, tenantHolder2 );
+			var tenantNameProvider1 = scopedProvider1.GetRequiredInstance<ITenantNameProvider>();
+			var tenantNameProvider2 = scopedProvider2.GetRequiredInstance<ITenantNameProvider>();
+			Assert.Equal( tenantNameProvider1, tenantNameProvider2 );
 
 			SimulateTenantResolution( scopedProvider1, scopedProvider2 );
 
@@ -75,16 +75,16 @@ namespace Automated.Arca.Tests
 			// message handling method can then be called on the tenant-scoped processor.
 
 			var managerTooling = ManagerTooling.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
-				true, false );
+				true, null, false );
 
 			var scopedProvider1 = managerTooling.GetOrAddScopedProvider( ScopeName1 );
 			var scopedProvider2 = managerTooling.GetOrAddScopedProvider( ScopeName2 );
 
 			Assert.NotEqual( ((InstanceProvider)scopedProvider1).Dependency, ((InstanceProvider)scopedProvider2).Dependency );
 
-			var tenantHolder1 = scopedProvider1.GetRequiredInstance<ITenantHolder>();
-			var tenantHolder2 = scopedProvider2.GetRequiredInstance<ITenantHolder>();
-			Assert.NotEqual( tenantHolder1, tenantHolder2 );
+			var tenantNameProvider1 = scopedProvider1.GetRequiredInstance<ITenantNameProvider>();
+			var tenantNameProvider2 = scopedProvider2.GetRequiredInstance<ITenantNameProvider>();
+			Assert.NotEqual( tenantNameProvider1, tenantNameProvider2 );
 
 			SimulateTenantResolution( scopedProvider1, scopedProvider2 );
 
@@ -111,9 +111,9 @@ namespace Automated.Arca.Tests
 		{
 			foreach( var scopedProvider in scopedProviders )
 			{
-				var tenantHolder = scopedProvider.GetRequiredInstance<ITenantHolder>();
+				var tenantNameProvider = scopedProvider.GetRequiredInstance<ITenantNameProvider>();
 
-				tenantHolder.ScopeName = scopedProvider.ScopeName;
+				tenantNameProvider.ScopeName = scopedProvider.ScopeName;
 			}
 		}
 	}

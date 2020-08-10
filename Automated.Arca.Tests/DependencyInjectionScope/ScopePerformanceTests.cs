@@ -11,7 +11,7 @@ namespace Automated.Arca.Tests
 		public void CreateScope()
 		{
 			var managerTooling = ManagerTooling.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
-				true, false );
+				true, null, false );
 
 			Stopwatch sw = new Stopwatch();
 			sw.Start();

@@ -14,15 +14,16 @@ namespace Automated.Arca.Tests.Dummies
 	[InstantiatePerScopeWithInterfaceAttribute]
 	public class SomeTenantRequestProcessor : ISomeTenantRequestProcessor
 	{
-		private readonly ITenantHolder TenantHolder;
+		private readonly ITenantNameProvider TenantNameProvider;
 
-		public SomeTenantRequestProcessor( ITenantHolder tenantHolder, SomeTenantComponentLevel1 someTenantComponentLevel1 )
+		public SomeTenantRequestProcessor( ITenantNameProvider tenantNameProvider,
+			SomeTenantComponentLevel1 someTenantComponentLevel1 )
 		{
-			TenantHolder = tenantHolder;
+			TenantNameProvider = tenantNameProvider;
 			Level1 = someTenantComponentLevel1;
 		}
 
-		public string ScopeName => TenantHolder.ScopeName;
+		public string ScopeName => TenantNameProvider.ScopeName;
 		public SomeTenantComponentLevel1 Level1 { get; }
 
 		public void HandleRequest( object request )

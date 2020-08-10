@@ -9,7 +9,7 @@ namespace Automated.Arca.Manager
 {
 	public class Manager : IManager
 	{
-		private readonly ManagerOptions Options;
+		private readonly IManagerOptions Options;
 
 		private readonly object Lock = new object();
 
@@ -21,7 +21,7 @@ namespace Automated.Arca.Manager
 			new Dictionary<Type, IExtensionForProcessableAttribute>();
 		private readonly IDictionary<Type, Type> ExtensionTypesByAttributeType = new Dictionary<Type, Type>();
 
-		public Manager( ManagerOptions options )
+		public Manager( IManagerOptions options )
 		{
 			Options = options;
 
@@ -64,6 +64,11 @@ namespace Automated.Arca.Manager
 
 				return this;
 			}
+		}
+
+		public IManager AddAssemblyContainingType<T>()
+		{
+			return AddAssemblyContainingType( typeof( T ) );
 		}
 
 		public IManager AddEntryAssembly()
@@ -251,8 +256,15 @@ namespace Automated.Arca.Manager
 
 			foreach( var type in cachedAssembly.Assembly.GetExportedTypes() )
 			{
-				var cachedType = new CachedType( type );
-				CachedTypes.Add( cachedType.Type, cachedType );
+				if( Options.ExcludeTypes.Contains( type ) )
+				{
+					Options.Logger?.Log( $"Type '{type.Name}' is excluded from processing." );
+				}
+				else
+				{
+					var cachedType = new CachedType( type );
+					CachedTypes.Add( cachedType.Type, cachedType );
+				}
 			}
 		}
 

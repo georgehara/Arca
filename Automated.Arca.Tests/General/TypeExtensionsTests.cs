@@ -15,6 +15,7 @@ namespace Automated.Arca.Tests
 		public void GetDefaultInterface_SomeClassDerivedFromClass_Succeeds()
 		{
 			var interfaceType = typeof( SomeClassDerivedFromClass ).GetDefaultInterface();
+
 			Assert.Equal( typeof( ISomeInterface ), interfaceType );
 		}
 
@@ -22,6 +23,7 @@ namespace Automated.Arca.Tests
 		public void GetDefaultInterface_SomeClassDerivedFromInterface_Succeeds()
 		{
 			var interfaceType = typeof( SomeClassDerivedFromInterface ).GetDefaultInterface();
+
 			Assert.Equal( typeof( ISomeInterface ), interfaceType );
 		}
 
@@ -29,6 +31,7 @@ namespace Automated.Arca.Tests
 		public void GetDefaultInterface_SomeClassDerivedFromClassWithInterfaceAndInterface_Succeeds()
 		{
 			var interfaceType = typeof( SomeClassDerivedFromClassWithInterfaceAndInterface ).GetDefaultInterface();
+
 			Assert.Equal( typeof( ISomeInterfaceDerivedFromInterface ), interfaceType );
 		}
 
@@ -36,6 +39,7 @@ namespace Automated.Arca.Tests
 		public void GetDefaultInterface_SomeClassDerivedFromInterfaceWithInterfaceAndInterface_Fails()
 		{
 			static void a() => typeof( SomeClassDerivedFromInterfaceWithInterfaceAndInterface ).GetDefaultInterface();
+
 			Assert.Throws<InvalidOperationException>( a );
 		}
 
@@ -55,6 +59,7 @@ namespace Automated.Arca.Tests
 		public void EnsureDerivesFrom_SomeClassDerivedFromClass_Fails()
 		{
 			static void a() => typeof( SomeClassDerivedFromClass ).EnsureDerivesFrom( typeof( ISomeOtherInterface ) );
+
 			Assert.Throws<InvalidCastException>( a );
 		}
 
@@ -76,6 +81,7 @@ namespace Automated.Arca.Tests
 		{
 			static void a() => typeof( SomeClassDerivedFromInterface ).EnsureDerivesFromInterface(
 				typeof( ISomeOtherInterface ) );
+
 			Assert.Throws<InvalidCastException>( a );
 		}
 
@@ -91,6 +97,7 @@ namespace Automated.Arca.Tests
 		{
 			static void a() => typeof( SomeClassDerivedFromClass ).EnsureDerivesFromGenericInterface(
 				typeof( ISomeGenericInterface<> ), typeof( string ) );
+
 			Assert.Throws<InvalidCastException>( a );
 		}
 
