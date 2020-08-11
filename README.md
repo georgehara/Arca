@@ -227,7 +227,6 @@ Create an ASP.NET / WebApi application and install the following packages:
 
 ```
 using Automated.Arca.Abstractions.Core;
-using Automated.Arca.Abstractions.DependencyInjection;
 using Automated.Arca.Extensions.Cqrs;
 using Automated.Arca.Extensions.DependencyInjection;
 using Automated.Arca.Implementations.ForMicrosoft;
@@ -248,10 +247,9 @@ namespace FooCorp
 
 		public Startup( IConfiguration options )
 		{
-			ApplicationOptions = options;
+			ApplicationOptionsProvider = options;
 
 			var managerOptions = new ManagerOptions()
-				.UseLogger( ManagerLogger )
 				.AddAssemblyNamePrefix( "FooCorp" )
 				.UseOnlyClassesDerivedFromIProcessable();
 
@@ -266,8 +264,6 @@ namespace FooCorp
 		public void ConfigureServices( IServiceCollection services )
 		{
 			// ...
-
-			services.AddSingleton( typeof( CollectorLogger ), ManagerLogger );
 
 			Manager
 				.AddInstantiationRegistry( services, false, true )
