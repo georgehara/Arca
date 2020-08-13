@@ -202,6 +202,8 @@ Middleware support is provided with the `ChainMiddlewarePerScopeAttribute` and `
 
 The middleware class must implement the `IMiddleware` interface, and must have applied on it one of the attributes above. Then, when it's time to call it in the request pipeline, ASP.NET will instantiate it through the dependency injection container.
 
+Before you call the `Configure` method on the manager, call the `AddMiddlewareRegistry` extension method, on the manager.
+
 Note: Don't count on the middleware being called in a specific order in the request pipeline, because the ARCA manager doesn't know how to order the middleware.
 
 
