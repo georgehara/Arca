@@ -388,7 +388,7 @@ Method 'RegisterAssemblies' executed in 2 ms.
 Configured class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Configured class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
 Method 'ConfigureAssemblies' executed in 1 ms.
-Invoking middleware 'LoggingMiddleware':
+Invoked middleware 'LoggingMiddleware':
 	* URL: https://localhost:53712/logs
 	* Endpoint: Automated.Arca.Demo.WebApi.Controllers.LogsController.Get (Automated.Arca.Demo.WebApi)
 	* Request identifier: 8000000f-0001-ff00-b83f-29710c7967de
