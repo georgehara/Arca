@@ -210,8 +210,8 @@ Note: Don't count on the middleware being called in a specific order in the requ
 ## PACKAGE DESCRIPTIONS
 
 * Automated.Arca.Abstractions.Core - Core abstractions. Contains `IProcessable`, so it's usually necessary. Use to create your own attributes and extensions.
-* Automated.Arca.Abstractions.Specialized - Specialized abstractions. Implement these interfaces in your CQRS implementation.
 * Automated.Arca.Abstractions.DependencyInjection - Dependency injection abstractions.
+* Automated.Arca.Abstractions.Specialized - Specialized abstractions. Implement these interfaces in your CQRS implementation.
 * Automated.Arca.Attributes.DependencyInjection - Dependency injection attributes to apply on classes to register / configure.
 * Automated.Arca.Attributes.Specialized - Specialized attributes to apply on classes to register / configure.
 * Automated.Arca.Extensions.DependencyInjection - Dependency injection extensions for the dependency injection attributes.
