@@ -13,6 +13,7 @@
 [Performance considerations](#performance-considerations)<br/>
 [Scopes](#scopes)<br/>
 [Dependencies registered by default](#dependencies-registered-by-default)<br/>
+[Middleware](#middleware)<br/>
 [Package descriptions](#package-descriptions)<br/>
 [Examples](#examples)<br/>
 
