@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using Automated.Arca.Abstractions.DependencyInjection;
-using Automated.Arca.Implementations.ForMicrosoft;
 using Automated.Arca.Tests.Dummies;
 using Xunit;
 
@@ -48,8 +47,6 @@ namespace Automated.Arca.Tests
 			var scopedProvider1 = managerTooling.GetOrAddScopedProvider( ScopeName1 );
 			var scopedProvider2 = managerTooling.GetOrAddScopedProvider( ScopeName1 );
 
-			Assert.Equal( ((InstanceProvider)scopedProvider1).Dependency, ((InstanceProvider)scopedProvider2).Dependency );
-
 			var tenantNameProvider1 = scopedProvider1.GetRequiredInstance<ITenantNameProvider>();
 			var tenantNameProvider2 = scopedProvider2.GetRequiredInstance<ITenantNameProvider>();
 			Assert.Equal( tenantNameProvider1, tenantNameProvider2 );
@@ -79,8 +76,6 @@ namespace Automated.Arca.Tests
 
 			var scopedProvider1 = managerTooling.GetOrAddScopedProvider( ScopeName1 );
 			var scopedProvider2 = managerTooling.GetOrAddScopedProvider( ScopeName2 );
-
-			Assert.NotEqual( ((InstanceProvider)scopedProvider1).Dependency, ((InstanceProvider)scopedProvider2).Dependency );
 
 			var tenantNameProvider1 = scopedProvider1.GetRequiredInstance<ITenantNameProvider>();
 			var tenantNameProvider2 = scopedProvider2.GetRequiredInstance<ITenantNameProvider>();

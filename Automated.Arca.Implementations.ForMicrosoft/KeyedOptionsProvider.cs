@@ -6,19 +6,19 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 {
 	public class KeyedOptionsProvider : IKeyedOptionsProvider
 	{
-		public KeyedOptionsProvider( IConfiguration dependency )
-		{
-			Dependency = dependency;
-		}
+		protected IConfiguration ApplicationOptionsProvider { get; private set; }
 
-		public IConfiguration Dependency { get; private set; }
+		public KeyedOptionsProvider( IConfiguration applicationOptionsProvider )
+		{
+			ApplicationOptionsProvider = applicationOptionsProvider;
+		}
 
 		public T GetRequiredValue<T>( string keyName )
 		{
 			if( string.IsNullOrEmpty( keyName ) )
 				throw new ArgumentNullException( $"Configuration key is missing." );
 
-			var value = Dependency.GetValue<T>( keyName );
+			var value = ApplicationOptionsProvider.GetValue<T>( keyName );
 
 			if( value == null )
 				throw new InvalidOperationException( $"Configuration value for key '{keyName}' is missing, but is required." );

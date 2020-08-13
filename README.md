@@ -242,7 +242,6 @@ namespace FooCorp
 	public class Startup
 	{
 		private readonly IConfiguration ApplicationOptionsProvider;
-		private readonly IManagerLogger ManagerLogger;
 		private readonly IManager Manager;
 
 		public Startup( IConfiguration options )

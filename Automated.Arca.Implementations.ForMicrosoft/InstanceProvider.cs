@@ -6,31 +6,31 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 {
 	public abstract class InstanceProvider : IInstanceProvider
 	{
-		public InstanceProvider( IServiceProvider dependency )
-		{
-			Dependency = dependency;
-		}
+		protected IServiceProvider ServiceProvider { get; private set; }
 
-		public IServiceProvider Dependency { get; private set; }
+		public InstanceProvider( IServiceProvider serviceProvider )
+		{
+			ServiceProvider = serviceProvider;
+		}
 
 		public object GetInstanceOrNull( Type type )
 		{
-			return Dependency.GetService( type );
+			return ServiceProvider.GetService( type );
 		}
 
 		public T GetInstanceOrNull<T>()
 		{
-			return Dependency.GetService<T>();
+			return ServiceProvider.GetService<T>();
 		}
 
 		public object GetRequiredInstance( Type type )
 		{
-			return Dependency.GetRequiredService( type );
+			return ServiceProvider.GetRequiredService( type );
 		}
 
 		public T GetRequiredInstance<T>()
 		{
-			return Dependency.GetRequiredService<T>();
+			return ServiceProvider.GetRequiredService<T>();
 		}
 	}
 }

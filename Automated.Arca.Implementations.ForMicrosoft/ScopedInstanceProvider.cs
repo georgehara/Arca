@@ -6,8 +6,8 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 {
 	public class ScopedInstanceProvider<TScopeName> : InstanceProvider, IScopedInstanceProvider<TScopeName>
 	{
-		public ScopedInstanceProvider( TScopeName scopeName, IServiceProvider dependency )
-			: base( dependency )
+		public ScopedInstanceProvider( TScopeName scopeName, IServiceProvider serviceProvider )
+			: base( serviceProvider )
 		{
 			ScopeName = scopeName;
 		}
@@ -16,7 +16,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 
 		public IDisposable CreateScope( TScopeName scopeName, out IScopedInstanceProvider<TScopeName> provider )
 		{
-			var scopeTyped = Dependency.CreateScope();
+			var scopeTyped = ServiceProvider.CreateScope();
 
 			provider = new ScopedInstanceProvider<TScopeName>( scopeName, scopeTyped.ServiceProvider );
 
@@ -25,7 +25,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 
 		public IScopedInstanceProvider<TScopeName> CreateScopedProvider( TScopeName scopeName, out IDisposable scope )
 		{
-			var scopeTyped = Dependency.CreateScope();
+			var scopeTyped = ServiceProvider.CreateScope();
 
 			scope = scopeTyped;
 

@@ -12,12 +12,13 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 {
 	public class InstantiationRegistry : IInstantiationRegistry
 	{
-		private readonly bool InstantiatePerContainerInsteadOfScope;
+		protected IServiceCollection Services { get; private set; }
+		protected bool InstantiatePerContainerInsteadOfScope { get; private set; }
 
-		public InstantiationRegistry( IServiceCollection dependency, bool instantiatePerContainerInsteadOfScope,
+		public InstantiationRegistry( IServiceCollection services, bool instantiatePerContainerInsteadOfScope,
 			bool addGlobalInstanceProvider )
 		{
-			Dependency = dependency;
+			Services = services;
 
 			InstantiatePerContainerInsteadOfScope = instantiatePerContainerInsteadOfScope;
 
@@ -25,21 +26,19 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 				AddGlobalInstanceProvider();
 		}
 
-		public IServiceCollection Dependency { get; private set; }
-
 		public void ToInstantiatePerContainer( Type type )
 		{
-			Dependency.AddSingleton( type );
+			Services.AddSingleton( type );
 		}
 
 		public void ToInstantiatePerContainer( Type baseType, Type implementationType )
 		{
-			Dependency.AddSingleton( baseType, implementationType );
+			Services.AddSingleton( baseType, implementationType );
 		}
 
 		public void ToInstantiatePerContainer( Type baseType, Func<IServiceProvider, object> implementationFactory )
 		{
-			Dependency.AddSingleton( baseType, implementationFactory );
+			Services.AddSingleton( baseType, implementationFactory );
 		}
 
 		public void ToInstantiatePerScope( Type type )
@@ -47,7 +46,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			if( InstantiatePerContainerInsteadOfScope )
 				ToInstantiatePerContainer( type );
 			else
-				Dependency.AddScoped( type );
+				Services.AddScoped( type );
 		}
 
 		public void ToInstantiatePerScope( Type baseType, Type implementationType )
@@ -55,7 +54,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			if( InstantiatePerContainerInsteadOfScope )
 				ToInstantiatePerContainer( baseType, implementationType );
 			else
-				Dependency.AddScoped( baseType, implementationType );
+				Services.AddScoped( baseType, implementationType );
 		}
 
 		public void ToInstantiatePerScope( Type baseType, Func<IServiceProvider, object> implementationFactory )
@@ -63,27 +62,27 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			if( InstantiatePerContainerInsteadOfScope )
 				ToInstantiatePerContainer( baseType, implementationFactory );
 			else
-				Dependency.AddScoped( baseType, implementationFactory );
+				Services.AddScoped( baseType, implementationFactory );
 		}
 
 		public void ToInstantiatePerInjection( Type type )
 		{
-			Dependency.AddTransient( type );
+			Services.AddTransient( type );
 		}
 
 		public void ToInstantiatePerInjection( Type baseType, Type implementationType )
 		{
-			Dependency.AddTransient( baseType, implementationType );
+			Services.AddTransient( baseType, implementationType );
 		}
 
 		public void ToInstantiatePerInjection( Type baseType, Func<IServiceProvider, object> implementationFactory )
 		{
-			Dependency.AddTransient( baseType, implementationFactory );
+			Services.AddTransient( baseType, implementationFactory );
 		}
 
 		public void AddInstancePerContainer( Type baseType, object implementationInstance )
 		{
-			Dependency.AddSingleton( baseType, implementationInstance );
+			Services.AddSingleton( baseType, implementationInstance );
 		}
 
 		public void AddInstancePerContainer<T>( T instance )
@@ -118,7 +117,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 
 			MethodInfo generic = method!.MakeGenericMethod( serviceInterfaceType, serviceImplementationType );
 
-			var httpClientBuilder = generic!.Invoke( null, new object[] { Dependency, action } ) as IHttpClientBuilder;
+			var httpClientBuilder = generic!.Invoke( null, new object[] { Services, action } ) as IHttpClientBuilder;
 
 			httpClientBuilder
 				.AddTransientHttpErrorPolicy(
@@ -130,7 +129,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			var serviceName = $"External Service: {serviceImplementationType.Name} ({healthUri})";
 			var tags = new[] { "externalService" };
 
-			Dependency.AddHealthChecks().AddUrlGroup( new Uri( healthUri ), serviceName, tags: tags );
+			Services.AddHealthChecks().AddUrlGroup( new Uri( healthUri ), serviceName, tags: tags );
 		}
 
 		public void AddHostedService( Type hostedServiceType )
@@ -143,7 +142,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 
 			MethodInfo generic = method!.MakeGenericMethod( hostedServiceType );
 
-			generic.Invoke( null, new object[] { Dependency } );
+			generic.Invoke( null, new object[] { Services } );
 		}
 
 		public void AddDatabaseContext( Type dbContextType, string connectionString, string migrationsHistoryTable,
@@ -174,7 +173,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 
 			MethodInfo generic = method!.MakeGenericMethod( dbContextType );
 
-			generic.Invoke( null, new object?[] { Dependency, action, null, null } );
+			generic.Invoke( null, new object?[] { Services, action, null, null } );
 		}
 	}
 }
