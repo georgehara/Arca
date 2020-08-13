@@ -60,14 +60,13 @@ namespace Automated.Arca.Demo.WebApi
 
 			app.UseAuthorization();
 
-			app.UseEndpoints( endpoints =>
-			{
-				endpoints.MapControllers();
-			} );
-
+			// When using middleware, "Manager.Configure" must be called before "app.UseEndpoints"!
 			Manager
 				.AddGlobalInstanceProvider( app.ApplicationServices )
+				.AddMiddlewareRegistry( app )
 				.Configure();
+
+			app.UseEndpoints( endpoints => endpoints.MapControllers() );
 		}
 	}
 }

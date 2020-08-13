@@ -1,4 +1,4 @@
-﻿using Automated.Arca.Demo.WebApi.Providers;
+﻿using Automated.Arca.Demo.WebApi.Components;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Automated.Arca.Demo.WebApi.Controllers

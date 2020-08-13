@@ -2,7 +2,7 @@
 using Automated.Arca.Attributes.DependencyInjection;
 using Automated.Arca.Manager;
 
-namespace Automated.Arca.Demo.WebApi.Providers
+namespace Automated.Arca.Demo.WebApi.Components
 {
 	[InstantiatePerScopeAttribute]
 	public class LogsProvider : IProcessable
