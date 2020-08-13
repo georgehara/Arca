@@ -44,6 +44,8 @@ namespace Automated.Arca.Tests
 
 			ApplicationBuilder = new ApplicationBuilder( ServiceProvider );
 
+			Manager.AddMiddlewareRegistry( ApplicationBuilder );
+
 			onManagerConfigure( this );
 		}
 

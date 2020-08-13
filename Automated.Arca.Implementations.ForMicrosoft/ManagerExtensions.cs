@@ -33,5 +33,12 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 				.AddExtensionDependency<IGlobalInstanceProvider>( globalInstanceProvider )
 				.AddExtensionDependency<IInstanceProvider>( globalInstanceProvider );
 		}
+
+		public static IManager AddMiddlewareRegistry( this IManager manager, IApplicationBuilder applicationBuilder )
+		{
+			var middlewareRegistry = new MiddlewareRegistry( applicationBuilder );
+
+			return manager.AddExtensionDependency<IMiddlewareRegistry>( middlewareRegistry );
+		}
 	}
 }

@@ -196,6 +196,15 @@ When dependency injection is used, ARCA adds the following components to the ins
 You can add any of these interfaces as parameters to the constructors of you classes, so they can be injected by the dependency injection container.
 
 
+## MIDDLEWARE
+
+Middleware support is provided with the `ChainMiddlewarePerScopeAttribute` and `ChainMiddlewarePerInjectionAttribute` attributes. The attributes register the middleware, in the dependency injection container, for instantiation per scope / injection.
+
+The middleware class must implement the `IMiddleware` interface, and must have applied on it one of the attributes above. Then, when it's time to call it in the request pipeline, ASP.NET will instantiate it through the dependency injection container.
+
+Note: Don't count on the middleware being called in a specific order in the request pipeline, because the ARCA manager doesn't know how to order the middleware.
+
+
 ## PACKAGE DESCRIPTIONS
 
 * Automated.Arca.Abstractions.Core - Core abstractions. Contains `IProcessable`, so it's usually necessary. Use to create your own attributes and extensions.
@@ -227,8 +236,8 @@ Create an ASP.NET / WebApi application and install the following packages:
 
 ```
 using Automated.Arca.Abstractions.Core;
-using Automated.Arca.Extensions.Specialized;
 using Automated.Arca.Extensions.DependencyInjection;
+using Automated.Arca.Extensions.Specialized;
 using Automated.Arca.Implementations.ForMicrosoft;
 using Automated.Arca.Manager;
 using Microsoft.AspNetCore.Builder;

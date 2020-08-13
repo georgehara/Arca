@@ -212,6 +212,9 @@ namespace Automated.Arca.Tests
 			var someMessageBusConnection = applicationPipeline.GetRequiredInstance<ISomeMessageBusConnection>();
 			Assert.NotNull( someMessageBusConnection.Connection );
 
+			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeMiddlewarePerScope>() );
+			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeMiddlewarePerInjection>() );
+
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeOutbox>() );
 			Assert.NotNull( applicationPipeline.GetRequiredInstance<IOutboxProcessor>() );
 
