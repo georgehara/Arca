@@ -204,7 +204,7 @@ The middleware class must implement the `IMiddleware` interface, and must have a
 
 Before you call the `Configure` method on the manager, call the `AddMiddlewareRegistry` extension method, on the manager.
 
-Note: Don't count on the middleware being called in a specific order in the request pipeline, because the ARCA manager doesn't know how to order the middleware.
+Note: Don't count on the middleware being called in a specific order in the request pipeline, because the ARCA manager doesn't know how to order the middleware registration.
 
 
 ## PACKAGE DESCRIPTIONS
