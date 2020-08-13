@@ -26,7 +26,7 @@ namespace Automated.Arca.Demo.WebApi.Components
 
 		private void Log( HttpContext httpContext )
 		{
-			ManagerLogger.Log( $"Invoking middleware '{nameof( LoggingMiddleware )}':" );
+			ManagerLogger.Log( $"Invoked middleware '{nameof( LoggingMiddleware )}':" );
 			ManagerLogger.Log( $"\t* URL: {httpContext.Request.GetDisplayUrl()}" );
 			ManagerLogger.Log( $"\t* Endpoint: {httpContext.GetEndpoint().DisplayName}" );
 			ManagerLogger.Log( $"\t* Request identifier: {httpContext.TraceIdentifier}" );
