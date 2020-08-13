@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Automated.Arca.Abstractions.Cqrs;
+using Automated.Arca.Abstractions.Specialized;
 using Automated.Arca.Tests.Dummies;
 using Xunit;
 
@@ -12,21 +12,21 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void Processing_Succeeds()
 		{
-			var managerTooling = ManagerTooling.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
 				true, null, false );
 
-			VerifyDummies( managerTooling, false );
+			VerifyDummies( applicationPipeline, false );
 		}
 
 		[Fact]
 		public void ProcessingWithoutDummyAssembly_Fails()
 		{
-			var managerTooling = ManagerTooling.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
 				true, null, false );
 
-			VerifyDummies( managerTooling, false );
+			VerifyDummies( applicationPipeline, false );
 
-			void a() => managerTooling.GetRequiredInstance<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>();
+			void a() => applicationPipeline.GetRequiredInstance<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>();
 
 			Assert.Throws<InvalidOperationException>( a );
 		}
@@ -34,21 +34,21 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ProcessingWithDummyAssembly_Succeeds()
 		{
-			var managerTooling = new ManagerTooling( Assembly.GetExecutingAssembly(), true, null, false )
-				.AddAssemblyContainingType<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>()
-				.Register()
-				.Configure();
+			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), true, null, false,
+					x => x.AddAssemblyContainingType<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>(),
+					x => x.RegisterFirst(),
+					x => x.ConfigureFirst() );
 
-			VerifyDummies( managerTooling, true );
+			VerifyDummies( applicationPipeline, true );
 		}
 
 		[Fact]
 		public void ProcessingWithDummyAssemblyBetweenRegisterAndConfigure_Fails()
 		{
-			static void a() => new ManagerTooling( Assembly.GetExecutingAssembly(), true, null, false )
-				.Register()
-				.AddAssemblyContainingType<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>()
-				.Configure();
+			static void a() => new ApplicationPipeline( Assembly.GetExecutingAssembly(), true, null, false,
+				x => x.RegisterFirst(),
+				x => x.AddAssemblyContainingType<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>(),
+				x => x.ConfigureFirst() );
 
 			Assert.Throws<InvalidOperationException>( a );
 		}
@@ -56,25 +56,27 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ProcessingWithDummyAssemblyBetweenRegisterAndRegisterAndConfigure_Succeeds()
 		{
-			var managerTooling = new ManagerTooling( Assembly.GetExecutingAssembly(), true, null, false )
-				.Register()
-				.AddAssemblyContainingType<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>()
-				.Register()
-				.Configure();
+			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), true, null, false,
+				x => { },
+				x => x.RegisterFirst()
+					.AddAssemblyContainingType<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>()
+					.RegisterSecond(),
+				x => x.ConfigureFirst() );
 
-			VerifyDummies( managerTooling, true );
+			VerifyDummies( applicationPipeline, true );
 		}
 
 		[Fact]
 		public void ProcessingWithMultipleCallsToRegisterAndConfigure_Succeeds()
 		{
-			var managerTooling = new ManagerTooling( Assembly.GetExecutingAssembly(), true, null, false )
-				.Register()
-				.Configure()
-				.Register()
-				.Configure();
+			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), true, null, false,
+				x => { },
+				x => x.RegisterFirst(),
+				x => x.ConfigureFirst()
+					.RegisterSecond()
+					.ConfigureSecond() );
 
-			VerifyDummies( managerTooling, false );
+			VerifyDummies( applicationPipeline, false );
 		}
 
 		[Fact]
@@ -83,16 +85,17 @@ namespace Automated.Arca.Tests
 			// Microsoft's dependency injection container stops registering components once the service provider is built,
 			// without throwing an exception, so trying to register new types after "Configure" was called is pointless.
 
-			var managerTooling = new ManagerTooling( Assembly.GetExecutingAssembly(), true, null, false )
-				.Register()
-				.Configure()
-				.AddAssemblyContainingType<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>()
-				.Register()
-				.Configure();
+			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), true, null, false,
+				x => { },
+				x => x.RegisterFirst(),
+				x => x.ConfigureFirst()
+					.AddAssemblyContainingType<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>()
+					.RegisterSecond()
+					.ConfigureSecond() );
 
-			VerifyDummies( managerTooling, false );
+			VerifyDummies( applicationPipeline, false );
 
-			void a() => managerTooling.GetRequiredInstance<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>();
+			void a() => applicationPipeline.GetRequiredInstance<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>();
 
 			Assert.Throws<InvalidOperationException>( a );
 		}
@@ -100,8 +103,10 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ProcessingWithoutRegister_Fails()
 		{
-			static void a() => new ManagerTooling( Assembly.GetCallingAssembly(), true, null, false )
-				.Configure();
+			static void a() => new ApplicationPipeline( Assembly.GetCallingAssembly(), true, null, false,
+				x => { },
+				x => { },
+				x => x.ConfigureFirst() );
 
 			Assert.Throws<InvalidOperationException>( a );
 		}
@@ -109,10 +114,10 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ProcessingWithWrongRootAssembly_Fails()
 		{
-			var managerTooling = ManagerTooling.GetInstanceAndCallRegisterAndConfigure( Assembly.GetCallingAssembly(),
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetCallingAssembly(),
 				true, null, false );
 
-			void a() => managerTooling.GetRequiredInstance<SomeInstantiatePerScopeComponent>();
+			void a() => applicationPipeline.GetRequiredInstance<SomeInstantiatePerScopeComponent>();
 
 			Assert.Throws<InvalidOperationException>( a );
 		}
@@ -120,19 +125,19 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ProcessingNotDerivedFromIProcessable_Succeeds()
 		{
-			var managerTooling = ManagerTooling.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
 				false, null, false );
 
-			Assert.NotNull( managerTooling.GetRequiredInstance<SomeComponentNotDerivedFromIProcessable>() );
+			Assert.NotNull( applicationPipeline.GetRequiredInstance<SomeComponentNotDerivedFromIProcessable>() );
 		}
 
 		[Fact]
 		public void ProcessingNotDerivedFromIProcessable_Fails()
 		{
-			var managerTooling = ManagerTooling.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
 				true, null, false );
 
-			void a() => managerTooling.GetRequiredInstance<SomeComponentNotDerivedFromIProcessable>();
+			void a() => applicationPipeline.GetRequiredInstance<SomeComponentNotDerivedFromIProcessable>();
 
 			Assert.Throws<InvalidOperationException>( a );
 		}
@@ -140,11 +145,12 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void InstantiatingClassIncludedInProcessing_Succeeds()
 		{
-			var managerTooling = new ManagerTooling( Assembly.GetExecutingAssembly(), false, null, false )
-				.Register()
-				.Configure();
+			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), false, null, false,
+				x => { },
+				x => x.RegisterFirst(),
+				x => x.ConfigureFirst() );
 
-			Assert.NotNull( managerTooling.GetRequiredInstance<SomeInstantiatePerContainerComponent>() );
+			Assert.NotNull( applicationPipeline.GetRequiredInstance<SomeInstantiatePerContainerComponent>() );
 		}
 
 		[Fact]
@@ -152,24 +158,25 @@ namespace Automated.Arca.Tests
 		{
 			var excludeTypes = new HashSet<Type> { typeof( SomeInstantiatePerContainerComponent ) };
 
-			var managerTooling = new ManagerTooling( Assembly.GetExecutingAssembly(), false, excludeTypes, false )
-				.Register()
-				.Configure();
+			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), false, excludeTypes, false,
+				x => { },
+				x => x.RegisterFirst(),
+				x => x.ConfigureFirst() );
 
-			void a() => managerTooling.GetRequiredInstance<SomeInstantiatePerContainerComponent>();
+			void a() => applicationPipeline.GetRequiredInstance<SomeInstantiatePerContainerComponent>();
 
 			Assert.Throws<InvalidOperationException>( a );
 		}
 
-		private void VerifyDummies( ManagerTooling managerTooling, bool includeDummyAssembly )
+		private void VerifyDummies( ApplicationPipeline applicationPipeline, bool includeDummyAssembly )
 		{
-			var scopedProvider = managerTooling.GetOrAddScopedProvider( ScopeNames.Main );
+			var scopedProvider = applicationPipeline.GetOrAddScopedProvider( ScopeNames.Main );
 
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeAttributeWithInstantiatePerScopeAttribute>() );
 
-			Assert.NotNull( managerTooling.GetRequiredInstance<SomeBoundedContext>() );
+			Assert.NotNull( applicationPipeline.GetRequiredInstance<SomeBoundedContext>() );
 
-			Assert.NotNull( managerTooling.GetRequiredInstance<ICommandHandlerRegistry>() );
+			Assert.NotNull( applicationPipeline.GetRequiredInstance<ICommandHandlerRegistry>() );
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeCommandHandler>() );
 
 			var someComponentForRegistratorConfigurator
@@ -179,34 +186,34 @@ namespace Automated.Arca.Tests
 			// "SomeComponentNotDerivedFromIProcessable" is checked separately.
 
 			var someComponentWithInterfaceSpecifiedInAttribute
-				= managerTooling.GetRequiredInstance<ISomeComponentWithInterfaceSpecifiedInAttribute>();
+				= applicationPipeline.GetRequiredInstance<ISomeComponentWithInterfaceSpecifiedInAttribute>();
 			Assert.True( someComponentWithInterfaceSpecifiedInAttribute.Configured );
 
 			var someComponentWithoutInterfaceSpecifiedInAttribute
-				= managerTooling.GetRequiredInstance<ISomeComponentWithoutInterfaceSpecifiedInAttribute>();
+				= applicationPipeline.GetRequiredInstance<ISomeComponentWithoutInterfaceSpecifiedInAttribute>();
 			Assert.True( someComponentWithoutInterfaceSpecifiedInAttribute.Configured );
 
-			Assert.NotNull( managerTooling.GetRequiredInstance<IDomainEventRegistry>() );
-			Assert.NotNull( managerTooling.GetRequiredInstance<IDomainEventHandlerRegistry>() );
+			Assert.NotNull( applicationPipeline.GetRequiredInstance<IDomainEventRegistry>() );
+			Assert.NotNull( applicationPipeline.GetRequiredInstance<IDomainEventHandlerRegistry>() );
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeDomainEventHandler>() );
 
-			Assert.NotNull( managerTooling.GetRequiredInstance<ISomeExternalService>() );
+			Assert.NotNull( applicationPipeline.GetRequiredInstance<ISomeExternalService>() );
 
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeInstantiatePerScopeComponent>() );
 			Assert.NotNull( scopedProvider.GetRequiredInstance<ISomeInstantiatePerScopeComponentWithInterface>() );
-			Assert.NotNull( managerTooling.GetRequiredInstance<SomeInstantiatePerInjectionComponent>() );
-			Assert.NotNull( managerTooling.GetRequiredInstance<ISomeInstantiatePerInjectionComponentWithInterface>() );
-			Assert.NotNull( managerTooling.GetRequiredInstance<SomeInstantiatePerContainerComponent>() );
-			Assert.NotNull( managerTooling.GetRequiredInstance<ISomeInstantiatePerContainerComponentWithInterface>() );
+			Assert.NotNull( applicationPipeline.GetRequiredInstance<SomeInstantiatePerInjectionComponent>() );
+			Assert.NotNull( applicationPipeline.GetRequiredInstance<ISomeInstantiatePerInjectionComponentWithInterface>() );
+			Assert.NotNull( applicationPipeline.GetRequiredInstance<SomeInstantiatePerContainerComponent>() );
+			Assert.NotNull( applicationPipeline.GetRequiredInstance<ISomeInstantiatePerContainerComponentWithInterface>() );
 
-			Assert.NotNull( managerTooling.GetRequiredInstance<IIntegrationEventHandlerRegistry>() );
+			Assert.NotNull( applicationPipeline.GetRequiredInstance<IIntegrationEventHandlerRegistry>() );
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeIntegrationEventHandler>() );
 
-			var someMessageBusConnection = managerTooling.GetRequiredInstance<ISomeMessageBusConnection>();
+			var someMessageBusConnection = applicationPipeline.GetRequiredInstance<ISomeMessageBusConnection>();
 			Assert.NotNull( someMessageBusConnection.Connection );
 
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeOutbox>() );
-			Assert.NotNull( managerTooling.GetRequiredInstance<IOutboxProcessor>() );
+			Assert.NotNull( applicationPipeline.GetRequiredInstance<IOutboxProcessor>() );
 
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeProcessableAttributeWithInstantiatePerScopeAttribute>() );
 
@@ -214,12 +221,12 @@ namespace Automated.Arca.Tests
 			Assert.NotNull( scopedProvider.GetRequiredInstance<ISomeTenantRequestProcessor>() );
 
 			if( includeDummyAssembly )
-				VerifyDummiesFromDummyAssembly( managerTooling );
+				VerifyDummiesFromDummyAssembly( applicationPipeline );
 		}
 
-		private void VerifyDummiesFromDummyAssembly( ManagerTooling managerTooling )
+		private void VerifyDummiesFromDummyAssembly( ApplicationPipeline applicationPipeline )
 		{
-			var scopedProvider = managerTooling.GetOrAddScopedProvider( ScopeNames.Main );
+			var scopedProvider = applicationPipeline.GetOrAddScopedProvider( ScopeNames.Main );
 
 			Assert.NotNull( scopedProvider.GetRequiredInstance<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>() );
 		}

@@ -1,6 +1,6 @@
 using Automated.Arca.Abstractions.Core;
-using Automated.Arca.Extensions.Cqrs;
 using Automated.Arca.Extensions.DependencyInjection;
+using Automated.Arca.Extensions.Specialized;
 using Automated.Arca.Implementations.ForMicrosoft;
 using Automated.Arca.Manager;
 using Microsoft.AspNetCore.Builder;

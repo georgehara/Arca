@@ -16,6 +16,7 @@
 Implementations for Microsoft's dependency injection.</Description>
 		<RepositoryUrl>https://github.com/georgehara/Arca</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
+		<Version>1.0.1</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -34,7 +35,7 @@ Implementations for Microsoft's dependency injection.</Description>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Automated.Arca.Abstractions.Core\Automated.Arca.Abstractions.Core.csproj" />
-		<ProjectReference Include="..\Automated.Arca.Abstractions.Cqrs\Automated.Arca.Abstractions.Cqrs.csproj" />
+		<ProjectReference Include="..\Automated.Arca.Abstractions.Specialized\Automated.Arca.Abstractions.Specialized.csproj" />
 		<ProjectReference Include="..\Automated.Arca.Abstractions.DependencyInjection\Automated.Arca.Abstractions.DependencyInjection.csproj" />
 		<ProjectReference Include="..\Automated.Arca.Libraries\Automated.Arca.Libraries.csproj" />
 	</ItemGroup>

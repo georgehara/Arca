@@ -13,11 +13,11 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void InstantiatePerContainer_GetSameInstanceForGlobalScope()
 		{
-			var managerTooling = ManagerTooling.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
 				true, null, false );
 
-			var instance1 = managerTooling.GetRequiredInstance<SomeInstantiatePerContainerComponent>();
-			var instance2 = managerTooling.GetRequiredInstance<SomeInstantiatePerContainerComponent>();
+			var instance1 = applicationPipeline.GetRequiredInstance<SomeInstantiatePerContainerComponent>();
+			var instance2 = applicationPipeline.GetRequiredInstance<SomeInstantiatePerContainerComponent>();
 
 			Assert.Equal( instance1, instance2 );
 		}
@@ -25,11 +25,11 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void InstantiatePerScope_GetSameInstanceForGlobalScope()
 		{
-			var managerTooling = ManagerTooling.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
 				true, null, true );
 
-			var instance1 = managerTooling.GetRequiredInstance<ISomeTenantRequestProcessor>();
-			var instance2 = managerTooling.GetRequiredInstance<ISomeTenantRequestProcessor>();
+			var instance1 = applicationPipeline.GetRequiredInstance<ISomeTenantRequestProcessor>();
+			var instance2 = applicationPipeline.GetRequiredInstance<ISomeTenantRequestProcessor>();
 
 			Assert.Equal( instance1, instance2 );
 			Assert.Equal( "", instance1.ScopeName );
@@ -41,11 +41,11 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void InstantiatePerScope_GetSameInstanceForSameScopeName()
 		{
-			var managerTooling = ManagerTooling.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
 				true, null, false );
 
-			var scopedProvider1 = managerTooling.GetOrAddScopedProvider( ScopeName1 );
-			var scopedProvider2 = managerTooling.GetOrAddScopedProvider( ScopeName1 );
+			var scopedProvider1 = applicationPipeline.GetOrAddScopedProvider( ScopeName1 );
+			var scopedProvider2 = applicationPipeline.GetOrAddScopedProvider( ScopeName1 );
 
 			var tenantNameProvider1 = scopedProvider1.GetRequiredInstance<ITenantNameProvider>();
 			var tenantNameProvider2 = scopedProvider2.GetRequiredInstance<ITenantNameProvider>();
@@ -71,11 +71,11 @@ namespace Automated.Arca.Tests
 			// has all its constructor parameters automatically instantiated, regardless of the level of imbrication. A request /
 			// message handling method can then be called on the tenant-scoped processor.
 
-			var managerTooling = ManagerTooling.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
 				true, null, false );
 
-			var scopedProvider1 = managerTooling.GetOrAddScopedProvider( ScopeName1 );
-			var scopedProvider2 = managerTooling.GetOrAddScopedProvider( ScopeName2 );
+			var scopedProvider1 = applicationPipeline.GetOrAddScopedProvider( ScopeName1 );
+			var scopedProvider2 = applicationPipeline.GetOrAddScopedProvider( ScopeName2 );
 
 			var tenantNameProvider1 = scopedProvider1.GetRequiredInstance<ITenantNameProvider>();
 			var tenantNameProvider2 = scopedProvider2.GetRequiredInstance<ITenantNameProvider>();

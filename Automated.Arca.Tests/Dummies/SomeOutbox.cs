@@ -1,5 +1,5 @@
-﻿using Automated.Arca.Abstractions.Cqrs;
-using Automated.Arca.Attributes.Cqrs;
+﻿using Automated.Arca.Abstractions.Specialized;
+using Automated.Arca.Attributes.Specialized;
 
 namespace Automated.Arca.Tests.Dummies
 {

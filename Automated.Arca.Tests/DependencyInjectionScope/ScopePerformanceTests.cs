@@ -10,7 +10,7 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void CreateScope()
 		{
-			var managerTooling = ManagerTooling.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
 				true, null, false );
 
 			Stopwatch sw = new Stopwatch();
@@ -20,7 +20,7 @@ namespace Automated.Arca.Tests
 			IScopedInstanceProvider<string> scopedProvider;
 
 			for( int i = 0; i < iterations; i++ )
-				scopedProvider = managerTooling.GetOrAddScopedProvider( ScopeNames.Main );
+				scopedProvider = applicationPipeline.GetOrAddScopedProvider( ScopeNames.Main );
 
 			Trace.WriteLine( $"Speed of '{nameof( CreateScope )}' = {Speed( sw, iterations )}" );
 		}

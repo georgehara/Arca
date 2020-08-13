@@ -199,12 +199,12 @@ You can add any of these interfaces as parameters to the constructors of you cla
 ## PACKAGE DESCRIPTIONS
 
 * Automated.Arca.Abstractions.Core - Core abstractions. Contains `IProcessable`, so it's usually necessary. Use to create your own attributes and extensions.
-* Automated.Arca.Abstractions.Cqrs - CQRS abstractions. Implement these interfaces in your CQRS implementation.
+* Automated.Arca.Abstractions.Specialized - Specialized abstractions. Implement these interfaces in your CQRS implementation.
 * Automated.Arca.Abstractions.DependencyInjection - Dependency injection abstractions.
 * Automated.Arca.Attributes.DependencyInjection - Dependency injection attributes to apply on classes to register / configure.
-* Automated.Arca.Attributes.Cqrs - CQRS attributes to apply on classes to register / configure.
+* Automated.Arca.Attributes.Specialized - Specialized attributes to apply on classes to register / configure.
 * Automated.Arca.Extensions.DependencyInjection - Dependency injection extensions for the dependency injection attributes.
-* Automated.Arca.Extensions.Cqrs - CQRS extensions for the CQRS attributes.
+* Automated.Arca.Extensions.Specialized - Specialized extensions for the specialized attributes.
 * Automated.Arca.Implementations.ForMicrosoft - Implementations for Microsoft's dependency injection.
 * Automated.Arca.Libraries - Libraries for other packages.
 * Automated.Arca.Manager - The ARCA manager. Use during the startup of an application.
@@ -221,13 +221,13 @@ For more examples look in the "Automated.Arca.Tests" project.
 
 Create an ASP.NET / WebApi application and install the following packages:
 * Automated.Arca.Extensions.DependencyInjection
-* Automated.Arca.Extensions.Cqrs
+* Automated.Arca.Extensions.Specialized
 * Automated.Arca.Implementations.ForMicrosoft
 * Automated.Arca.Manager
 
 ```
 using Automated.Arca.Abstractions.Core;
-using Automated.Arca.Extensions.Cqrs;
+using Automated.Arca.Extensions.Specialized;
 using Automated.Arca.Extensions.DependencyInjection;
 using Automated.Arca.Implementations.ForMicrosoft;
 using Automated.Arca.Manager;

@@ -1,6 +1,6 @@
 ﻿using System.Net.Http;
 using Automated.Arca.Abstractions.Core;
-using Automated.Arca.Attributes.Cqrs;
+using Automated.Arca.Attributes.Specialized;
 
 namespace Automated.Arca.Tests.Dummies
 {

@@ -1,5 +1,5 @@
 ﻿using Automated.Arca.Abstractions.Core;
-using Automated.Arca.Attributes.Cqrs;
+using Automated.Arca.Attributes.Specialized;
 using Microsoft.EntityFrameworkCore;
 
 namespace Automated.Arca.Tests.Dummies

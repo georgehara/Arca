@@ -7,15 +7,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automated.Arca.Abstractions
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automated.Arca.Libraries", "Automated.Arca.Libraries\Automated.Arca.Libraries.csproj", "{18B7D7F7-B2E7-40A2-98C3-B68A54E160D7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automated.Arca.Abstractions.Cqrs", "Automated.Arca.Abstractions.Cqrs\Automated.Arca.Abstractions.Cqrs.csproj", "{1DCB02B6-B9C3-45DF-84FA-09ACF8C61C40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automated.Arca.Abstractions.Specialized", "Automated.Arca.Abstractions.Specialized\Automated.Arca.Abstractions.Specialized.csproj", "{1DCB02B6-B9C3-45DF-84FA-09ACF8C61C40}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automated.Arca.Attributes.DependencyInjection", "Automated.Arca.Attributes.DependencyInjection\Automated.Arca.Attributes.DependencyInjection.csproj", "{8E01DC66-952E-4FE0-A9E0-BDA9E1CCC026}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automated.Arca.Attributes.Cqrs", "Automated.Arca.Attributes.Cqrs\Automated.Arca.Attributes.Cqrs.csproj", "{3877B694-88D9-448F-90EF-55244D225993}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automated.Arca.Attributes.Specialized", "Automated.Arca.Attributes.Specialized\Automated.Arca.Attributes.Specialized.csproj", "{3877B694-88D9-448F-90EF-55244D225993}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automated.Arca.Extensions.DependencyInjection", "Automated.Arca.Extensions.DependencyInjection\Automated.Arca.Extensions.DependencyInjection.csproj", "{B83B9609-BE84-45C1-9FDB-22CDAF72F18C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automated.Arca.Extensions.Cqrs", "Automated.Arca.Extensions.Cqrs\Automated.Arca.Extensions.Cqrs.csproj", "{DF4C595D-E086-4194-9081-6E6A28B7C521}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automated.Arca.Extensions.Specialized", "Automated.Arca.Extensions.Specialized\Automated.Arca.Extensions.Specialized.csproj", "{DF4C595D-E086-4194-9081-6E6A28B7C521}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automated.Arca.Manager", "Automated.Arca.Manager\Automated.Arca.Manager.csproj", "{F8B384CF-5067-4D90-9FE6-3E328D70C4DB}"
 EndProject
@@ -30,7 +30,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automated.Arca.Implementati
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automated.Arca.Abstractions.DependencyInjection", "Automated.Arca.Abstractions.DependencyInjection\Automated.Arca.Abstractions.DependencyInjection.csproj", "{74F2E795-4367-4984-A904-9E145A46D39B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.DummyAssembly", "Tests.DummyAssembly\Tests.DummyAssembly.csproj", "{AF7F52C9-4C0D-42A1-AFC0-18D8701C692C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.DummyAssembly", "Tests.DummyAssembly\Tests.DummyAssembly.csproj", "{AF7F52C9-4C0D-42A1-AFC0-18D8701C692C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
