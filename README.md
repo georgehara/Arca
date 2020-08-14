@@ -66,7 +66,7 @@ An attribute must be applied on the class that it marks for registration or conf
 
 A class may have applied on it only one attribute (derived from the `ProcessableAttribute` attribute).
 
-Some attributes allow you to specify an interface with which the (dependency injection) registration has to be made. They also offer you the option to not specify the interface, in which case the registration will be made with the default interface of class on which the attribute is applied. The default interface of a class is considered to be the interface from which the class derives on the first ancestor level that has an interface; such an interface may be implemented either by the class itself, or by an ancestor class.
+Some attributes allow you to specify an interface with which the (dependency injection) registration has to be made. They also offer you the option to not specify the interface, in which case the registration will be made with the default interface of the class on which the attribute is applied. The default interface of a class is considered to be the interface from which the class derives on the first ancestor level that has an interface; such an interface may be implemented either by the class itself, or by an ancestor class.
 
 
 ## EXTENSIONS
@@ -199,7 +199,7 @@ When dependency injection is used, ARCA adds the following components to the ins
 * `IGlobalInstanceProvider`
 * `IInstanceProvider`
 
-You can add any of these interfaces as parameters to the constructors of you classes, so they can be injected by the dependency injection container.
+You can add any of these interfaces as parameters to the constructors of your classes, so they can be injected by the dependency injection container.
 
 
 ## MIDDLEWARE
