@@ -14,6 +14,7 @@
 		<Product>Automated.Arca</Product>
 		<Description>Automated registration and configuration of classes for dependency injection, CQRS.
 Dependency injection extensions for the dependency injection attributes.</Description>
+		<PackageTags>arca automated registration configuration dependency injection cqrs</PackageTags>
 		<RepositoryUrl>https://github.com/georgehara/Arca</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<Version>1.0.2</Version>
