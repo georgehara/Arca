@@ -7,10 +7,6 @@ namespace Automated.Arca.Tests
 {
 	public class TypeExtensionsTests
 	{
-		public TypeExtensionsTests()
-		{
-		}
-
 		[Fact]
 		public void GetDefaultInterface_SomeClassDerivedFromClass_Succeeds()
 		{

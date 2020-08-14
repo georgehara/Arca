@@ -9,11 +9,14 @@ namespace Automated.Arca.Manager
 		IList<string> ProcessOnlyAssemblyNamesPrefixedWith { get; }
 		bool ProcessOnlyClassesDerivedFromIProcessable { get; }
 		ICollection<Type> ExcludeTypes { get; }
+		IOrderedTypes PriorityTypes { get; }
 
 		IManagerOptions UseLogger( IManagerLogger? logger );
 		IManagerOptions AddAssemblyNamePrefix( string assemblyNamePrefix );
 		IManagerOptions UseOnlyClassesDerivedFromIProcessable();
 		IManagerOptions Exclude( Type type );
 		IManagerOptions Exclude<T>();
+		IManagerOptions Prioritize( Type type );
+		IManagerOptions Prioritize<T>();
 	}
 }

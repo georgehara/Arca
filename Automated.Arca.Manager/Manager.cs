@@ -14,7 +14,7 @@ namespace Automated.Arca.Manager
 		private readonly object Lock = new object();
 
 		private readonly IDictionary<string, CachedAssembly> CachedAssemblies = new Dictionary<string, CachedAssembly>();
-		private readonly IDictionary<Type, CachedType> CachedTypes = new Dictionary<Type, CachedType>();
+		private readonly CachedTypes CachedTypes;
 		private readonly IDictionary<Type, IExtensionDependency> ExtensionDependencies =
 			new Dictionary<Type, IExtensionDependency>();
 		private readonly IDictionary<Type, IExtensionForProcessableAttribute> ExtensionInstancesByType =
@@ -24,6 +24,7 @@ namespace Automated.Arca.Manager
 		public Manager( IManagerOptions options )
 		{
 			Options = options;
+			CachedTypes = new CachedTypes( Options.PriorityTypes );
 
 			LogOptions();
 		}
@@ -144,7 +145,7 @@ namespace Automated.Arca.Manager
 			{
 				var context = new RegistrationContext( this );
 
-				RegisterAssemblies( context );
+				Register( context );
 
 				return this;
 			}
@@ -156,10 +157,15 @@ namespace Automated.Arca.Manager
 			{
 				var context = new ConfigurationContext( this );
 
-				ConfigureAssemblies( context );
+				Configure( context );
 
 				return this;
 			}
+		}
+
+		public IEnumerable<Type> GetPriorityTypes()
+		{
+			return CachedTypes.GetPriorityTypes().Select( x => x.Type ).ToList();
 		}
 
 		private void LogOptions()
@@ -178,6 +184,12 @@ namespace Automated.Arca.Manager
 					$" significantly speed up the processing; if you do that, every class to register or configure must" +
 					$" derive from '{nameof( IProcessable )}'." );
 			}
+
+			var excludeTypes = Options.ExcludeTypes.Select( x => x.Name ).JoinWithFormat( "'{0}'", ", " );
+			logger.Log( $"Exclude types: {excludeTypes}" );
+
+			var priorityTypes = Options.PriorityTypes.GetOrderedTypes().Select( x => x.Name ).JoinWithFormat( "'{0}'", ", " );
+			logger.Log( $"Priority types: {priorityTypes}" );
 		}
 
 		private void CacheReferencedAssembliesAndTypesAndExtensions( Assembly assembly )
@@ -270,8 +282,7 @@ namespace Automated.Arca.Manager
 
 		private void CacheExtensions()
 		{
-			foreach( var kvp in CachedTypes )
-				CacheExtension( kvp.Value );
+			CachedTypes.ForAll( x => CacheExtension( x ) );
 		}
 
 		private void CacheExtension( CachedType cachedType )
@@ -344,39 +355,40 @@ namespace Automated.Arca.Manager
 			return ExtensionInstancesByType[ extensionType ];
 		}
 
-		private void RegisterAssemblies( IRegistrationContext context )
+		private void Register( IRegistrationContext context )
 		{
 			var watch = System.Diagnostics.Stopwatch.StartNew();
+
+			if( !CachedTypes.HasItems )
+			{
+				Options.Logger?.Log( $"Calling '{nameof( Register )}' without first caching an assembly is pointless." +
+					$" If you already did that, do the classes to register implement the '{nameof( IProcessable )}' interface?" );
+			}
 
 			RegisterTypes( context );
 			RunRegistrators( context );
 
-			if( CachedTypes.Count <= 0 )
-				Options.Logger?.Log( $"Calling '{nameof( Register )}' without first caching an assembly is pointless." );
-
-			Options.Logger?.Log( $"Method '{nameof( RegisterAssemblies )}' executed in {watch.ElapsedMilliseconds} ms." );
+			Options.Logger?.Log( $"Method '{nameof( Register )}' executed in {watch.ElapsedMilliseconds} ms." );
 		}
 
-		private void ConfigureAssemblies( IConfigurationContext context )
+		private void Configure( IConfigurationContext context )
 		{
 			var watch = System.Diagnostics.Stopwatch.StartNew();
 
 			ConfigureTypes( context );
 			RunConfigurators( context );
 
-			Options.Logger?.Log( $"Method '{nameof( ConfigureAssemblies )}' executed in {watch.ElapsedMilliseconds} ms." );
+			Options.Logger?.Log( $"Method '{nameof( Configure )}' executed in {watch.ElapsedMilliseconds} ms." );
 		}
 
 		private void RegisterTypes( IRegistrationContext context )
 		{
-			foreach( var kvp in CachedTypes )
-				RegisterType( context, kvp.Value );
+			CachedTypes.ForAll( x => RegisterType( context, x ) );
 		}
 
 		private void ConfigureTypes( IConfigurationContext context )
 		{
-			foreach( var kvp in CachedTypes )
-				ConfigureType( context, kvp.Value );
+			CachedTypes.ForAll( x => ConfigureType( context, x ) );
 		}
 
 		private void RegisterType( IRegistrationContext context, CachedType cachedType )
@@ -507,14 +519,12 @@ namespace Automated.Arca.Manager
 
 		private void RunRegistrators( IRegistrationContext context )
 		{
-			foreach( var kvp in CachedTypes )
-				RunRegistrator( context, kvp.Value );
+			CachedTypes.ForAll( x => RunRegistrator( context, x ) );
 		}
 
 		private void RunConfigurators( IConfigurationContext context )
 		{
-			foreach( var kvp in CachedTypes )
-				RunConfigurator( context, kvp.Value );
+			CachedTypes.ForAll( x => RunConfigurator( context, x ) );
 		}
 
 		private void RunRegistrator( IRegistrationContext context, CachedType cachedType )

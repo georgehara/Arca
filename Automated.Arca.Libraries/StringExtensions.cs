@@ -5,16 +5,21 @@ namespace Automated.Arca.Libraries
 {
 	public static class StringExtensions
 	{
-		public static string JoinWithFormat( this IList<string> texts, string format, string separator )
+		public static string JoinWithFormat( this IEnumerable<string> texts, string format, string separator )
 		{
 			StringBuilder sb = new StringBuilder();
 
-			var count = texts.Count;
-			for( int i = 0; i < count; i++ )
-			{
-				sb.AppendFormat( format, texts[ i ] );
+			var enumerator = texts.GetEnumerator();
 
-				if( i < count - 1 )
+			bool hasMore = enumerator.MoveNext();
+			while( hasMore )
+			{
+				if( enumerator.Current != null )
+					sb.AppendFormat( format, enumerator.Current );
+
+				hasMore = enumerator.MoveNext();
+
+				if( hasMore )
 					sb.Append( separator );
 			}
 

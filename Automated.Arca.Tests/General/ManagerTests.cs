@@ -13,7 +13,7 @@ namespace Automated.Arca.Tests
 		public void Processing_Succeeds()
 		{
 			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
-				true, null, false );
+				true, null, null, false );
 
 			VerifyDummies( applicationPipeline, false );
 		}
@@ -22,7 +22,7 @@ namespace Automated.Arca.Tests
 		public void ProcessingWithoutDummyAssembly_Fails()
 		{
 			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
-				true, null, false );
+				true, null, null, false );
 
 			VerifyDummies( applicationPipeline, false );
 
@@ -34,7 +34,7 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ProcessingWithDummyAssembly_Succeeds()
 		{
-			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), true, null, false,
+			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), true, null, null, false,
 					x => x.AddAssemblyContainingType<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>(),
 					x => x.RegisterFirst(),
 					x => x.ConfigureFirst() );
@@ -45,7 +45,7 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ProcessingWithDummyAssemblyBetweenRegisterAndConfigure_Fails()
 		{
-			static void a() => new ApplicationPipeline( Assembly.GetExecutingAssembly(), true, null, false,
+			static void a() => new ApplicationPipeline( Assembly.GetExecutingAssembly(), true, null, null, false,
 				x => x.RegisterFirst(),
 				x => x.AddAssemblyContainingType<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>(),
 				x => x.ConfigureFirst() );
@@ -56,7 +56,7 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ProcessingWithDummyAssemblyBetweenRegisterAndRegisterAndConfigure_Succeeds()
 		{
-			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), true, null, false,
+			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), true, null, null, false,
 				x => { },
 				x => x.RegisterFirst()
 					.AddAssemblyContainingType<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>()
@@ -69,7 +69,7 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ProcessingWithMultipleCallsToRegisterAndConfigure_Succeeds()
 		{
-			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), true, null, false,
+			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), true, null, null, false,
 				x => { },
 				x => x.RegisterFirst(),
 				x => x.ConfigureFirst()
@@ -85,7 +85,7 @@ namespace Automated.Arca.Tests
 			// Microsoft's dependency injection container stops registering components once the service provider is built,
 			// without throwing an exception, so trying to register new types after "Configure" was called is pointless.
 
-			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), true, null, false,
+			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), true, null, null, false,
 				x => { },
 				x => x.RegisterFirst(),
 				x => x.ConfigureFirst()
@@ -103,7 +103,7 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ProcessingWithoutRegister_Fails()
 		{
-			static void a() => new ApplicationPipeline( Assembly.GetCallingAssembly(), true, null, false,
+			static void a() => new ApplicationPipeline( Assembly.GetCallingAssembly(), true, null, null, false,
 				x => { },
 				x => { },
 				x => x.ConfigureFirst() );
@@ -115,7 +115,7 @@ namespace Automated.Arca.Tests
 		public void ProcessingWithWrongRootAssembly_Fails()
 		{
 			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetCallingAssembly(),
-				true, null, false );
+				true, null, null, false );
 
 			void a() => applicationPipeline.GetRequiredInstance<SomeInstantiatePerScopeComponent>();
 
@@ -126,7 +126,7 @@ namespace Automated.Arca.Tests
 		public void ProcessingNotDerivedFromIProcessable_Succeeds()
 		{
 			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
-				false, null, false );
+				false, null, null, false );
 
 			Assert.NotNull( applicationPipeline.GetRequiredInstance<SomeComponentNotDerivedFromIProcessable>() );
 		}
@@ -135,7 +135,7 @@ namespace Automated.Arca.Tests
 		public void ProcessingNotDerivedFromIProcessable_Fails()
 		{
 			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
-				true, null, false );
+				true, null, null, false );
 
 			void a() => applicationPipeline.GetRequiredInstance<SomeComponentNotDerivedFromIProcessable>();
 
@@ -145,7 +145,7 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void InstantiatingClassIncludedInProcessing_Succeeds()
 		{
-			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), false, null, false,
+			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), false, null, null, false,
 				x => { },
 				x => x.RegisterFirst(),
 				x => x.ConfigureFirst() );
@@ -158,7 +158,7 @@ namespace Automated.Arca.Tests
 		{
 			var excludeTypes = new HashSet<Type> { typeof( SomeInstantiatePerContainerComponent ) };
 
-			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), false, excludeTypes, false,
+			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), false, excludeTypes, null, false,
 				x => { },
 				x => x.RegisterFirst(),
 				x => x.ConfigureFirst() );
@@ -166,6 +166,22 @@ namespace Automated.Arca.Tests
 			void a() => applicationPipeline.GetRequiredInstance<SomeInstantiatePerContainerComponent>();
 
 			Assert.Throws<InvalidOperationException>( a );
+		}
+
+		[Fact]
+		public void ProcessingPriorityTypes_Succeeds()
+		{
+			var priorityTypes = new List<Type> { typeof( SomeMiddlewarePerContainer ), typeof( SomeMiddlewarePerScope ),
+				typeof( SomeMiddlewarePerInjection ) };
+
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
+				true, null, priorityTypes, false );
+
+			VerifyDummies( applicationPipeline, false );
+
+			var resultedPriorityTypes = applicationPipeline.GetPriorityTypes();
+
+			Assert.Equal( priorityTypes, resultedPriorityTypes );
 		}
 
 		private void VerifyDummies( ApplicationPipeline applicationPipeline, bool includeDummyAssembly )
@@ -199,12 +215,12 @@ namespace Automated.Arca.Tests
 
 			Assert.NotNull( applicationPipeline.GetRequiredInstance<ISomeExternalService>() );
 
-			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeInstantiatePerScopeComponent>() );
-			Assert.NotNull( scopedProvider.GetRequiredInstance<ISomeInstantiatePerScopeComponentWithInterface>() );
-			Assert.NotNull( applicationPipeline.GetRequiredInstance<SomeInstantiatePerInjectionComponent>() );
-			Assert.NotNull( applicationPipeline.GetRequiredInstance<ISomeInstantiatePerInjectionComponentWithInterface>() );
 			Assert.NotNull( applicationPipeline.GetRequiredInstance<SomeInstantiatePerContainerComponent>() );
 			Assert.NotNull( applicationPipeline.GetRequiredInstance<ISomeInstantiatePerContainerComponentWithInterface>() );
+			Assert.NotNull( applicationPipeline.GetRequiredInstance<SomeInstantiatePerInjectionComponent>() );
+			Assert.NotNull( applicationPipeline.GetRequiredInstance<ISomeInstantiatePerInjectionComponentWithInterface>() );
+			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeInstantiatePerScopeComponent>() );
+			Assert.NotNull( scopedProvider.GetRequiredInstance<ISomeInstantiatePerScopeComponentWithInterface>() );
 
 			Assert.NotNull( applicationPipeline.GetRequiredInstance<IIntegrationEventHandlerRegistry>() );
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeIntegrationEventHandler>() );
@@ -212,8 +228,9 @@ namespace Automated.Arca.Tests
 			var someMessageBusConnection = applicationPipeline.GetRequiredInstance<ISomeMessageBusConnection>();
 			Assert.NotNull( someMessageBusConnection.Connection );
 
-			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeMiddlewarePerScope>() );
+			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeMiddlewarePerContainer>() );
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeMiddlewarePerInjection>() );
+			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeMiddlewarePerScope>() );
 
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeOutbox>() );
 			Assert.NotNull( applicationPipeline.GetRequiredInstance<IOutboxProcessor>() );

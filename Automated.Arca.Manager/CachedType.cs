@@ -4,12 +4,12 @@ namespace Automated.Arca.Manager
 {
 	internal class CachedType
 	{
-		public Type Type { get; }
+		internal Type Type { get; }
 
-		public string FullName { get; }
-		public ProcessingState State { get; set; } = ProcessingState.None;
+		internal string FullName { get; }
+		internal ProcessingState State { get; set; } = ProcessingState.None;
 
-		public CachedType( Type type )
+		internal CachedType( Type type )
 		{
 			Type = type;
 

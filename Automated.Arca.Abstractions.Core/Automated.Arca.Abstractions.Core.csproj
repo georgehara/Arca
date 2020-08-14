@@ -16,7 +16,7 @@
 Core abstractions. Contains "IProcessable", so it's usually necessary. Use to create your own attributes and extensions.</Description>
 		<RepositoryUrl>https://github.com/georgehara/Arca</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<Version>1.0.1</Version>
+		<Version>1.0.2</Version>
 	</PropertyGroup>
 
 </Project>

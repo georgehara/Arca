@@ -9,6 +9,7 @@ namespace Automated.Arca.Manager
 		public IList<string> ProcessOnlyAssemblyNamesPrefixedWith { get; } = new List<string>();
 		public bool ProcessOnlyClassesDerivedFromIProcessable { get; private set; }
 		public ICollection<Type> ExcludeTypes { get; private set; } = new HashSet<Type>();
+		public IOrderedTypes PriorityTypes { get; } = new OrderedTypes();
 
 		public ManagerOptions( bool addAutomatedArcaAssemblyNamePrefix = true )
 		{
@@ -47,6 +48,20 @@ namespace Automated.Arca.Manager
 		public IManagerOptions Exclude<T>()
 		{
 			return Exclude( typeof( T ) );
+		}
+
+		public IManagerOptions Prioritize( Type type )
+		{
+			PriorityTypes.Add( type );
+
+			return this;
+		}
+
+		public IManagerOptions Prioritize<T>()
+		{
+			Prioritize( typeof( T ) );
+
+			return this;
 		}
 	}
 }

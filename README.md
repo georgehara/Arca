@@ -130,6 +130,8 @@ The ARCA manager must be instantiated with a set of options that can be created 
 
 `Exclude`: Specifies a type that the manager will not process. This is useful when you want to override the implementation of an interface which is registered in an assembly that you can't modify. By excluding such a type, you can add another implementation, in another assembly.
 
+`Prioritize`: Specifies a type that the manager will process first. The types are processed in the specified order, and before types which are not specified. This is particularly useful for middleware.
+
 Note: The attributes, extensions, registrators and configurators that you want to use must be defined in assemblies whose names start with a prefix from the prefix list. If the "Automated.Arca." prefix is added to the prefix list through the constructor of the options class, you can use the predefined attributes and extensions without specifying this prefix.
 
 
@@ -163,6 +165,8 @@ After you instantiate the manager, at application startup, and you add assemblie
 * Runs the configurators. The configurators can't depend on one another because the manager doesn't know the order in which to run the configurators.
 
 Note: `Register` and `Configure` may be called multiple times, but the manager checks the consistency of the state of each type that was loaded (by the manager) with an `AddXXX` method. So, for example if you call `AddXXX`, then `Register`, then `AddXXX` again, an exception is thrown because you didn't call `Configure` after `Register`. On top of this, Microsoft's dependency injection container stops registering components once the service provider is built, without throwing an exception, so trying to register new types after `Configure` was called is pointless.
+
+Note: If the order of processing matters, use the `Prioritize` manager option.
 
 
 ## PERFORMANCE CONSIDERATIONS
@@ -200,13 +204,13 @@ You can add any of these interfaces as parameters to the constructors of you cla
 
 ## MIDDLEWARE
 
-Middleware support is provided with the `ChainMiddlewarePerScopeAttribute` and `ChainMiddlewarePerInjectionAttribute` attributes. The attributes register the middleware, in the dependency injection container, for instantiation per scope / injection.
+Middleware support is provided by the `ChainMiddlewarePerContainerAttribute`, `ChainMiddlewarePerScopeAttribute` and `ChainMiddlewarePerInjectionAttribute` attributes. The attributes register the middleware, in the dependency injection container, for instantiation per container, scope or injection.
 
 The middleware class must implement the `IMiddleware` interface, and must have applied on it one of the attributes above. Then, when it's time to call it in the request pipeline, ASP.NET will instantiate it through the dependency injection container.
 
 Before you call the `Configure` method on the manager, call the `AddMiddlewareRegistry` extension method, on the manager. `Configure` must be called before calling the "IApplicationBuilder.UseEndpoints" extension method!
 
-Note: Don't count on the middleware being called in a specific order in the request pipeline, because the ARCA manager doesn't know how to order the middleware registration.
+Note: If the order of the middleware in the pipeline matters, use the `Prioritize` manager option.
 
 
 ## PACKAGE DESCRIPTIONS
@@ -343,8 +347,10 @@ namespace Automated.Arca.Tests.Dummies
 Here is a sample output:
 
 ```
-Created instance of 'CollectorLogger' at 2020-08-14T01:02:00
+Created instance of 'CollectorLogger' at 2020-08-15T00:10:07
 Using the assembly name prefix list: 'Automated.Arca.'
+Exclude types: 
+Priority types: 
 Cached assembly 'Automated.Arca.Demo.WebApi'
 Cached assembly 'Automated.Arca.Manager'
 Cached assembly 'Automated.Arca.Abstractions.Core'
@@ -366,6 +372,7 @@ Cached extension 'ExtensionForScopeManagerAttribute' for attribute 'ScopeManager
 Cached extension 'ExtensionForScopeNameProviderAttribute' for attribute 'ScopeNameProviderAttribute'
 Cached extension 'ExtensionForScopeNameResolverAttribute' for attribute 'ScopeNameResolverAttribute'
 Cached extension 'ExtensionForBoundedContextAttribute' for attribute 'BoundedContextAttribute'
+Cached extension 'ExtensionForChainMiddlewarePerContainerAttribute' for attribute 'ChainMiddlewarePerContainerAttribute'
 Cached extension 'ExtensionForChainMiddlewarePerInjectionAttribute' for attribute 'ChainMiddlewarePerInjectionAttribute'
 Cached extension 'ExtensionForChainMiddlewarePerScopeAttribute' for attribute 'ChainMiddlewarePerScopeAttribute'
 Cached extension 'ExtensionForCommandHandlerAttribute' for attribute 'CommandHandlerAttribute'
@@ -381,13 +388,13 @@ Cached extension 'ExtensionForMessageBusSubscribeForExchangeCommandQueueTargetAt
 Cached extension 'ExtensionForMessageBusSubscribeForExchangePublicationQueueBetweenAttribute' for attribute 'MessageBusSubscribeForExchangePublicationQueueBetweenAttribute'
 Cached extension 'ExtensionForOutboxAttribute' for attribute 'OutboxAttribute'
 Cached extension 'ExtensionForOutboxProcessorAttribute' for attribute 'OutboxProcessorAttribute'
-Method 'AddAssembly' executed in 8 ms.
+Method 'AddAssembly' executed in 32 ms.
 Registered class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Registered class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
-Method 'RegisterAssemblies' executed in 2 ms.
+Method 'Register' executed in 2 ms.
 Configured class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Configured class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
-Method 'ConfigureAssemblies' executed in 1 ms.
+Method 'Configure' executed in 1 ms.
 Invoked middleware 'LoggingMiddleware':
 	* URL: https://localhost:53712/logs
 	* Endpoint: Automated.Arca.Demo.WebApi.Controllers.LogsController.Get (Automated.Arca.Demo.WebApi)

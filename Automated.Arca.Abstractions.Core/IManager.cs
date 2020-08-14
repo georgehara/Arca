@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Automated.Arca.Abstractions.Core
@@ -15,5 +16,6 @@ namespace Automated.Arca.Abstractions.Core
 		IManager AddExtensionDependency<BaseType>( IExtensionDependency baseTypeImplementation );
 		IManager Register();
 		IManager Configure();
+		IEnumerable<Type> GetPriorityTypes();
 	}
 }
