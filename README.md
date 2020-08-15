@@ -76,12 +76,12 @@ An extension is a class which derives from the `IExtensionForAttribute` interfac
 The extension specifies which attribute it handles, in the `AttributeType` property, and provides methods for the registration and configuration of the class on which the attribute is applied; the attribute can't come from the inheritance tree of the class to process.
 
 
-### Register
+### REGISTER
 
 The `Register` method registers a class (on which the attribute which is handled by the extension is applied on) in various registers, like a dependency injection register.
 
 
-### Configure
+### CONFIGURE
 
 The `Configure` method requests an instance (of a certain class) from the dependency injection provider, and calls a method on it, passing to it various parameters which may come from the attribute that the extension is handling.
 
@@ -109,13 +109,15 @@ A class which can be marked for registration or configuration must:
 
 ## PROCESSING WITH COMPLEX INPUT PARAMETERS
 
+### REGISTRATORS AND CONFIGURATORS
+
 If the registration / configuration of a class requires complex input parameters, you can handle it in a registrator / configurator.
 
 A registrator must derive from `IRegistrator`.
 
 A configurator must derive from `IConfigurator`.
 
-The classes which are registered and configured by registrators and configurators should not have applied on them attributes (derived from the `ProcessableAttribute` attribute), else the registration and configuration would happen multiple times.
+The classes which are registered and configured by registrators and configurators should not have applied on them attributes (derived from the `ProcessableAttribute` attribute) because the attributes would trigger a separate processing of the classes.
 
 
 ## PROCESSING OPTIONS
@@ -177,9 +179,9 @@ If manual registration and configuration were used instead of ARCA, the applicat
 
 ARCA allows you to specify a prefix that each assembly must have in order to be loaded and scanned.
 
-To improve performance, derive the classes (to register and configure) from the `IProcessable` interface. This way, the processing is much faster because the number of calls to `Type.GetCustomAttributes` is reduced (since the presence of the interface is checked first). By default, the manager ignores this interface.
+To improve performance, derive the classes (to register and configure) from the `IProcessable` interface. This works because checking if a class implements an interface is much faster (50 times) than calling `Type.GetCustomAttributes` for each class. By default, the manager ignores this interface.
 
-In the vast majority of cases, the performance would be fine without the `IProcessable` interface. In such a case, the processing performance is on the order of 1.4 million classes per second. If the `IProcessable` interface is used (see the `UseOnlyClassesDerivedFromIProcessable` manager option), the processing performance is 50 times higher. Only the public and concrete classes are relevant for performance evaluation, from the assemblies whose names start with one of the specified prefixes.
+In the vast majority of cases, the performance is fine without the `IProcessable` interface. An approximate performance can be viewed by executing the (release build of the) tests from the `ProcessingPerformanceTests` class. When processing about 350 assemblies loaded into a process, with a total of about 10'000 types, with 31 registered and configured classes, the total execution time (for assembly loading, registration and configuration) is about 100 ms when using the `IProcessable` interface, and about 200 ms when not using it.
 
 
 ## SCOPES
@@ -347,9 +349,10 @@ namespace Automated.Arca.Tests.Dummies
 Here is a sample output:
 
 ```
-Created instance of 'CollectorLogger' at 2020-08-15T00:10:07
+Created instance of 'CollectorLogger' at 2020-08-15T16:16:47
 Using the assembly name prefix list: 'Automated.Arca.'
-Exclude types: 
+Assembly names to exclude: 
+Excluded types: 
 Priority types: 
 Cached assembly 'Automated.Arca.Demo.WebApi'
 Cached assembly 'Automated.Arca.Manager'
@@ -388,17 +391,17 @@ Cached extension 'ExtensionForMessageBusSubscribeForExchangeCommandQueueTargetAt
 Cached extension 'ExtensionForMessageBusSubscribeForExchangePublicationQueueBetweenAttribute' for attribute 'MessageBusSubscribeForExchangePublicationQueueBetweenAttribute'
 Cached extension 'ExtensionForOutboxAttribute' for attribute 'OutboxAttribute'
 Cached extension 'ExtensionForOutboxProcessorAttribute' for attribute 'OutboxProcessorAttribute'
-Method 'AddAssembly' executed in 32 ms.
+Method 'AddAssembly' for assembly 'Automated.Arca.Demo.WebApi' executed in 13 ms.
 Registered class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Registered class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
-Method 'Register' executed in 2 ms.
+Method 'Register' executed in 2 ms. Registered 2 classes out of 120 cached types.
 Configured class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Configured class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
 Method 'Configure' executed in 1 ms.
 Invoked middleware 'LoggingMiddleware':
 	* URL: https://localhost:53712/logs
 	* Endpoint: Automated.Arca.Demo.WebApi.Controllers.LogsController.Get (Automated.Arca.Demo.WebApi)
-	* Request identifier: 8000000f-0001-ff00-b83f-29710c7967de
+	* Request identifier: 8000000f-0001-ff00-583f-29710c7967de
 ```
 
 

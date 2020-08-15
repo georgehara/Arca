@@ -7,8 +7,9 @@ namespace Automated.Arca.Manager
 	{
 		public IManagerLogger? Logger { get; private set; }
 		public IList<string> ProcessOnlyAssemblyNamesPrefixedWith { get; } = new List<string>();
+		public IList<string> ExcludedAssemblyNames { get; } = new List<string>();
 		public bool ProcessOnlyClassesDerivedFromIProcessable { get; private set; }
-		public ICollection<Type> ExcludeTypes { get; private set; } = new HashSet<Type>();
+		public ICollection<Type> ExcludedTypes { get; private set; } = new HashSet<Type>();
 		public IOrderedTypes PriorityTypes { get; } = new OrderedTypes();
 
 		public ManagerOptions( bool addAutomatedArcaAssemblyNamePrefix = true )
@@ -31,6 +32,13 @@ namespace Automated.Arca.Manager
 			return this;
 		}
 
+		public IManagerOptions ExcludeAssemblyName( string assemblyName )
+		{
+			ExcludedAssemblyNames.Add( assemblyName );
+
+			return this;
+		}
+
 		public IManagerOptions UseOnlyClassesDerivedFromIProcessable()
 		{
 			ProcessOnlyClassesDerivedFromIProcessable = true;
@@ -40,7 +48,7 @@ namespace Automated.Arca.Manager
 
 		public IManagerOptions Exclude( Type type )
 		{
-			ExcludeTypes.Add( type );
+			ExcludedTypes.Add( type );
 
 			return this;
 		}

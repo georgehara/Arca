@@ -20,6 +20,7 @@ namespace Automated.Arca.Manager
 		private readonly IDictionary<Type, IExtensionForProcessableAttribute> ExtensionInstancesByType =
 			new Dictionary<Type, IExtensionForProcessableAttribute>();
 		private readonly IDictionary<Type, Type> ExtensionTypesByAttributeType = new Dictionary<Type, Type>();
+		private int RegisteredClassesCount;
 
 		public Manager( IManagerOptions options )
 		{
@@ -91,6 +92,9 @@ namespace Automated.Arca.Manager
 			lock( Lock )
 			{
 				var assemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
+
+				if( Options.Logger != null )
+					Options.Logger.Log( $"Processing {assemblies.Count} assemblies loaded into the current process." );
 
 				foreach( var assembly in assemblies )
 					CacheReferencedAssembliesAndTypesAndExtensions( assembly );
@@ -178,6 +182,9 @@ namespace Automated.Arca.Manager
 			var prefixes = Options.ProcessOnlyAssemblyNamesPrefixedWith.JoinWithFormat( "'{0}'", ", " );
 			logger.Log( $"Using the assembly name prefix list: {prefixes}" );
 
+			var excludedNames = Options.ExcludedAssemblyNames.JoinWithFormat( "'{0}'", ", " );
+			logger.Log( $"Assembly names to exclude: {excludedNames}" );
+
 			if( !Options.ProcessOnlyClassesDerivedFromIProcessable )
 			{
 				logger.Log( $"Use the manager option '{nameof( ManagerOptions.UseOnlyClassesDerivedFromIProcessable )}' to" +
@@ -185,8 +192,8 @@ namespace Automated.Arca.Manager
 					$" derive from '{nameof( IProcessable )}'." );
 			}
 
-			var excludeTypes = Options.ExcludeTypes.Select( x => x.Name ).JoinWithFormat( "'{0}'", ", " );
-			logger.Log( $"Exclude types: {excludeTypes}" );
+			var excludeTypes = Options.ExcludedTypes.Select( x => x.Name ).JoinWithFormat( "'{0}'", ", " );
+			logger.Log( $"Excluded types: {excludeTypes}" );
 
 			var priorityTypes = Options.PriorityTypes.GetOrderedTypes().Select( x => x.Name ).JoinWithFormat( "'{0}'", ", " );
 			logger.Log( $"Priority types: {priorityTypes}" );
@@ -206,7 +213,8 @@ namespace Automated.Arca.Manager
 
 			TypesAndExtensionsAreCached();
 
-			Options.Logger?.Log( $"Method '{nameof( AddAssembly )}' executed in {watch.ElapsedMilliseconds} ms." );
+			Options.Logger?.Log( $"Method '{nameof( AddAssembly )}' for assembly '{assembly.GetName().Name}' executed in" +
+				$" {watch.ElapsedMilliseconds} ms." );
 		}
 
 		private void TypesAndExtensionsAreCached()
@@ -226,6 +234,7 @@ namespace Automated.Arca.Manager
 
 			foreach( var assemblyName in assemblyNames )
 			{
+				// Avoid loading the assembly before checking if it's processable.
 				if( MayAddAssemblyToCache( assemblyName ) )
 					CacheReferencedAssemblies( Assembly.Load( assemblyName ) );
 			}
@@ -241,12 +250,13 @@ namespace Automated.Arca.Manager
 
 		private bool MayAddAssemblyToCache( Assembly assembly )
 		{
-			return MayAddAssemblyToCache( assembly.GetName() );
+			return !assembly.IsDynamic && MayAddAssemblyToCache( assembly.GetName() );
 		}
 
 		private bool MayAddAssemblyToCache( AssemblyName assemblyName )
 		{
-			return !CachedAssemblies.ContainsKey( assemblyName.FullName ) && AssemblyNameMatchesPrefix( assemblyName.Name! );
+			return !CachedAssemblies.ContainsKey( assemblyName.FullName ) && AssemblyNameMatchesPrefix( assemblyName.Name! ) &&
+				!Options.ExcludedAssemblyNames.Contains( assemblyName.Name! );
 		}
 
 		private bool AssemblyNameMatchesPrefix( string name )
@@ -268,7 +278,7 @@ namespace Automated.Arca.Manager
 
 			foreach( var type in cachedAssembly.Assembly.GetExportedTypes() )
 			{
-				if( Options.ExcludeTypes.Contains( type ) )
+				if( Options.ExcludedTypes.Contains( type ) )
 				{
 					Options.Logger?.Log( $"Type '{type.Name}' is excluded from processing." );
 				}
@@ -368,7 +378,8 @@ namespace Automated.Arca.Manager
 			RegisterTypes( context );
 			RunRegistrators( context );
 
-			Options.Logger?.Log( $"Method '{nameof( Register )}' executed in {watch.ElapsedMilliseconds} ms." );
+			Options.Logger?.Log( $"Method '{nameof( Register )}' executed in {watch.ElapsedMilliseconds} ms." +
+				$" Registered {RegisteredClassesCount} classes out of {CachedTypes.Count} cached types." );
 		}
 
 		private void Configure( IConfigurationContext context )
@@ -460,6 +471,8 @@ namespace Automated.Arca.Manager
 				throw new ArgumentOutOfRangeException( $"Unhandled attribute '{attributeType.Name}'" );
 
 			extension.Register( context, attribute, type );
+
+			RegisteredClassesCount++;
 
 			Options.Logger?.Log( $"Registered class '{type.Name}' with attribute '{attributeType.Name}'" );
 		}

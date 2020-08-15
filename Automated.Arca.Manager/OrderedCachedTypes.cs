@@ -15,7 +15,8 @@ namespace Automated.Arca.Manager
 			RecreateQuickAccessTypes();
 		}
 
-		internal bool HasItems => OrderedListTypes!.Count > 0;
+		internal int Count => OrderedListTypes!.Count;
+		internal bool HasItems => Count > 0;
 
 		internal CachedType? Get( Type type )
 		{

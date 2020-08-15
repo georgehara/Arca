@@ -13,8 +13,8 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void InstantiatePerContainer_GetSameInstanceForGlobalScope()
 		{
-			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
-				true, null, null, false );
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, false,
+				Assembly.GetExecutingAssembly() );
 
 			var instance1 = applicationPipeline.GetRequiredInstance<SomeInstantiatePerContainerComponent>();
 			var instance2 = applicationPipeline.GetRequiredInstance<SomeInstantiatePerContainerComponent>();
@@ -25,8 +25,8 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void InstantiatePerScope_GetSameInstanceForGlobalScope()
 		{
-			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
-				true, null, null, true );
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, true,
+				Assembly.GetExecutingAssembly() );
 
 			var instance1 = applicationPipeline.GetRequiredInstance<ISomeTenantRequestProcessor>();
 			var instance2 = applicationPipeline.GetRequiredInstance<ISomeTenantRequestProcessor>();
@@ -41,8 +41,8 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void InstantiatePerScope_GetSameInstanceForSameScopeName()
 		{
-			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
-				true, null, null, false );
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, false,
+				Assembly.GetExecutingAssembly() );
 
 			var scopedProvider1 = applicationPipeline.GetOrAddScopedProvider( ScopeName1 );
 			var scopedProvider2 = applicationPipeline.GetOrAddScopedProvider( ScopeName1 );
@@ -71,8 +71,8 @@ namespace Automated.Arca.Tests
 			// has all its constructor parameters automatically instantiated, regardless of the level of imbrication. A request /
 			// message handling method can then be called on the tenant-scoped processor.
 
-			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
-				true, null, null, false );
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, false,
+				Assembly.GetExecutingAssembly() );
 
 			var scopedProvider1 = applicationPipeline.GetOrAddScopedProvider( ScopeName1 );
 			var scopedProvider2 = applicationPipeline.GetOrAddScopedProvider( ScopeName2 );

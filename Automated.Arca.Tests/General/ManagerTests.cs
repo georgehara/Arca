@@ -12,8 +12,8 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void Processing_Succeeds()
 		{
-			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
-				true, null, null, false );
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, false,
+				Assembly.GetExecutingAssembly() );
 
 			VerifyDummies( applicationPipeline, false );
 		}
@@ -21,8 +21,8 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ProcessingWithoutDummyAssembly_Fails()
 		{
-			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
-				true, null, null, false );
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, false,
+				Assembly.GetExecutingAssembly() );
 
 			VerifyDummies( applicationPipeline, false );
 
@@ -34,10 +34,11 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ProcessingWithDummyAssembly_Succeeds()
 		{
-			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), true, null, null, false,
-					x => x.AddAssemblyContainingType<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>(),
-					x => x.RegisterFirst(),
-					x => x.ConfigureFirst() );
+			var applicationPipeline = new ApplicationPipeline( x => { }, true, true, null, null, false,
+				Assembly.GetExecutingAssembly(),
+				x => x.AddAssemblyContainingType<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>(),
+				x => x.RegisterFirst(),
+				x => x.ConfigureFirst() );
 
 			VerifyDummies( applicationPipeline, true );
 		}
@@ -45,7 +46,8 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ProcessingWithDummyAssemblyBetweenRegisterAndConfigure_Fails()
 		{
-			static void a() => new ApplicationPipeline( Assembly.GetExecutingAssembly(), true, null, null, false,
+			static void a() => new ApplicationPipeline( x => { }, true, true, null, null, false,
+				Assembly.GetExecutingAssembly(),
 				x => x.RegisterFirst(),
 				x => x.AddAssemblyContainingType<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>(),
 				x => x.ConfigureFirst() );
@@ -56,7 +58,8 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ProcessingWithDummyAssemblyBetweenRegisterAndRegisterAndConfigure_Succeeds()
 		{
-			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), true, null, null, false,
+			var applicationPipeline = new ApplicationPipeline( x => { }, true, true, null, null, false,
+				Assembly.GetExecutingAssembly(),
 				x => { },
 				x => x.RegisterFirst()
 					.AddAssemblyContainingType<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>()
@@ -69,7 +72,8 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ProcessingWithMultipleCallsToRegisterAndConfigure_Succeeds()
 		{
-			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), true, null, null, false,
+			var applicationPipeline = new ApplicationPipeline( x => { }, true, true, null, null, false,
+				Assembly.GetExecutingAssembly(),
 				x => { },
 				x => x.RegisterFirst(),
 				x => x.ConfigureFirst()
@@ -85,7 +89,8 @@ namespace Automated.Arca.Tests
 			// Microsoft's dependency injection container stops registering components once the service provider is built,
 			// without throwing an exception, so trying to register new types after "Configure" was called is pointless.
 
-			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), true, null, null, false,
+			var applicationPipeline = new ApplicationPipeline( x => { }, true, true, null, null, false,
+				Assembly.GetExecutingAssembly(),
 				x => { },
 				x => x.RegisterFirst(),
 				x => x.ConfigureFirst()
@@ -103,7 +108,8 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ProcessingWithoutRegister_Fails()
 		{
-			static void a() => new ApplicationPipeline( Assembly.GetCallingAssembly(), true, null, null, false,
+			static void a() => new ApplicationPipeline( x => { }, true, true, null, null, false,
+				Assembly.GetCallingAssembly(),
 				x => { },
 				x => { },
 				x => x.ConfigureFirst() );
@@ -114,8 +120,8 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ProcessingWithWrongRootAssembly_Fails()
 		{
-			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetCallingAssembly(),
-				true, null, null, false );
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, false,
+				Assembly.GetCallingAssembly() );
 
 			void a() => applicationPipeline.GetRequiredInstance<SomeInstantiatePerScopeComponent>();
 
@@ -125,8 +131,8 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ProcessingNotDerivedFromIProcessable_Succeeds()
 		{
-			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
-				false, null, null, false );
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( false, null, null, false,
+				Assembly.GetExecutingAssembly() );
 
 			Assert.NotNull( applicationPipeline.GetRequiredInstance<SomeComponentNotDerivedFromIProcessable>() );
 		}
@@ -134,8 +140,8 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ProcessingNotDerivedFromIProcessable_Fails()
 		{
-			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
-				true, null, null, false );
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, false,
+				Assembly.GetExecutingAssembly() );
 
 			void a() => applicationPipeline.GetRequiredInstance<SomeComponentNotDerivedFromIProcessable>();
 
@@ -145,7 +151,8 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void InstantiatingClassIncludedInProcessing_Succeeds()
 		{
-			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), false, null, null, false,
+			var applicationPipeline = new ApplicationPipeline( x => { }, true, false, null, null, false,
+				Assembly.GetExecutingAssembly(),
 				x => { },
 				x => x.RegisterFirst(),
 				x => x.ConfigureFirst() );
@@ -158,7 +165,8 @@ namespace Automated.Arca.Tests
 		{
 			var excludeTypes = new HashSet<Type> { typeof( SomeInstantiatePerContainerComponent ) };
 
-			var applicationPipeline = new ApplicationPipeline( Assembly.GetExecutingAssembly(), false, excludeTypes, null, false,
+			var applicationPipeline = new ApplicationPipeline( x => { }, true, false, excludeTypes, null, false,
+				Assembly.GetExecutingAssembly(),
 				x => { },
 				x => x.RegisterFirst(),
 				x => x.ConfigureFirst() );
@@ -174,8 +182,8 @@ namespace Automated.Arca.Tests
 			var priorityTypes = new List<Type> { typeof( SomeMiddlewarePerContainer ), typeof( SomeMiddlewarePerScope ),
 				typeof( SomeMiddlewarePerInjection ) };
 
-			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( Assembly.GetExecutingAssembly(),
-				true, null, priorityTypes, false );
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, priorityTypes, false,
+				Assembly.GetExecutingAssembly() );
 
 			VerifyDummies( applicationPipeline, false );
 

@@ -24,10 +24,10 @@ namespace Automated.Arca.Tests
 		private readonly IServiceProvider ServiceProvider;
 		private readonly IApplicationBuilder ApplicationBuilder;
 
-		public ApplicationPipeline( Assembly rootAssembly, bool processOnlyTypesDerivedFromIProcessable,
-			ICollection<Type>? excludeTypes, IList<Type>? priorityTypes, bool instantiatePerContainerInsteadOfScope,
-			Action<ApplicationPipeline> onCreateManager, Action<ApplicationPipeline> onManagerRegister,
-			Action<ApplicationPipeline> onManagerConfigure )
+		public ApplicationPipeline( Action<IManagerOptions> onCreateManagerOptions, bool useLogging,
+			bool processOnlyTypesDerivedFromIProcessable, ICollection<Type>? excludeTypes, IList<Type>? priorityTypes,
+			bool instantiatePerContainerInsteadOfScope, Assembly rootAssembly, Action<ApplicationPipeline> onCreateManager,
+			Action<ApplicationPipeline> onManagerRegister, Action<ApplicationPipeline> onManagerConfigure )
 		{
 			InstantiatePerContainerInsteadOfScope = instantiatePerContainerInsteadOfScope;
 
@@ -35,8 +35,10 @@ namespace Automated.Arca.Tests
 
 			Services = new ServiceCollection();
 
-			Manager = GetManager( rootAssembly, processOnlyTypesDerivedFromIProcessable, excludeTypes, priorityTypes,
-				ApplicationOptionsProvider );
+			var managerOptions = GetManagerOptions( onCreateManagerOptions, useLogging, processOnlyTypesDerivedFromIProcessable,
+				excludeTypes, priorityTypes );
+
+			Manager = GetManager( managerOptions, ApplicationOptionsProvider, rootAssembly );
 
 			onCreateManager( this );
 			onManagerRegister( this );
@@ -50,18 +52,24 @@ namespace Automated.Arca.Tests
 			onManagerConfigure( this );
 		}
 
-		public static ApplicationPipeline GetInstanceAndCallRegisterAndConfigure( Assembly rootAssembly,
-			bool processOnlyTypesDerivedFromIProcessable, ICollection<Type>? excludeTypes, IList<Type>? priorityTypes,
-			bool instantiatePerContainerInsteadOfScope )
+		public static ApplicationPipeline GetInstanceAndCallRegisterAndConfigure( bool processOnlyTypesDerivedFromIProcessable,
+			ICollection<Type>? excludeTypes, IList<Type>? priorityTypes, bool instantiatePerContainerInsteadOfScope,
+			Assembly rootAssembly )
 		{
-			return new ApplicationPipeline( rootAssembly, processOnlyTypesDerivedFromIProcessable,
-				excludeTypes, priorityTypes, instantiatePerContainerInsteadOfScope, x => { },
-				x => x.RegisterFirst(), x => x.ConfigureFirst() );
+			return new ApplicationPipeline( x => { }, true, processOnlyTypesDerivedFromIProcessable, excludeTypes, priorityTypes,
+				instantiatePerContainerInsteadOfScope, rootAssembly, x => { }, x => x.RegisterFirst(), x => x.ConfigureFirst() );
 		}
 
 		public ApplicationPipeline AddAssemblyContainingType<T>()
 		{
 			Manager.AddAssemblyContainingType<T>();
+
+			return this;
+		}
+
+		public ApplicationPipeline AddAssembliesLoadedInProcess()
+		{
+			Manager.AddAssembliesLoadedInProcess();
 
 			return this;
 		}
@@ -126,11 +134,25 @@ namespace Automated.Arca.Tests
 				.Build();
 		}
 
-		private IManager GetManager( Assembly rootAssembly, bool processOnlyTypesDerivedFromIProcessable,
-			ICollection<Type>? excludeTypes, IList<Type>? priorityTypes, IConfiguration applicationOptionsProvider )
+		private IManager GetManager( IManagerOptions managerOptions, IConfiguration applicationOptionsProvider,
+			Assembly rootAssembly )
 		{
-			var managerOptions = new ManagerOptions()
-				.UseLogger( new TraceLogger() );
+			return new Manager.Manager( managerOptions )
+				.AddAssembly( rootAssembly )
+				.AddAssemblyContainingType( typeof( ExtensionForInstantiatePerScopeAttribute ) )
+				.AddAssemblyContainingType( typeof( ExtensionForBoundedContextAttribute ) )
+				.AddKeyedOptionsProvider( applicationOptionsProvider );
+		}
+
+		private IManagerOptions GetManagerOptions( Action<IManagerOptions> onCreateManagerOptions, bool useLogging,
+			bool processOnlyTypesDerivedFromIProcessable, ICollection<Type>? excludeTypes, IList<Type>? priorityTypes )
+		{
+			var managerOptions = new ManagerOptions();
+
+			onCreateManagerOptions( managerOptions );
+
+			if( useLogging )
+				managerOptions.UseLogger( new TraceLogger() );
 
 			if( processOnlyTypesDerivedFromIProcessable )
 				managerOptions.UseOnlyClassesDerivedFromIProcessable();
@@ -147,11 +169,7 @@ namespace Automated.Arca.Tests
 					managerOptions.Prioritize( type );
 			}
 
-			return new Manager.Manager( managerOptions )
-				.AddAssembly( rootAssembly )
-				.AddAssemblyContainingType( typeof( ExtensionForInstantiatePerScopeAttribute ) )
-				.AddAssemblyContainingType( typeof( ExtensionForBoundedContextAttribute ) )
-				.AddKeyedOptionsProvider( applicationOptionsProvider );
+			return managerOptions;
 		}
 
 		private IServiceProvider BuildServiceProvider( IServiceCollection services )

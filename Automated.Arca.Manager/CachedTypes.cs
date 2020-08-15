@@ -14,7 +14,8 @@ namespace Automated.Arca.Manager
 			OptionsPriorityTypes = optionsPriorityTypes;
 		}
 
-		internal bool HasItems => PriorityTypes.HasItems || OrdinaryTypes.Count > 0;
+		internal int Count => PriorityTypes.Count + OrdinaryTypes.Count;
+		internal bool HasItems => Count > 0;
 
 		internal IEnumerable<CachedType> GetPriorityTypes()
 		{

@@ -14,10 +14,10 @@
 		<Product>Automated.Arca</Product>
 		<Description>Automated registration and configuration of classes for dependency injection, CQRS.
 Specialized abstractions. Use for middleware and CQRS. Implement these interfaces in your CQRS implementation.</Description>
-		<PackageTags>arca automated registration configuration dependency injection cqrs</PackageTags>
+		<PackageTags>arca automatic automated registration configuration dependency injection cqrs</PackageTags>
 		<RepositoryUrl>https://github.com/georgehara/Arca</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<Version>1.0.2</Version>
+		<Version>1.0.3</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
