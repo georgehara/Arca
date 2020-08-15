@@ -85,7 +85,7 @@ The `Register` method registers a class (on which the attribute which is handled
 
 The `Configure` method requests an instance (of a certain class) from the dependency injection provider, and calls a method on it, passing to it various parameters which may come from the attribute that the extension is handling.
 
-If you create custom extensions, it's important to understand that this method is not called every time an instance of that class is created, but only once per (dependency injection) container. This means that configuring an instance (of that class) which is not instantiated per container, as a so called singleton, is a logical flaw; it's fine to configure the class because types are singletons.
+If you create custom extensions, it's important to understand that this method is not called every time an instance of that class is created, but only once per dependency injection container. This means that configuring an instance (of that class) which is not instantiated per container (as a so called singleton) is a logical flaw; it's fine to configure the class itself because types are singletons.
 
 You can achieve the same thing by using the implementation factory parameter during `Register`, and the factory would be called every time the class would be instantiated. But this means that you would have to manually create the instance in the extension, so you would create tight coupling between the extension of the class to instantiate.
 
@@ -94,7 +94,7 @@ You can achieve the same thing by using the implementation factory parameter dur
 
 Extension dependencies allow ARCA to be completely independent from the internal business of the extensions, but at the same time it can still pass such dependencies from the application to the extensions.
 
-Extension dependencies can be added to the manager with the `AddExtensionDependencyXXX` methods.
+Extension dependencies can be added to the manager with the `AddExtensionDependencyXXX` manager methods.
 
 Examples of application dependencies which can be added as extension dependencies: `IConfiguration`, `IServiceCollection`, `IServiceProvider`.
 
@@ -164,7 +164,7 @@ After you instantiate the manager, at application startup, and you add assemblie
 * Configures the registered classes (based on extensions).
 * Runs the configurators. The configurators can't depend on one another because the manager doesn't know the order in which to run the configurators.
 
-Note: `Register` and `Configure` may be called multiple times, but the manager checks the consistency of the state of each type that was loaded (by the manager) with an `AddXXX` method. So, for example if you call `AddXXX`, then `Register`, then `AddXXX` again, an exception is thrown because you didn't call `Configure` after `Register`. On top of this, Microsoft's dependency injection container stops registering components once the service provider is built, without throwing an exception, so trying to register new types after `Configure` was called is pointless.
+Note: The `Register` and `Configure` manager methods may be called multiple times, but the manager checks the consistency of the state of each type that was loaded (by the manager) with an `AddXXX` manager method. So, for example if you call `AddXXX`, then `Register`, then `AddXXX` again, an exception is thrown because you didn't call `Configure` after `Register`. On top of this, Microsoft's dependency injection container stops registering components once the service provider is built, without throwing an exception, so trying to register new types after `Configure` was called is pointless.
 
 Note: If the order of processing matters, use the `Prioritize` manager option.
 
@@ -204,11 +204,11 @@ You can add any of these interfaces as parameters to the constructors of your cl
 
 ## MIDDLEWARE
 
-Middleware support is provided by the `ChainMiddlewarePerContainerAttribute`, `ChainMiddlewarePerScopeAttribute` and `ChainMiddlewarePerInjectionAttribute` attributes. The attributes register the middleware, in the dependency injection container, for instantiation per container, scope or injection.
+Middleware support is provided by the `ChainMiddlewarePerContainerAttribute`, `ChainMiddlewarePerScopeAttribute` and `ChainMiddlewarePerInjectionAttribute` attributes from the `Automated.Arca.Attributes.Specialized` package. The attributes register the middleware, in the dependency injection container, for instantiation per container, scope or injection.
 
 The middleware class must implement the `IMiddleware` interface, and must have applied on it one of the attributes above. Then, when it's time to call it in the request pipeline, ASP.NET will instantiate it through the dependency injection container.
 
-Before you call the `Configure` method on the manager, call the `AddMiddlewareRegistry` extension method, on the manager. `Configure` must be called before calling the "IApplicationBuilder.UseEndpoints" extension method!
+Before you call the `Configure` manager method, call the `AddMiddlewareRegistry` extension method, on the manager. `Configure` must be called before calling the "IApplicationBuilder.UseEndpoints" extension method!
 
 Note: If the order of the middleware in the pipeline matters, use the `Prioritize` manager option.
 
@@ -217,11 +217,11 @@ Note: If the order of the middleware in the pipeline matters, use the `Prioritiz
 
 * Automated.Arca.Abstractions.Core - Core abstractions. Contains `IProcessable`, so it's usually necessary. Use to create your own attributes and extensions.
 * Automated.Arca.Abstractions.DependencyInjection - Dependency injection abstractions.
-* Automated.Arca.Abstractions.Specialized - Specialized abstractions. Implement these interfaces in your CQRS implementation.
+* Automated.Arca.Abstractions.Specialized - Specialized abstractions. Use for middleware and CQRS. Implement these interfaces in your CQRS implementation.
 * Automated.Arca.Attributes.DependencyInjection - Dependency injection attributes to apply on classes to register / configure.
-* Automated.Arca.Attributes.Specialized - Specialized attributes to apply on classes to register / configure.
+* Automated.Arca.Attributes.Specialized - Specialized attributes to apply on classes to register / configure. Use for middleware and CQRS.
 * Automated.Arca.Extensions.DependencyInjection - Dependency injection extensions for the dependency injection attributes.
-* Automated.Arca.Extensions.Specialized - Specialized extensions for the specialized attributes.
+* Automated.Arca.Extensions.Specialized - Specialized extensions for the specialized attributes. Use for middleware and CQRS.
 * Automated.Arca.Implementations.ForMicrosoft - Implementations for Microsoft's dependency injection.
 * Automated.Arca.Libraries - Libraries for other packages.
 * Automated.Arca.Manager - The ARCA manager. Use during the startup of an application.

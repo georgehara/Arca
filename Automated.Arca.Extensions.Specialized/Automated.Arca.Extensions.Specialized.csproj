@@ -13,7 +13,7 @@
 		<Company>Automated.Arca</Company>
 		<Product>Automated.Arca</Product>
 		<Description>Automated registration and configuration of classes for dependency injection, CQRS.
-Specialized extensions for the specialized attributes.</Description>
+Specialized extensions for the specialized attributes. Use for middleware and CQRS.</Description>
 		<PackageTags>arca automated registration configuration dependency injection cqrs</PackageTags>
 		<RepositoryUrl>https://github.com/georgehara/Arca</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
