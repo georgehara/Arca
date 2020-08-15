@@ -90,7 +90,7 @@ If you create custom extensions, it's important to understand that this method i
 You can achieve the same thing by using the implementation factory parameter during `Register`, and the factory would be called every time the class would be instantiated. But this means that you would have to manually create the instance in the extension, so you would create tight coupling between the extension of the class to instantiate.
 
 
-## EXTENSION DEPENDENCIES
+### EXTENSION DEPENDENCIES
 
 Extension dependencies allow ARCA to be completely independent from the internal business of the extensions, but at the same time it can still pass such dependencies from the application to the extensions.
 
@@ -124,9 +124,11 @@ The classes which are registered and configured by registrators and configurator
 
 The ARCA manager must be instantiated with a set of options that can be created with the following fluent methods:
 
-`UseLogger`: Specifies the logger which handles the processing messages of the manager.
+`UseLogger`: Specifies the logger which handles the processing messages of the manager. A logger significantly reduces the processing performance.
 
 `AddAssemblyNamePrefix`: An assembly is processed only if its name starts with a prefix specified through this method. Each call of this method adds a prefix to the assembly name prefix list.
+
+`ExcludeAssemblyName`: Excludes from processing all assemblies whose names are specified through this method. Each call of this method adds a name to a list.
 
 `UseOnlyClassesDerivedFromIProcessable`: If called, the manager will process only the classes which are derived from the `IProcessable` interface, which significantly speeds up the processing.
 
@@ -182,6 +184,10 @@ ARCA allows you to specify a prefix that each assembly must have in order to be 
 To improve performance, derive the classes (to register and configure) from the `IProcessable` interface. This works because checking if a class implements an interface is much faster (50 times) than calling `Type.GetCustomAttributes` for each class. By default, the manager ignores this interface.
 
 In the vast majority of cases, the performance is fine without the `IProcessable` interface. An approximate performance can be viewed by executing the (release build of the) tests from the `ProcessingPerformanceTests` class. When processing about 350 assemblies loaded into a process, with a total of about 10'000 types, with 31 registered and configured classes, the total execution time (for assembly loading, registration and configuration) is about 100 ms when using the `IProcessable` interface, and about 200 ms when not using it.
+
+To further improve performance:
+* Do not pass a logger to the manager options.
+* Group all classes to process in a single assembly, or as few assemblies as possible, because assembly loading takes most time from the processing. This will have the most significant effect on performance.
 
 
 ## SCOPES
