@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
+using Automated.Arca.Abstractions.Core;
 using Automated.Arca.Manager;
 using Xunit;
 
@@ -8,26 +9,31 @@ namespace Automated.Arca.Tests
 	public class ProcessingPerformanceTests : PerformanceTests
 	{
 		[Fact]
+		public void ManagerPerformanceWithoutRegisterAndConfigure()
+		{
+			var statistics = GetManagerPerformance( false, true );
+
+			DisplayTrace( nameof( ManagerPerformanceWithoutRegisterAndConfigure ), statistics );
+		}
+
+		[Fact]
 		public void ManagerPerformanceWithIProcessable()
 		{
-			var elapsedMilliseconds = ManagerPerformance( true );
+			var statistics = GetManagerPerformance( true, true );
 
-			Trace.WriteLine( $"Method '{nameof( ManagerPerformanceWithIProcessable )}' executed in {elapsedMilliseconds} ms." );
+			DisplayTrace( nameof( ManagerPerformanceWithIProcessable ), statistics );
 		}
 
 		[Fact]
 		public void ManagerPerformanceWithoutIProcessable()
 		{
-			var elapsedMilliseconds = ManagerPerformance( false );
+			var statistics = GetManagerPerformance( true, false );
 
-			Trace.WriteLine( $"Method '{nameof( ManagerPerformanceWithoutIProcessable )}' executed in {elapsedMilliseconds} ms." );
+			DisplayTrace( nameof( ManagerPerformanceWithoutIProcessable ), statistics );
 		}
 
-		private long ManagerPerformance( bool processOnlyTypesDerivedFromIProcessable )
+		private IManagerStatistics GetManagerPerformance( bool doRegisterAndConfigure, bool processOnlyTypesDerivedFromIProcessable )
 		{
-			Stopwatch sw = new Stopwatch();
-			sw.Start();
-
 			static void a( IManagerOptions x ) => x
 				.AddAssemblyNamePrefix( "" )
 				.ExcludeAssemblyName( "System.Data.OleDb" ) // Exclude missing assemblies.
@@ -46,14 +52,38 @@ namespace Automated.Arca.Tests
 				.ExcludeAssemblyName( "System.Data.SqlClient" )
 				.ExcludeAssemblyName( "System.Data.Odbc" );
 
-			new ApplicationPipeline( a, false, processOnlyTypesDerivedFromIProcessable, null, null, false,
-				Assembly.GetExecutingAssembly(),
-				x => { },
-				x => x.AddAssembliesLoadedInProcess()
-					.RegisterFirst(),
-				x => x.ConfigureFirst() );
+			ApplicationPipeline applicationPipeline;
 
-			return sw.ElapsedMilliseconds;
+			if( doRegisterAndConfigure )
+			{
+				applicationPipeline = new ApplicationPipeline( a, false, processOnlyTypesDerivedFromIProcessable, null, null,
+					false, Assembly.GetExecutingAssembly(),
+					x => x.AddAssembliesLoadedInProcess(),
+					x => x.RegisterFirst(),
+					x => x.ConfigureFirst() );
+			}
+			else
+			{
+				applicationPipeline = new ApplicationPipeline( a, false, processOnlyTypesDerivedFromIProcessable, null, null,
+					false, Assembly.GetExecutingAssembly(),
+					x => x.AddAssembliesLoadedInProcess(),
+					x => { },
+					x => { } );
+			}
+
+			return applicationPipeline.Statistics;
+		}
+
+		private void DisplayTrace( string methodName, IManagerStatistics statistics )
+		{
+			Trace.WriteLine( $"Executed method '{methodName}':" +
+				$" Loaded {statistics.LoadedAssemblies} assemblies." +
+				$" Assemblies loaded in {statistics.AssemblyLoadingTime} ms." +
+				$" Data cached in {statistics.AssemblyLoadingTime} ms." +
+				$" Cached {statistics.CachedTypes} types." +
+				$" Registered {statistics.RegisteredClasses} classes." +
+				$" Classes registered in {statistics.ClassRegistrationTime} ms." +
+				$" Classes configured in {statistics.ClassConfigurationTime} ms." );
 		}
 	}
 }

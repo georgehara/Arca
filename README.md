@@ -10,10 +10,10 @@
 [Processing with complex input parameters](#processing-with-complex-input-parameters)<br/>
 [Processing options](#processing-options)<br/>
 [Inter-class dependencies](#inter-class-dependencies)<br/>
-[Performance considerations](#performance-considerations)<br/>
 [Scopes](#scopes)<br/>
 [Dependencies registered by default](#dependencies-registered-by-default)<br/>
 [Middleware](#middleware)<br/>
+[Performance considerations](#performance-considerations)<br/>
 [Package descriptions](#package-descriptions)<br/>
 [Examples](#examples)<br/>
 [Demo](#demo)<br/>
@@ -173,23 +173,6 @@ Note: The `Register` and `Configure` manager methods may be called multiple time
 Note: If the order of processing matters, use the `Prioritize` manager option.
 
 
-## PERFORMANCE CONSIDERATIONS
-
-ARCA has to load all the assemblies (referenced by an application) and has to use reflection to scan all the classes at application startup, but this is done only once, no matter how many extensions are used. This means that the more extensions are used to perform all sorts of automated operations, the more effective ARCA becomes.
-
-If manual registration and configuration were used instead of ARCA, the application startup would have to load (almost) the same number of assemblies in order to perform assembly-local operations, so there is little performance advantage in doing manual registration and configuration.
-
-ARCA allows you to specify a prefix that each assembly must have in order to be loaded and scanned.
-
-To improve performance, derive the classes (to register and configure) from the `IProcessable` interface. This works because checking if a class implements an interface is much faster (50 times) than calling `Type.GetCustomAttributes` for each class. By default, the manager ignores this interface.
-
-In the vast majority of cases, the performance is fine without the `IProcessable` interface. An approximate performance can be viewed by executing the (release build of the) tests from the `ProcessingPerformanceTests` class. When processing about 350 assemblies loaded into a process, with a total of about 10'000 types, with 31 registered and configured classes, the total execution time (for assembly loading, registration and configuration) is about 100 ms when using the `IProcessable` interface, and about 200 ms when not using it.
-
-To further improve performance:
-* Do not pass a logger to the manager options.
-* Group all classes to process in a single assembly, or as few assemblies as possible, because assembly loading takes most time from the processing. This will have the most significant effect on performance.
-
-
 ## SCOPES
 
 In applications which are not based on client requests, like test projects and desktop applications, the dependency injection container may throw exceptions if you try to instantiate dependencies which were registered to be instantiated per scope. This is because, in such a context, the instantiation per client request is meaningless, and those dependencies should be either:
@@ -219,6 +202,25 @@ The middleware class must implement the `IMiddleware` interface, and must have a
 Before you call the `Configure` manager method, call the `AddMiddlewareRegistry` extension method, on the manager. `Configure` must be called before calling the "IApplicationBuilder.UseEndpoints" extension method!
 
 Note: If the order of the middleware in the pipeline matters, use the `Prioritize` manager option.
+
+
+## PERFORMANCE CONSIDERATIONS
+
+ARCA has to load all the assemblies (referenced by an application) and has to use reflection to scan all the classes at application startup, but this is done only once, no matter how many extensions are used. This means that the more extensions are used to perform all sorts of automated operations, the more effective ARCA becomes.
+
+If manual registration and configuration were used instead of ARCA, the application startup would have to load (almost) the same number of assemblies in order to perform assembly-local operations, so there is little performance advantage in doing manual registration and configuration.
+
+ARCA allows you to specify a prefix that each assembly must have in order to be loaded and scanned.
+
+To improve performance, derive the classes (to register and configure) from the `IProcessable` interface. This works because checking if a class implements an interface is much faster (50 times) than calling `Type.GetCustomAttributes` for each class. By default, the manager ignores this interface.
+
+To further improve performance:
+* Do not pass a logger to the manager options.
+* Group all classes to process in a single assembly, or as few assemblies as possible, because assembly loading takes most time from the processing. This will have the most significant effect on performance.
+
+Unless you need to register and configure an absolutely enormous number of classes, the performance is fine without the `IProcessable` interface. An approximate performance can be viewed by executing the (release build of the) tests from the `ProcessingPerformanceTests` class. The number of assemblies involved and their loading time is not relevant in these tests because the assemblies are already loaded in the process. Some assembly loading is cached by .Net, but it's a small time, so it can be ignored here by repeating the tests. However, .Net caches some other things, so each test must be run separately. Because the number of classes that are registered and configured is very small compared to the number of processed types, and since most of the time spent there would also have to be spent during manual registration and configuration, it can be ignored.
+
+The tests process about 10'000 types, and register and configure 30 classes. The relevant execution time for registration and configuration is about 33 ms (if the `IProcessable` interface is not used, it's 37 ms). This means that ARCA can process about 300'000 unprocessable types per second, and this matters because the time spent processing unprocessable types is not spent during manual registration and configuration.
 
 
 ## PACKAGE DESCRIPTIONS

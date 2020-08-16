@@ -20,7 +20,8 @@ namespace Automated.Arca.Manager
 		private readonly IDictionary<Type, IExtensionForProcessableAttribute> ExtensionInstancesByType =
 			new Dictionary<Type, IExtensionForProcessableAttribute>();
 		private readonly IDictionary<Type, Type> ExtensionTypesByAttributeType = new Dictionary<Type, Type>();
-		private int RegisteredClassesCount;
+
+		public IManagerStatistics Statistics { get; } = new ManagerStatistics();
 
 		public Manager( IManagerOptions options )
 		{
@@ -46,7 +47,7 @@ namespace Automated.Arca.Manager
 		{
 			lock( Lock )
 			{
-				var assembly = Assembly.LoadFrom( assemblyFile );
+				var assembly = LoadAssemblyFromFile( assemblyFile );
 
 				Options.AddAssemblyNamePrefix( assembly.GetName().Name! );
 
@@ -199,12 +200,46 @@ namespace Automated.Arca.Manager
 			logger.Log( $"Priority types: {priorityTypes}" );
 		}
 
+		private Assembly LoadAssemblyFromFile( string assemblyFile )
+		{
+			var watch = System.Diagnostics.Stopwatch.StartNew();
+
+			var assembly = Assembly.LoadFrom( assemblyFile );
+
+			Statistics.LoadedAssemblies++;
+
+			long elapsedMilliseconds = watch.ElapsedMilliseconds;
+			Statistics.AssemblyLoadingTime += elapsedMilliseconds;
+
+			Options.Logger?.Log( $"Method '{nameof( LoadAssemblyFromFile )}' for assembly file '{assemblyFile}' executed in" +
+				$" {elapsedMilliseconds} ms." );
+
+			return assembly;
+		}
+
+		private Assembly LoadAssemblyWithName( AssemblyName assemblyName )
+		{
+			var watch = System.Diagnostics.Stopwatch.StartNew();
+
+			var assembly = Assembly.Load( assemblyName );
+
+			Statistics.LoadedAssemblies++;
+
+			long elapsedMilliseconds = watch.ElapsedMilliseconds;
+			Statistics.AssemblyLoadingTime += elapsedMilliseconds;
+
+			Options.Logger?.Log( $"Method '{nameof( LoadAssemblyWithName )}' for assembly '{assemblyName.Name}' executed in" +
+				$" {elapsedMilliseconds} ms." );
+
+			return assembly;
+		}
+
 		private void CacheReferencedAssembliesAndTypesAndExtensions( Assembly assembly )
 		{
+			var watch = System.Diagnostics.Stopwatch.StartNew();
+
 			if( !MayAddAssemblyToCache( assembly ) )
 				return;
-
-			var watch = System.Diagnostics.Stopwatch.StartNew();
 
 			CacheReferencedAssemblies( assembly );
 
@@ -213,8 +248,11 @@ namespace Automated.Arca.Manager
 
 			TypesAndExtensionsAreCached();
 
-			Options.Logger?.Log( $"Method '{nameof( AddAssembly )}' for assembly '{assembly.GetName().Name}' executed in" +
-				$" {watch.ElapsedMilliseconds} ms." );
+			long elapsedMilliseconds = watch.ElapsedMilliseconds;
+			Statistics.CachingTime += elapsedMilliseconds;
+
+			Options.Logger?.Log( $"Method '{nameof( CacheReferencedAssembliesAndTypesAndExtensions )}' for assembly" +
+				$" '{assembly.GetName().Name}' executed in {elapsedMilliseconds} ms." );
 		}
 
 		private void TypesAndExtensionsAreCached()
@@ -236,7 +274,7 @@ namespace Automated.Arca.Manager
 			{
 				// Avoid loading the assembly before checking if it's processable.
 				if( MayAddAssemblyToCache( assemblyName ) )
-					CacheReferencedAssemblies( Assembly.Load( assemblyName ) );
+					CacheReferencedAssemblies( LoadAssemblyWithName( assemblyName ) );
 			}
 		}
 
@@ -286,6 +324,8 @@ namespace Automated.Arca.Manager
 				{
 					var cachedType = new CachedType( type );
 					CachedTypes.Add( cachedType.Type, cachedType );
+
+					Statistics.CachedTypes++;
 				}
 			}
 		}
@@ -378,8 +418,11 @@ namespace Automated.Arca.Manager
 			RegisterTypes( context );
 			RunRegistrators( context );
 
-			Options.Logger?.Log( $"Method '{nameof( Register )}' executed in {watch.ElapsedMilliseconds} ms." +
-				$" Registered {RegisteredClassesCount} classes out of {CachedTypes.Count} cached types." );
+			long elapsedMilliseconds = watch.ElapsedMilliseconds;
+			Statistics.ClassRegistrationTime += elapsedMilliseconds;
+
+			Options.Logger?.Log( $"Method '{nameof( Register )}' executed in {elapsedMilliseconds} ms." +
+				$" Registered {Statistics.RegisteredClasses} classes out of {CachedTypes.Count} cached types." );
 		}
 
 		private void Configure( IConfigurationContext context )
@@ -389,7 +432,10 @@ namespace Automated.Arca.Manager
 			ConfigureTypes( context );
 			RunConfigurators( context );
 
-			Options.Logger?.Log( $"Method '{nameof( Configure )}' executed in {watch.ElapsedMilliseconds} ms." );
+			long elapsedMilliseconds = watch.ElapsedMilliseconds;
+			Statistics.ClassConfigurationTime += elapsedMilliseconds;
+
+			Options.Logger?.Log( $"Method '{nameof( Configure )}' executed in {elapsedMilliseconds} ms." );
 		}
 
 		private void RegisterTypes( IRegistrationContext context )
@@ -416,9 +462,14 @@ namespace Automated.Arca.Manager
 			var attribute = GetProcessableAttribute( cachedType.Type );
 			if( attribute == null )
 			{
+				cachedType.ProcessableAttribute = null;
 				cachedType.State = ProcessingState.Registered;
 
 				return;
+			}
+			else
+			{
+				cachedType.ProcessableAttribute = attribute;
 			}
 
 			RegisterType( context, cachedType.Type, attribute );
@@ -472,7 +523,7 @@ namespace Automated.Arca.Manager
 
 			extension.Register( context, attribute, type );
 
-			RegisteredClassesCount++;
+			Statistics.RegisteredClasses++;
 
 			Options.Logger?.Log( $"Registered class '{type.Name}' with attribute '{attributeType.Name}'" );
 		}
@@ -487,15 +538,14 @@ namespace Automated.Arca.Manager
 				return;
 			}
 
-			var attribute = GetProcessableAttribute( cachedType.Type );
-			if( attribute == null )
+			if( !cachedType.HasProcessableAttribute )
 			{
 				cachedType.State = ProcessingState.Configured;
 
 				return;
 			}
 
-			ConfigureType( context, cachedType.Type, attribute );
+			ConfigureType( context, cachedType.Type, cachedType.ProcessableAttribute! );
 
 			cachedType.State = ProcessingState.Configured;
 		}
@@ -511,10 +561,8 @@ namespace Automated.Arca.Manager
 					$" '{ProcessingState.Registered}' but is '{cachedType.State}'." );
 			}
 
-			var type = cachedType.Type;
-
-			return type.IsClass && !type.IsAbstract &&
-				(!Options.ProcessOnlyClassesDerivedFromIProcessable || typeof( IProcessable ).IsAssignableFrom( type ));
+			// The conditions were already checked during registration.
+			return true;
 		}
 
 		private void ConfigureType( IConfigurationContext context, Type type, ProcessableAttribute attribute )

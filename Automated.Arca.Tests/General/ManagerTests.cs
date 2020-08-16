@@ -48,8 +48,9 @@ namespace Automated.Arca.Tests
 		{
 			static void a() => new ApplicationPipeline( x => { }, true, true, null, null, false,
 				Assembly.GetExecutingAssembly(),
-				x => x.RegisterFirst(),
-				x => x.AddAssemblyContainingType<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>(),
+				x => { },
+				x => x.RegisterFirst()
+					.AddAssemblyContainingType<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>(),
 				x => x.ConfigureFirst() );
 
 			Assert.Throws<InvalidOperationException>( a );

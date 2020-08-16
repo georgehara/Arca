@@ -6,6 +6,8 @@ namespace Automated.Arca.Abstractions.Core
 {
 	public interface IManager : IProcessable, IExtensionDependencyProvider
 	{
+		IManagerStatistics Statistics { get; }
+
 		IManager AddAssembly( Assembly assembly );
 		IManager AddAssemblyFromFile( string assemblyFile );
 		IManager AddAssemblyContainingType( Type type );

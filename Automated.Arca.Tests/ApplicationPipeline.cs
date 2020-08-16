@@ -24,6 +24,8 @@ namespace Automated.Arca.Tests
 		private readonly IServiceProvider ServiceProvider;
 		private readonly IApplicationBuilder ApplicationBuilder;
 
+		public IManagerStatistics Statistics => Manager.Statistics;
+
 		public ApplicationPipeline( Action<IManagerOptions> onCreateManagerOptions, bool useLogging,
 			bool processOnlyTypesDerivedFromIProcessable, ICollection<Type>? excludeTypes, IList<Type>? priorityTypes,
 			bool instantiatePerContainerInsteadOfScope, Assembly rootAssembly, Action<ApplicationPipeline> onCreateManager,
