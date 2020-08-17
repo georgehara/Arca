@@ -91,7 +91,7 @@ The `Configure` method requests an instance (of a certain class) from the depend
 
 If you create custom extensions, it's important to understand that this method is not called every time an instance of that class is created, but only once per dependency injection container. This means that configuring an instance (of that class) which is not instantiated per container (as a so called singleton) is a logical flaw; it's fine to configure the class itself because types are singletons.
 
-You can achieve the same thing by using the implementation factory parameter during `Register`, and the factory would be called every time the class would be instantiated. But this means that you would have to manually create the instance in the extension, so you would create a tight coupling between the extension of the class to instantiate and the configuration objects.
+If you were to use the implementation factory parameter for dependency injection during `Register`, that factory would be called every time the class would be instantiated. But this means that in the extension you would have to manually create the instance of the class to configure, so you would create a tight coupling between the extension and the class to instantiate.
 
 
 ### EXTENSION DEPENDENCIES
