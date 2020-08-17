@@ -9,30 +9,23 @@ namespace Automated.Arca.Tests
 	public class ProcessingPerformanceTests : PerformanceTests
 	{
 		[Fact]
-		public void ManagerPerformanceWithoutRegisterAndConfigure()
-		{
-			var statistics = GetManagerPerformance( false, true );
-
-			DisplayTrace( nameof( ManagerPerformanceWithoutRegisterAndConfigure ), statistics );
-		}
-
-		[Fact]
-		public void ManagerPerformanceWithIProcessable()
+		public void ManagerPerformanceWithoutRegistrationAndConfigurationAndWithIProcessable()
 		{
 			var statistics = GetManagerPerformance( true, true );
 
-			DisplayTrace( nameof( ManagerPerformanceWithIProcessable ), statistics );
+			DisplayTrace( "Performance with 'IProcessable'", statistics );
 		}
 
 		[Fact]
-		public void ManagerPerformanceWithoutIProcessable()
+		public void ManagerPerformanceWithoutRegistrationAndConfigurationAndWithoutIProcessable()
 		{
 			var statistics = GetManagerPerformance( true, false );
 
-			DisplayTrace( nameof( ManagerPerformanceWithoutIProcessable ), statistics );
+			DisplayTrace( "Performance without 'IProcessable'", statistics );
 		}
 
-		private IManagerStatistics GetManagerPerformance( bool doRegisterAndConfigure, bool processOnlyTypesDerivedFromIProcessable )
+		private IManagerStatistics GetManagerPerformance( bool simulateRegistrationAndConfiguration,
+			bool processOnlyTypesDerivedFromIProcessable )
 		{
 			static void a( IManagerOptions x ) => x
 				.AddAssemblyNamePrefix( "" )
@@ -54,29 +47,18 @@ namespace Automated.Arca.Tests
 
 			ApplicationPipeline applicationPipeline;
 
-			if( doRegisterAndConfigure )
-			{
-				applicationPipeline = new ApplicationPipeline( a, false, processOnlyTypesDerivedFromIProcessable, null, null,
-					false, Assembly.GetExecutingAssembly(),
-					x => x.AddAssembliesLoadedInProcess(),
-					x => x.RegisterFirst(),
-					x => x.ConfigureFirst() );
-			}
-			else
-			{
-				applicationPipeline = new ApplicationPipeline( a, false, processOnlyTypesDerivedFromIProcessable, null, null,
-					false, Assembly.GetExecutingAssembly(),
-					x => x.AddAssembliesLoadedInProcess(),
-					x => { },
-					x => { } );
-			}
+			applicationPipeline = new ApplicationPipeline( a, false, processOnlyTypesDerivedFromIProcessable, null, null,
+				simulateRegistrationAndConfiguration, false, Assembly.GetExecutingAssembly(),
+				x => x.AddAssembliesLoadedInProcess(),
+				x => x.RegisterFirst(),
+				x => x.ConfigureFirst() );
 
 			return applicationPipeline.Statistics;
 		}
 
-		private void DisplayTrace( string methodName, IManagerStatistics statistics )
+		private void DisplayTrace( string testDescription, IManagerStatistics statistics )
 		{
-			Trace.WriteLine( $"Executed method '{methodName}':" +
+			Trace.WriteLine( $"{testDescription}:" +
 				$" Loaded {statistics.LoadedAssemblies} assemblies." +
 				$" Assemblies loaded in {statistics.AssemblyLoadingTime} ms." +
 				$" Data cached in {statistics.AssemblyLoadingTime} ms." +

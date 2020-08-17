@@ -126,7 +126,7 @@ The ARCA manager must be instantiated with a set of options that can be created 
 
 `UseLogger`: Specifies the logger which handles the processing messages of the manager. A logger significantly reduces the processing performance.
 
-`AddAssemblyNamePrefix`: An assembly is processed only if its name starts with a prefix specified through this method. Each call of this method adds a prefix to the assembly name prefix list.
+`AddAssemblyNamePrefix`: An assembly is processed only if its name starts with a prefix specified through this method. An empty text means that any assembly name matches. Each call of this method adds a prefix to the assembly name prefix list.
 
 `ExcludeAssemblyName`: Excludes from processing all assemblies whose names are specified through this method. Each call of this method adds a name to a list.
 
@@ -206,21 +206,19 @@ Note: If the order of the middleware in the pipeline matters, use the `Prioritiz
 
 ## PERFORMANCE CONSIDERATIONS
 
-ARCA has to load all the assemblies (referenced by an application) and has to use reflection to scan all the classes at application startup, but this is done only once, no matter how many extensions are used. This means that the more extensions are used to perform all sorts of automated operations, the more effective ARCA becomes.
+ARCA has to load all the assemblies (referenced by an application) and has to use reflection to scan all the classes, at application startup, but this is done only once, no matter how many extensions are used. This means that the more extensions are used to perform all sorts of automated operations, the more effective ARCA becomes.
 
-If manual registration and configuration were used instead of ARCA, the application startup would have to load (almost) the same number of assemblies in order to perform assembly-local operations, so there is little performance advantage in doing manual registration and configuration.
+The number of assemblies involved and their loading time is not relevant because the assemblies also have to be loaded during manual registration and configuration, instead of using ARCA, in order to perform assembly-local operations. So, from this point of view there is virtually no performance advantage in doing manual registration and configuration. This means that the assembly loading time can be ignored during a performance comparison between manual and automatic registration and configuration.
 
-ARCA allows you to specify a prefix that each assembly must have in order to be loaded and scanned.
-
-To improve performance, derive the classes (to register and configure) from the `IProcessable` interface. This works because checking if a class implements an interface is much faster (50 times) than calling `Type.GetCustomAttributes` for each class. By default, the manager ignores this interface.
-
-To further improve performance:
+To improve performance:
 * Do not pass a logger to the manager options.
-* Group all classes to process in a single assembly, or as few assemblies as possible, because assembly loading takes most time from the processing. This will have the most significant effect on performance.
+* Group all the classes to process in as few assemblies as possible, because assembly loading takes most time, whether the registration and configuration is manual or automatic.
+* Use specific assembly name prefixes in order to reduce the number of assemblies that have be loaded and scanned.
+* Derive the classes to register and configure from the `IProcessable` interface. This works because checking if a class implements an interface is much faster (50 times) than calling `Type.GetCustomAttributes` for each class. By default, the manager ignores this interface because its effect is small in the entire context, in the vast majority of cases.
 
-Unless you need to register and configure an absolutely enormous number of classes, the performance is fine without the `IProcessable` interface. An approximate performance can be viewed by executing the (release build of the) tests from the `ProcessingPerformanceTests` class. The number of assemblies involved and their loading time is not relevant in these tests because the assemblies are already loaded in the process. Some assembly loading is cached by .Net, but it's a small time, so it can be ignored here by repeating the tests. However, .Net caches some other things, so each test must be run separately. Since most of the time spent in the registration and configuration of the processable classes has to also be spent during manual registration and configuration, we can ignore it (by commenting some code).
+An approximate performance can be viewed by executing the (release build of the) tests from the `ProcessingPerformanceTests` class. If you want to see the execution times without any caching from .Net, rebuild the solution before running each test separately. Since the time spent in the extensions to register and configure the processable classes has to also be spent during manual registration and configuration, it's ignored by simulating the calls to the extensions. This means that the relevant time is the execution time for processing the unprocessable types because the time spent doing this is not spent during manual registration and configuration.
 
-The tests process about 10'000 types. The remaining relevant execution time for the registration and configuration of unprocessable types is about 14 ms (if the `IProcessable` interface is not used, it's 18 ms). This means that ARCA can process about 700'000 unprocessable types per second, and this matters because the time spent processing unprocessable types is not spent during manual registration and configuration.
+The tests process about 10'000 types. The relevant execution time is 14 ms if the `IProcessable` interface is used, and 18 ms if it's not used. This means that ARCA can process about 700'000 unprocessable types per second.
 
 
 ## PACKAGE DESCRIPTIONS
@@ -357,21 +355,31 @@ namespace Automated.Arca.Tests.Dummies
 Here is a sample output:
 
 ```
-Created instance of 'CollectorLogger' at 2020-08-15T16:16:47
+Created instance of 'CollectorLogger' at 2020-08-18T00:14:34
 Using the assembly name prefix list: 'Automated.Arca.'
 Assembly names to exclude: 
 Excluded types: 
 Priority types: 
 Cached assembly 'Automated.Arca.Demo.WebApi'
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Manager' executed in 0 ms.
 Cached assembly 'Automated.Arca.Manager'
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Abstractions.Core' executed in 0 ms.
 Cached assembly 'Automated.Arca.Abstractions.Core'
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Libraries' executed in 0 ms.
 Cached assembly 'Automated.Arca.Libraries'
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.Specialized' executed in 21 ms.
 Cached assembly 'Automated.Arca.Attributes.Specialized'
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.DependencyInjection' executed in 1 ms.
 Cached assembly 'Automated.Arca.Attributes.DependencyInjection'
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Extensions.DependencyInjection' executed in 0 ms.
 Cached assembly 'Automated.Arca.Extensions.DependencyInjection'
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Abstractions.DependencyInjection' executed in 0 ms.
 Cached assembly 'Automated.Arca.Abstractions.DependencyInjection'
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Extensions.Specialized' executed in 0 ms.
 Cached assembly 'Automated.Arca.Extensions.Specialized'
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Abstractions.Specialized' executed in 1 ms.
 Cached assembly 'Automated.Arca.Abstractions.Specialized'
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Implementations.ForMicrosoft' executed in 0 ms.
 Cached assembly 'Automated.Arca.Implementations.ForMicrosoft'
 Cached extension 'ExtensionForInstantiatePerContainerAttribute' for attribute 'InstantiatePerContainerAttribute'
 Cached extension 'ExtensionForInstantiatePerContainerWithInterfaceAttribute' for attribute 'InstantiatePerContainerWithInterfaceAttribute'
@@ -399,10 +407,10 @@ Cached extension 'ExtensionForMessageBusSubscribeForExchangeCommandQueueTargetAt
 Cached extension 'ExtensionForMessageBusSubscribeForExchangePublicationQueueBetweenAttribute' for attribute 'MessageBusSubscribeForExchangePublicationQueueBetweenAttribute'
 Cached extension 'ExtensionForOutboxAttribute' for attribute 'OutboxAttribute'
 Cached extension 'ExtensionForOutboxProcessorAttribute' for attribute 'OutboxProcessorAttribute'
-Method 'AddAssembly' for assembly 'Automated.Arca.Demo.WebApi' executed in 13 ms.
+Method 'CacheReferencedAssembliesAndTypesAndExtensions' for assembly 'Automated.Arca.Demo.WebApi' executed in 36 ms.
 Registered class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Registered class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
-Method 'Register' executed in 2 ms. Registered 2 classes out of 120 cached types.
+Method 'Register' executed in 2 ms. Registered 2 classes out of 122 cached types.
 Configured class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Configured class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
 Method 'Configure' executed in 1 ms.

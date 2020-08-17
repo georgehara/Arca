@@ -9,13 +9,13 @@ namespace Automated.Arca.Manager
 		private readonly OrderedCachedTypes PriorityTypes = new OrderedCachedTypes();
 		private readonly IDictionary<Type, CachedType> OrdinaryTypes = new Dictionary<Type, CachedType>();
 
+		internal int Count => PriorityTypes.Count + OrdinaryTypes.Count;
+		internal bool HasItems => Count > 0;
+
 		internal CachedTypes( IOrderedTypes optionsPriorityTypes )
 		{
 			OptionsPriorityTypes = optionsPriorityTypes;
 		}
-
-		internal int Count => PriorityTypes.Count + OrdinaryTypes.Count;
-		internal bool HasItems => Count > 0;
 
 		internal IEnumerable<CachedType> GetPriorityTypes()
 		{

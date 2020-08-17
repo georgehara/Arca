@@ -28,8 +28,9 @@ namespace Automated.Arca.Tests
 
 		public ApplicationPipeline( Action<IManagerOptions> onCreateManagerOptions, bool useLogging,
 			bool processOnlyTypesDerivedFromIProcessable, ICollection<Type>? excludeTypes, IList<Type>? priorityTypes,
-			bool instantiatePerContainerInsteadOfScope, Assembly rootAssembly, Action<ApplicationPipeline> onCreateManager,
-			Action<ApplicationPipeline> onManagerRegister, Action<ApplicationPipeline> onManagerConfigure )
+			bool simulateRegistrationAndConfiguration, bool instantiatePerContainerInsteadOfScope, Assembly rootAssembly,
+			Action<IManager> onCreateManager, Action<ApplicationPipeline> onManagerRegister,
+			Action<ApplicationPipeline> onManagerConfigure )
 		{
 			InstantiatePerContainerInsteadOfScope = instantiatePerContainerInsteadOfScope;
 
@@ -40,9 +41,9 @@ namespace Automated.Arca.Tests
 			var managerOptions = GetManagerOptions( onCreateManagerOptions, useLogging, processOnlyTypesDerivedFromIProcessable,
 				excludeTypes, priorityTypes );
 
-			Manager = GetManager( managerOptions, ApplicationOptionsProvider, rootAssembly );
+			Manager = GetManager( managerOptions, simulateRegistrationAndConfiguration, ApplicationOptionsProvider, rootAssembly );
 
-			onCreateManager( this );
+			onCreateManager( Manager );
 			onManagerRegister( this );
 
 			ServiceProvider = BuildServiceProvider( Services );
@@ -59,7 +60,8 @@ namespace Automated.Arca.Tests
 			Assembly rootAssembly )
 		{
 			return new ApplicationPipeline( x => { }, true, processOnlyTypesDerivedFromIProcessable, excludeTypes, priorityTypes,
-				instantiatePerContainerInsteadOfScope, rootAssembly, x => { }, x => x.RegisterFirst(), x => x.ConfigureFirst() );
+				false, instantiatePerContainerInsteadOfScope, rootAssembly, x => { }, x => x.RegisterFirst(),
+				x => x.ConfigureFirst() );
 		}
 
 		public ApplicationPipeline AddAssemblyContainingType<T>()
@@ -136,10 +138,10 @@ namespace Automated.Arca.Tests
 				.Build();
 		}
 
-		private IManager GetManager( IManagerOptions managerOptions, IConfiguration applicationOptionsProvider,
-			Assembly rootAssembly )
+		private IManager GetManager( IManagerOptions managerOptions, bool simulateRegistrationAndConfiguration,
+			IConfiguration applicationOptionsProvider, Assembly rootAssembly )
 		{
-			return new Manager.Manager( managerOptions )
+			return new Manager.Manager( managerOptions, simulateRegistrationAndConfiguration )
 				.AddAssembly( rootAssembly )
 				.AddAssemblyContainingType( typeof( ExtensionForInstantiatePerScopeAttribute ) )
 				.AddAssemblyContainingType( typeof( ExtensionForBoundedContextAttribute ) )

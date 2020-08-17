@@ -10,8 +10,7 @@ namespace Automated.Arca.Manager
 	public class Manager : IManager
 	{
 		private readonly IManagerOptions Options;
-
-		private readonly object Lock = new object();
+		private readonly bool SimulateRegistrationAndConfiguration;
 
 		private readonly IDictionary<string, CachedAssembly> CachedAssemblies = new Dictionary<string, CachedAssembly>();
 		private readonly CachedTypes CachedTypes;
@@ -21,11 +20,15 @@ namespace Automated.Arca.Manager
 			new Dictionary<Type, IExtensionForProcessableAttribute>();
 		private readonly IDictionary<Type, Type> ExtensionTypesByAttributeType = new Dictionary<Type, Type>();
 
+		private readonly object Lock = new object();
+
 		public IManagerStatistics Statistics { get; } = new ManagerStatistics();
 
-		public Manager( IManagerOptions options )
+		public Manager( IManagerOptions options, bool simulateRegistrationAndConfiguration = false )
 		{
 			Options = options;
+			SimulateRegistrationAndConfiguration = simulateRegistrationAndConfiguration;
+
 			CachedTypes = new CachedTypes( Options.PriorityTypes );
 
 			LogOptions();
@@ -206,9 +209,9 @@ namespace Automated.Arca.Manager
 
 			var assembly = Assembly.LoadFrom( assemblyFile );
 
-			Statistics.LoadedAssemblies++;
-
 			long elapsedMilliseconds = watch.ElapsedMilliseconds;
+
+			Statistics.LoadedAssemblies++;
 			Statistics.AssemblyLoadingTime += elapsedMilliseconds;
 
 			Options.Logger?.Log( $"Method '{nameof( LoadAssemblyFromFile )}' for assembly file '{assemblyFile}' executed in" +
@@ -223,9 +226,9 @@ namespace Automated.Arca.Manager
 
 			var assembly = Assembly.Load( assemblyName );
 
-			Statistics.LoadedAssemblies++;
-
 			long elapsedMilliseconds = watch.ElapsedMilliseconds;
+
+			Statistics.LoadedAssemblies++;
 			Statistics.AssemblyLoadingTime += elapsedMilliseconds;
 
 			Options.Logger?.Log( $"Method '{nameof( LoadAssemblyWithName )}' for assembly '{assemblyName.Name}' executed in" +
@@ -249,6 +252,7 @@ namespace Automated.Arca.Manager
 			TypesAndExtensionsAreCached();
 
 			long elapsedMilliseconds = watch.ElapsedMilliseconds;
+
 			Statistics.CachingTime += elapsedMilliseconds;
 
 			Options.Logger?.Log( $"Method '{nameof( CacheReferencedAssembliesAndTypesAndExtensions )}' for assembly" +
@@ -348,9 +352,9 @@ namespace Automated.Arca.Manager
 			if( ExtensionInstancesByType.ContainsKey( cachedType.Type ) )
 				return;
 
-			var extension = Activator.CreateInstance( cachedType.Type ) as IExtensionForProcessableAttribute;
+			var extension = (IExtensionForProcessableAttribute)Activator.CreateInstance( cachedType.Type )!;
 
-			if( ExtensionTypesByAttributeType.ContainsKey( extension!.AttributeType ) )
+			if( ExtensionTypesByAttributeType.ContainsKey( extension.AttributeType ) )
 			{
 				throw new InvalidOperationException( $"The attribute '{extension.AttributeType.Name}' already" +
 					$" has a cached extension '{ExtensionTypesByAttributeType[ extension.AttributeType ].Name}'." );
@@ -419,10 +423,11 @@ namespace Automated.Arca.Manager
 			RunRegistrators( context );
 
 			long elapsedMilliseconds = watch.ElapsedMilliseconds;
+
 			Statistics.ClassRegistrationTime += elapsedMilliseconds;
 
 			Options.Logger?.Log( $"Method '{nameof( Register )}' executed in {elapsedMilliseconds} ms." +
-				$" Registered {Statistics.RegisteredClasses} classes out of {CachedTypes.Count} cached types." );
+				$" Registered {Statistics.RegisteredClasses} classes out of {Statistics.CachedTypes} cached types." );
 		}
 
 		private void Configure( IConfigurationContext context )
@@ -433,6 +438,7 @@ namespace Automated.Arca.Manager
 			RunConfigurators( context );
 
 			long elapsedMilliseconds = watch.ElapsedMilliseconds;
+
 			Statistics.ClassConfigurationTime += elapsedMilliseconds;
 
 			Options.Logger?.Log( $"Method '{nameof( Configure )}' executed in {elapsedMilliseconds} ms." );
@@ -521,7 +527,8 @@ namespace Automated.Arca.Manager
 			if( extension == null )
 				throw new ArgumentOutOfRangeException( $"Unhandled attribute '{attributeType.Name}'" );
 
-			extension.Register( context, attribute, type );
+			if( !SimulateRegistrationAndConfiguration )
+				extension.Register( context, attribute, type );
 
 			Statistics.RegisteredClasses++;
 
@@ -573,7 +580,8 @@ namespace Automated.Arca.Manager
 			if( extension == null )
 				throw new ArgumentOutOfRangeException( $"Unhandled attribute '{attributeType.Name}'" );
 
-			extension.Configure( context, attribute, type );
+			if( !SimulateRegistrationAndConfiguration )
+				extension.Configure( context, attribute, type );
 
 			Options.Logger?.Log( $"Configured class '{type.Name}' with attribute '{attributeType.Name}'" );
 		}
@@ -598,9 +606,10 @@ namespace Automated.Arca.Manager
 				return;
 			}
 
-			var registrator = Activator.CreateInstance( cachedType.Type ) as IRegistrator;
+			var registrator = (IRegistrator)Activator.CreateInstance( cachedType.Type )!;
 
-			registrator!.Register( context );
+			if( !SimulateRegistrationAndConfiguration )
+				registrator.Register( context );
 
 			cachedType.State = ProcessingState.RegistratorRan;
 
@@ -634,9 +643,10 @@ namespace Automated.Arca.Manager
 				return;
 			}
 
-			var registrator = Activator.CreateInstance( cachedType.Type ) as IConfigurator;
+			var registrator = (IConfigurator)Activator.CreateInstance( cachedType.Type )!;
 
-			registrator!.Configure( context );
+			if( !SimulateRegistrationAndConfiguration )
+				registrator.Configure( context );
 
 			cachedType.State = ProcessingState.ConfiguratorRan;
 

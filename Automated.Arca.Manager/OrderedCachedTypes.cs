@@ -10,13 +10,13 @@ namespace Automated.Arca.Manager
 		private int HeightForAdd;
 		private int HeightForContains;
 
+		internal int Count => OrderedListTypes!.Count;
+		internal bool HasItems => Count > 0;
+
 		internal OrderedCachedTypes()
 		{
 			RecreateQuickAccessTypes();
 		}
-
-		internal int Count => OrderedListTypes!.Count;
-		internal bool HasItems => Count > 0;
 
 		internal CachedType? Get( Type type )
 		{

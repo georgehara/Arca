@@ -10,12 +10,12 @@ namespace Automated.Arca.Manager
 		private int HeightForAdd;
 		private int HeightForContains;
 
+		public bool HasItems => OrderedListTypes!.Count > 0;
+
 		public OrderedTypes()
 		{
 			RecreateQuickAccessTypes();
 		}
-
-		public bool HasItems => OrderedListTypes!.Count > 0;
 
 		public IEnumerable<Type> GetOrderedTypes()
 		{
