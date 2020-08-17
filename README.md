@@ -75,6 +75,10 @@ An extension is a class which derives from the `IExtensionForAttribute` interfac
 
 The extension specifies which attribute it handles, in the `AttributeType` property, and provides methods for the registration and configuration of the class on which the attribute is applied; the attribute can't come from the inheritance tree of the class to process.
 
+Extensions are instantiated once per manager.
+
+Extensions don't support dependency injection through their constructors because the dependency injection container is not set up when the extensions are instantiated by the manager. However, in the `Configure` method you can instantiate classes from the dependency injection container because the instance provider (`IServiceProvider`) is available at that point.
+
 
 ### REGISTER
 
@@ -87,7 +91,7 @@ The `Configure` method requests an instance (of a certain class) from the depend
 
 If you create custom extensions, it's important to understand that this method is not called every time an instance of that class is created, but only once per dependency injection container. This means that configuring an instance (of that class) which is not instantiated per container (as a so called singleton) is a logical flaw; it's fine to configure the class itself because types are singletons.
 
-You can achieve the same thing by using the implementation factory parameter during `Register`, and the factory would be called every time the class would be instantiated. But this means that you would have to manually create the instance in the extension, so you would create tight coupling between the extension of the class to instantiate.
+You can achieve the same thing by using the implementation factory parameter during `Register`, and the factory would be called every time the class would be instantiated. But this means that you would have to manually create the instance in the extension, so you would create a tight coupling between the extension of the class to instantiate and the configuration objects.
 
 
 ### EXTENSION DEPENDENCIES
@@ -118,6 +122,10 @@ A registrator must derive from `IRegistrator`.
 A configurator must derive from `IConfigurator`.
 
 The classes which are registered and configured by registrators and configurators should not have applied on them attributes (derived from the `ProcessableAttribute` attribute) because the attributes would trigger a separate processing of the classes.
+
+Registrators and configurators are instantiated once per manager.
+
+Registrators and configurators don't support dependency injection through their constructors because the dependency injection container is not set up when the registrators / configurators are instantiated by the manager. However, a configurator can instantiate classes from the dependency injection container because the instance provider (`IServiceProvider`) is available at that point.
 
 
 ## PROCESSING OPTIONS
