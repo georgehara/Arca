@@ -12,9 +12,9 @@
 [Inter-class dependencies](#inter-class-dependencies)<br/>
 [Scopes](#scopes)<br/>
 [Dependencies registered by default](#dependencies-registered-by-default)<br/>
-[Support for dependency injection](#support_for_dependency_injection)<br/>
-[Support for middleware](#support_for_middleware)<br/>
-[Creating custom attributes](#creating_custom_attributes)<br/>
+[Support for dependency injection](#support-for-dependency-injection)<br/>
+[Support for middleware](#support-for-middleware)<br/>
+[Creating custom attributes](#creating-custom-attributes)<br/>
 [Performance considerations](#performance-considerations)<br/>
 [Package descriptions](#package-descriptions)<br/>
 [Examples](#examples)<br/>
