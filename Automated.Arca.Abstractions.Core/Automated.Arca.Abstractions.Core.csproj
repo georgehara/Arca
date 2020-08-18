@@ -13,7 +13,7 @@
 		<Company>Automated.Arca</Company>
 		<Product>Automated.Arca</Product>
 		<Description>Automated registration and configuration of classes for dependency injection, CQRS.
-Core abstractions. Contains "IProcessable", so it's usually necessary. Use to create your own attributes and extensions.</Description>
+Core abstractions. Contains `IProcessable`. Use it to create your own attributes and extensions. It's usually necessary.</Description>
 		<PackageTags>arca automatic automated registration configuration dependency injection cqrs</PackageTags>
 		<RepositoryUrl>https://github.com/georgehara/Arca</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>

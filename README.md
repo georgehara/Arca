@@ -8,11 +8,13 @@
 [Extensions](#extensions)<br/>
 [Processable classes](#processable-classes)<br/>
 [Processing with complex input parameters](#processing-with-complex-input-parameters)<br/>
-[Processing options](#processing-options)<br/>
+[Manager options](#manager-options)<br/>
 [Inter-class dependencies](#inter-class-dependencies)<br/>
 [Scopes](#scopes)<br/>
 [Dependencies registered by default](#dependencies-registered-by-default)<br/>
-[Middleware](#middleware)<br/>
+[Support for dependency injection](#support_for_dependency_injection)<br/>
+[Support for middleware](#support_for_middleware)<br/>
+[Creating custom attributes](#creating_custom_attributes)<br/>
 [Performance considerations](#performance-considerations)<br/>
 [Package descriptions](#package-descriptions)<br/>
 [Examples](#examples)<br/>
@@ -128,7 +130,7 @@ Registrators and configurators are instantiated once per manager.
 Registrators and configurators don't support dependency injection through their constructors because the dependency injection container is not set up when the registrators / configurators are instantiated by the manager. However, a configurator can instantiate classes from the dependency injection container because the instance provider (`IServiceProvider`) is available at that point.
 
 
-## PROCESSING OPTIONS
+## MANAGER OPTIONS
 
 The ARCA manager must be instantiated with a set of options that can be created with the following fluent methods:
 
@@ -201,15 +203,37 @@ When dependency injection is used, ARCA adds the following components to the ins
 You can add any of these interfaces as parameters to the constructors of your classes, so they can be injected by the dependency injection container.
 
 
-## MIDDLEWARE
+## SUPPORT FOR DEPENDENCY INJECTION
 
-Middleware support is provided by the `ChainMiddlewarePerContainerAttribute`, `ChainMiddlewarePerScopeAttribute` and `ChainMiddlewarePerInjectionAttribute` attributes from the `Automated.Arca.Attributes.Specialized` package. The attributes register the middleware, in the dependency injection container, for instantiation per container, scope or injection.
+Dependency injection support is provided by the `InstantiatePerContainerAttribute`, `InstantiatePerScopeAttribute` and `InstantiatePerInjectionAttribute` attributes from the `Attributes.DependencyInjection` package. The attributes register the classes, in the dependency injection container, for instantiation per container, scope or injection.
+
+In the terminology of Microsoft's dependency injection container, the instantiation per container is known as "singleton" (even though it's not a singleton per process), while the instantiation per injection is known as "transient".
+
+
+## SUPPORT FOR MIDDLEWARE
+
+Middleware support is provided by the `ChainMiddlewarePerContainerAttribute`, `ChainMiddlewarePerScopeAttribute` and `ChainMiddlewarePerInjectionAttribute` attributes from the `Attributes.Specialized` package. The attributes register the middleware, in the dependency injection container, for instantiation per container, scope or injection.
 
 The middleware class must implement the `IMiddleware` interface, and must have applied on it one of the attributes above. Then, when it's time to call it in the request pipeline, ASP.NET will instantiate it through the dependency injection container.
 
 Before you call the `Configure` manager method, call the `AddMiddlewareRegistry` extension method, on the manager. `Configure` must be called before calling the "IApplicationBuilder.UseEndpoints" extension method!
 
 Note: If the order of the middleware in the pipeline matters, use the `Prioritize` manager option.
+
+
+## CREATING CUSTOM ATTRIBUTES
+
+To create your own attribute, you only have to:
+* Create your attribute as a class which derives from `ProcessableAttribute`.
+* Create the extension which handles your attribute, as a class which derives from `ExtensionForProcessableAttribute` (which already contains a lot of reusable behavior). The extension must override `AttributeType`, `Register` and `Configure`.
+
+It doesn't matter in which assemblies you put these two classes, but the assembly which contains the extension will have to be processed by the manager, so you have to add it to the manager with one of the `AddXXX` methods, unless it's not already included in the scanned assemblies.
+
+Apply your attribute on the classes that you want to be registered and configured by the extension (that handles your attribute).
+
+You can take a look at an existing attribute, like `BoundedContextAttribute` from the `Attributes.Specialized` package. This attribute has some parameters that the extension uses to load some data from the application's configuration (file), so it's a good example for a more complex registration scenario.
+
+The associated extension is `ExtensionForBoundedContextAttribute` from the `Extensions.Specialized` package.
 
 
 ## PERFORMANCE CONSIDERATIONS
@@ -237,18 +261,18 @@ To improve ARCA's performance:
 
 ## PACKAGE DESCRIPTIONS
 
-* Automated.Arca.Abstractions.Core - Core abstractions. Contains `IProcessable`, so it's usually necessary. Use to create your own attributes and extensions.
-* Automated.Arca.Abstractions.DependencyInjection - Dependency injection abstractions.
-* Automated.Arca.Abstractions.Specialized - Specialized abstractions. Use for middleware and CQRS. Implement these interfaces in your CQRS implementation.
-* Automated.Arca.Attributes.DependencyInjection - Dependency injection attributes to apply on classes to register / configure.
-* Automated.Arca.Attributes.Specialized - Specialized attributes to apply on classes to register / configure. Use for middleware and CQRS.
-* Automated.Arca.Extensions.DependencyInjection - Dependency injection extensions for the dependency injection attributes.
-* Automated.Arca.Extensions.Specialized - Specialized extensions for the specialized attributes. Use for middleware and CQRS.
-* Automated.Arca.Implementations.ForMicrosoft - Implementations for Microsoft's dependency injection.
-* Automated.Arca.Libraries - Libraries for other packages.
-* Automated.Arca.Manager - The ARCA manager. Use during the startup of an application.
+* `Automated.Arca.Abstractions.Core` - Core abstractions. Contains `IProcessable`. Use it to create your own attributes and extensions. It's usually necessary.
+* `Automated.Arca.Abstractions.DependencyInjection` - Dependency injection abstractions.
+* `Automated.Arca.Abstractions.Specialized` - Specialized abstractions. Use for middleware and CQRS. Implement these interfaces in your CQRS implementation.
+* `Automated.Arca.Attributes.DependencyInjection` - Dependency injection attributes to apply on classes to register / configure.
+* `Automated.Arca.Attributes.Specialized` - Specialized attributes to apply on classes to register / configure. Use for middleware and CQRS.
+* `Automated.Arca.Extensions.DependencyInjection` - Dependency injection extensions for the dependency injection attributes.
+* `Automated.Arca.Extensions.Specialized` - Specialized extensions for the specialized attributes. Use for middleware and CQRS.
+* `Automated.Arca.Implementations.ForMicrosoft` - Implementations for Microsoft's dependency injection.
+* `Automated.Arca.Libraries` - Libraries for other packages.
+* `Automated.Arca.Manager` - The ARCA manager. Use during the startup of an application.
 
-The "ForMicrosoft" packages contain extension dependencies which are meant to be used in applications that use the Microsoft dependency injection container.
+The "ForMicrosoft" packages contain dependencies which are meant to be used in applications that use the Microsoft dependency injection container.
 
 
 ## EXAMPLES
