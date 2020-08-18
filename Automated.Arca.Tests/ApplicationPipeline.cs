@@ -81,7 +81,7 @@ namespace Automated.Arca.Tests
 		public ApplicationPipeline RegisterFirst()
 		{
 			Manager
-				.AddInstantiationRegistry( Services, InstantiatePerContainerInsteadOfScope, true )
+				.AddInstantiationRegistries( Services, InstantiatePerContainerInsteadOfScope, true )
 				.Register();
 
 			return this;

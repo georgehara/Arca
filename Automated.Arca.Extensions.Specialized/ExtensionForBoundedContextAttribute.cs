@@ -1,6 +1,6 @@
 ﻿using System;
 using Automated.Arca.Abstractions.Core;
-using Automated.Arca.Abstractions.DependencyInjection;
+using Automated.Arca.Abstractions.Specialized;
 using Automated.Arca.Attributes.Specialized;
 
 namespace Automated.Arca.Extensions.Specialized
@@ -20,7 +20,7 @@ namespace Automated.Arca.Extensions.Specialized
 			var retryCount = attributeTyped.RetryCount;
 			var retryDelaySeconds = attributeTyped.RetryDelaySeconds;
 
-			Registry( context ).AddDatabaseContext( typeWithAttribute, connectionString, migrationsHistoryTable,
+			SpecializedRegistry( context ).AddDatabaseContext( typeWithAttribute, connectionString, migrationsHistoryTable,
 				migrationsHistoryTableSchema, retryCount, retryDelaySeconds );
 		}
 

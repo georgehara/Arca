@@ -19,11 +19,5 @@ namespace Automated.Arca.Abstractions.DependencyInjection
 		void AddInstancePerContainer<T>( T instance ) where T : notnull;
 
 		void AddGlobalInstanceProvider();
-
-		void AddExternalService( Type serviceInterfaceType, Type serviceImplementationType, string baseAddress, int retryCount,
-			int retryDelayMilliseconds, int circuitBreakerEventCount, int circuitBreakerDurationSeconds );
-		void AddHostedService( Type hostedServiceType );
-		void AddDatabaseContext( Type dbContextType, string connectionString, string migrationsHistoryTable,
-			string migrationsHistoryTableSchema, int retryCount, int retryDelaySeconds );
 	}
 }

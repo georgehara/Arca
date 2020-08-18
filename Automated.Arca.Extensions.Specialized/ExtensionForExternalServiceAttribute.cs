@@ -1,6 +1,6 @@
 ﻿using System;
 using Automated.Arca.Abstractions.Core;
-using Automated.Arca.Abstractions.DependencyInjection;
+using Automated.Arca.Abstractions.Specialized;
 using Automated.Arca.Attributes.Specialized;
 
 namespace Automated.Arca.Extensions.Specialized
@@ -21,7 +21,7 @@ namespace Automated.Arca.Extensions.Specialized
 			var circuitBreakerEventCount = attributeTyped.CircuitBreakerEventCount;
 			var circuitBreakerDurationSeconds = attributeTyped.CircuitBreakerDurationSeconds;
 
-			Registry( context ).AddExternalService( interfaceType, typeWithAttribute,
+			SpecializedRegistry( context ).AddExternalService( interfaceType, typeWithAttribute,
 				baseAddress, retryCount, retryDelayMilliseconds, circuitBreakerEventCount, circuitBreakerDurationSeconds );
 		}
 

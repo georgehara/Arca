@@ -328,7 +328,7 @@ namespace FooCorp
 			// ...
 
 			Manager
-				.AddInstantiationRegistry( services, false, true )
+				.AddInstantiationRegistries( services, false, true )
 				.Register();
 		}
 
@@ -393,7 +393,7 @@ namespace Automated.Arca.Tests.Dummies
 Here is a sample output:
 
 ```
-Created instance of 'CollectorLogger' at 2020-08-18T00:14:34
+Created instance of 'CollectorLogger' at 2020-08-19T01:53:54
 Using the assembly name prefix list: 'Automated.Arca.'
 Assembly names to exclude: 
 Excluded types: 
@@ -407,7 +407,7 @@ Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Libraries' executed i
 Cached assembly 'Automated.Arca.Libraries'
 Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.Specialized' executed in 21 ms.
 Cached assembly 'Automated.Arca.Attributes.Specialized'
-Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.DependencyInjection' executed in 1 ms.
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.DependencyInjection' executed in 22 ms.
 Cached assembly 'Automated.Arca.Attributes.DependencyInjection'
 Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Extensions.DependencyInjection' executed in 0 ms.
 Cached assembly 'Automated.Arca.Extensions.DependencyInjection'
@@ -415,7 +415,7 @@ Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Abstractions.Dependen
 Cached assembly 'Automated.Arca.Abstractions.DependencyInjection'
 Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Extensions.Specialized' executed in 0 ms.
 Cached assembly 'Automated.Arca.Extensions.Specialized'
-Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Abstractions.Specialized' executed in 1 ms.
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Abstractions.Specialized' executed in 0 ms.
 Cached assembly 'Automated.Arca.Abstractions.Specialized'
 Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Implementations.ForMicrosoft' executed in 0 ms.
 Cached assembly 'Automated.Arca.Implementations.ForMicrosoft'
@@ -445,10 +445,10 @@ Cached extension 'ExtensionForMessageBusSubscribeForExchangeCommandQueueTargetAt
 Cached extension 'ExtensionForMessageBusSubscribeForExchangePublicationQueueBetweenAttribute' for attribute 'MessageBusSubscribeForExchangePublicationQueueBetweenAttribute'
 Cached extension 'ExtensionForOutboxAttribute' for attribute 'OutboxAttribute'
 Cached extension 'ExtensionForOutboxProcessorAttribute' for attribute 'OutboxProcessorAttribute'
-Method 'CacheReferencedAssembliesAndTypesAndExtensions' for assembly 'Automated.Arca.Demo.WebApi' executed in 36 ms.
+Method 'CacheReferencedAssembliesAndTypesAndExtensions' for assembly 'Automated.Arca.Demo.WebApi' executed in 55 ms.
 Registered class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Registered class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
-Method 'Register' executed in 2 ms. Registered 2 classes out of 122 cached types.
+Method 'Register' executed in 2 ms. Registered 2 classes out of 125 cached types.
 Configured class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Configured class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
 Method 'Configure' executed in 1 ms.

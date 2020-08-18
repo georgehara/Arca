@@ -1,17 +1,17 @@
 ﻿using Automated.Arca.Implementations.ForMicrosoft;
 using Automated.Arca.Tests.Dummies;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Automated.Arca.Tests
 {
 	public class InstantiationRegistryTests
 	{
-		private readonly InstantiationRegistry Registry;
+		private readonly SpecializedInstantiationRegistry Registry;
 
 		public InstantiationRegistryTests()
 		{
-			Registry = new InstantiationRegistry( new Microsoft.Extensions.DependencyInjection.ServiceCollection(), false,
-				true );
+			Registry = new SpecializedInstantiationRegistry( new ServiceCollection() );
 		}
 
 		[Fact]

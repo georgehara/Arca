@@ -1,13 +1,11 @@
 ﻿using System;
 using Automated.Arca.Abstractions.Core;
-using Automated.Arca.Abstractions.DependencyInjection;
 using Automated.Arca.Abstractions.Specialized;
 using Automated.Arca.Attributes.Specialized;
 
 namespace Automated.Arca.Extensions.Specialized
 {
-	public class ExtensionForMessageBusSubscribeForExchangeCommandQueueTargetAttribute :
-		ExtensionForProcessableAttribute
+	public class ExtensionForMessageBusSubscribeForExchangeCommandQueueTargetAttribute : ExtensionForProcessableAttribute
 	{
 		public override Type AttributeType => typeof( MessageBusSubscribeForExchangeCommandQueueTargetAttribute );
 

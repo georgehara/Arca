@@ -22,6 +22,7 @@ Specialized abstractions. Use for middleware and CQRS. Implement these interface
 
 	<ItemGroup>
 		<ProjectReference Include="..\Automated.Arca.Abstractions.Core\Automated.Arca.Abstractions.Core.csproj" />
+		<ProjectReference Include="..\Automated.Arca.Abstractions.DependencyInjection\Automated.Arca.Abstractions.DependencyInjection.csproj" />
 	</ItemGroup>
 
 </Project>

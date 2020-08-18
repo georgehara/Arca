@@ -21,7 +21,6 @@ Specialized extensions for the specialized attributes. Use for middleware and CQ
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Automated.Arca.Abstractions.DependencyInjection\Automated.Arca.Abstractions.DependencyInjection.csproj" />
 		<ProjectReference Include="..\Automated.Arca.Abstractions.Specialized\Automated.Arca.Abstractions.Specialized.csproj" />
 		<ProjectReference Include="..\Automated.Arca.Abstractions.Core\Automated.Arca.Abstractions.Core.csproj" />
 		<ProjectReference Include="..\Automated.Arca.Attributes.Specialized\Automated.Arca.Attributes.Specialized.csproj" />

@@ -42,7 +42,7 @@ namespace Automated.Arca.Demo.WebApi
 			services.AddSingleton( typeof( CollectorLogger ), ManagerLogger );
 
 			Manager
-				.AddInstantiationRegistry( services, false, true )
+				.AddInstantiationRegistries( services, false, true )
 				.Register();
 		}
 
