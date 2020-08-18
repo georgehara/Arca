@@ -227,7 +227,7 @@ To create your own attribute, you only have to:
 * Create your attribute as a class which derives from `ProcessableAttribute`.
 * Create the extension which handles your attribute, as a class which derives from `ExtensionForProcessableAttribute` (which already contains a lot of reusable behavior). The extension must override `AttributeType`, `Register` and `Configure`.
 
-It doesn't matter in which assemblies you put these two classes, but the assembly which contains the extension will have to be processed by the manager, so you have to add it to the manager with one of the `AddXXX` methods, unless it's not already included in the scanned assemblies.
+It doesn't matter in which assemblies you put these two classes, but the assembly which contains the extension will have to be processed by the manager, so you have to add it to the manager with one of the `AddXXX` manager methods, unless it's not already included in the scanned assemblies.
 
 Apply your attribute on the classes that you want to be registered and configured by the extension (that handles your attribute).
 
