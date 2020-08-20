@@ -195,10 +195,19 @@ namespace Automated.Arca.Tests
 		}
 
 		[Fact]
-		public void Mocking_Succeeds()
+		public void AutomatedMocking_Succeeds()
+		{
+			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, false,
+				new AutomatedMockingProvider(), Assembly.GetExecutingAssembly() );
+
+			VerifyDummies( applicationPipeline, false );
+		}
+
+		[Fact]
+		public void AutomatedAndManualMocking_Succeeds()
 		{
 			var applicationPipeline = new ApplicationPipeline( x => { }, true, false, null, null, false, false,
-				AutomatedMockingProvider, Assembly.GetExecutingAssembly(),
+				new AutomatedMockingProvider(), Assembly.GetExecutingAssembly(),
 				x => { },
 				x => x
 					.RegisterFirst()
@@ -218,17 +227,6 @@ namespace Automated.Arca.Tests
 			var value = instance.Get( "Some key" );
 
 			Assert.Equal( "Substituted value", value );
-		}
-
-		private object AutomatedMockingProvider( Type type )
-		{
-			if( type == typeof( ISomeComponentWithInterfaceSpecifiedInAttribute ) ||
-				type == typeof( ISomeComponentWithInterfaceSpecifiedInAttribute ) )
-			{
-				return Substitute.For( new Type[] { type, typeof( ISomeConfigurable ) }, new object[ 0 ] );
-			}
-
-			return Substitute.For( new Type[] { type }, new object[ 0 ] );
 		}
 
 		private void VerifyDummies( ApplicationPipeline applicationPipeline, bool includeDummyAssembly )

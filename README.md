@@ -273,10 +273,12 @@ Automated mocking support for unit testing is supported for all the classes regi
 * Only interfaces are supported.
 * Types which implement the `IDontAutoMock` interface are not mocked because they are essential for the application. Some types which already implement this interface are: `IInstanceProvider`, `IGlobalInstanceProvider`.
 * The types which are registered as extension dependencies for the manager are not mocked because they are essential for the manager.
-* Only the `ToInstantiatePerXXX` methods are supported, while the `AddInstancePerXXX` methods are not because they already specify an instance, so its presumed that the caller knows to create a mock if it's required.
 
-When the instantiation registries are added to the manager, an automated mocking provider can be specified. A simple version for NSubstitute can look like this:
-`static object automatedMockingProvider( Type t ) => Substitute.For( new Type[] { t }, new object[ 0 ] );`
+When the instantiation registries are added to the manager, an automated mocking provider can be specified as an implementation of the `AutomatedMockingProvider` abstract class from the `Abstractions.DependencyInjection` package. The `MustAvoidMocking` method already handles the cases above. A simple version for NSubstitute can simply do this in the `GetMock` method: `return Substitute.For( new Type[] { type }, new object[ 0 ] );`
+
+The `DependencyInjectionInstantiationRegistry` instantiation registry from the `Implementations.ForMicrosoft` supports mocking only in the `ToInstantiatePerXXX` methods; the `AddInstancePerXXX` methods don't support it because they already receive an implementation, so its presumed that the caller knows to send a mock if it's required.
+
+See the `AutomatedAndManualMocking_Succeeds` test for details.
 
 
 ### MANUAL MOCKING
@@ -286,6 +288,8 @@ Use manual mocking in unit tests during which you need to use a few specific moc
 Manual mocking can be activated with the `ManagerExtensions.ActivateManualMocking` method from the `Implementations.ForMicrosoft` package. This method receives a delegate parameter in which you can override the registered classes with manual mocks, by manually re-registering the mocked classes with the mock implementation (see the `overrideExisting` parameter of the `ToInstantiatePerXXX` methods). Once manual mocking starts, automated mocking stops.
 
 Microsoft's dependency injection container stops registering components once the instantiation provider (`IServiceProvider`) is built, and the configuration phase of the manager starts, without throwing an exception, so it's pointless to register new types after the `Configure` manager method is called.
+
+See the `AutomatedAndManualMocking_Succeeds` test for details.
 
 
 ## PACKAGE DESCRIPTIONS
@@ -357,7 +361,7 @@ namespace FooCorp
 			// ...
 
 			Manager
-				.AddInstantiationRegistries( services, false, true )
+				.AddInstantiationRegistries( services, false, false, null, true )
 				.Register();
 		}
 
@@ -422,7 +426,7 @@ namespace Automated.Arca.Tests.Dummies
 Here is a sample output:
 
 ```
-Created instance of 'CollectorLogger' at 2020-08-19T01:53:54
+Created instance of 'CollectorLogger' at 2020-08-21T01:05:59
 Using the assembly name prefix list: 'Automated.Arca.'
 Assembly names to exclude: 
 Excluded types: 
@@ -474,17 +478,17 @@ Cached extension 'ExtensionForMessageBusSubscribeForExchangeCommandQueueTargetAt
 Cached extension 'ExtensionForMessageBusSubscribeForExchangePublicationQueueBetweenAttribute' for attribute 'MessageBusSubscribeForExchangePublicationQueueBetweenAttribute'
 Cached extension 'ExtensionForOutboxAttribute' for attribute 'OutboxAttribute'
 Cached extension 'ExtensionForOutboxProcessorAttribute' for attribute 'OutboxProcessorAttribute'
-Method 'CacheReferencedAssembliesAndTypesAndExtensions' for assembly 'Automated.Arca.Demo.WebApi' executed in 55 ms.
+Method 'CacheReferencedAssembliesAndTypesAndExtensions' for assembly 'Automated.Arca.Demo.WebApi' executed in 53 ms.
 Registered class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Registered class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
-Method 'Register' executed in 2 ms. Registered 2 classes out of 126 cached types.
+Method 'Register' executed in 2 ms. Registered 2 classes out of 130 cached types.
 Configured class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Configured class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
 Method 'Configure' executed in 1 ms.
 Invoked middleware 'LoggingMiddleware':
 	* URL: https://localhost:53712/logs
 	* Endpoint: Automated.Arca.Demo.WebApi.Controllers.LogsController.Get (Automated.Arca.Demo.WebApi)
-	* Request identifier: 8000000f-0001-ff00-583f-29710c7967de
+	* Request identifier: 80000010-0001-ff00-b63f-84710c7967bb
 ```
 
 

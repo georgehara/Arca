@@ -16,8 +16,8 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 		protected bool ActiveManualMocking { get; private set; }
 
 		public DependencyInjectionInstantiationRegistry( IManager manager, IServiceCollection services,
-			bool allowMultipleImplementationsPerBaseType, bool instantiatePerContainerInsteadOfScope, AutomatedMockingProvider? automatedMockingProvider,
-			bool addGlobalInstanceProvider )
+			bool allowMultipleImplementationsPerBaseType, bool instantiatePerContainerInsteadOfScope,
+			AutomatedMockingProvider? automatedMockingProvider, bool addGlobalInstanceProvider )
 		{
 			Manager = manager;
 			Services = services;
@@ -38,7 +38,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 		{
 			PrepareOverrideExisting( type, overrideExisting );
 
-			if( MustNotMock( type ) )
+			if( MustAvoidMocking( type ) )
 				Services.AddSingleton( type );
 			else
 				Services.AddSingleton( type, sp => GetMock( type ) );
@@ -48,7 +48,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 		{
 			PrepareOverrideExisting( baseType, overrideExisting );
 
-			if( MustNotMock( baseType ) )
+			if( MustAvoidMocking( baseType ) )
 				Services.AddSingleton( baseType, implementationType );
 			else
 				Services.AddSingleton( baseType, sp => GetMock( baseType ) );
@@ -59,7 +59,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 		{
 			PrepareOverrideExisting( baseType, overrideExisting );
 
-			if( MustNotMock( baseType ) )
+			if( MustAvoidMocking( baseType ) )
 				Services.AddSingleton( baseType, implementationFactory );
 			else
 				Services.AddSingleton( baseType, sp => GetMock( baseType ) );
@@ -75,7 +75,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			{
 				PrepareOverrideExisting( type, overrideExisting );
 
-				if( MustNotMock( type ) )
+				if( MustAvoidMocking( type ) )
 					Services.AddScoped( type );
 				else
 					Services.AddScoped( type, sp => GetMock( type ) );
@@ -92,7 +92,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			{
 				PrepareOverrideExisting( baseType, overrideExisting );
 
-				if( MustNotMock( baseType ) )
+				if( MustAvoidMocking( baseType ) )
 					Services.AddScoped( baseType, implementationType );
 				else
 					Services.AddScoped( baseType, sp => GetMock( baseType ) );
@@ -110,7 +110,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			{
 				PrepareOverrideExisting( baseType, overrideExisting );
 
-				if( MustNotMock( baseType ) )
+				if( MustAvoidMocking( baseType ) )
 					Services.AddScoped( baseType, implementationFactory );
 				else
 					Services.AddScoped( baseType, sp => GetMock( baseType ) );
@@ -121,7 +121,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 		{
 			PrepareOverrideExisting( type, overrideExisting );
 
-			if( MustNotMock( type ) )
+			if( MustAvoidMocking( type ) )
 				Services.AddTransient( type );
 			else
 				Services.AddTransient( type, sp => GetMock( type ) );
@@ -131,7 +131,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 		{
 			PrepareOverrideExisting( baseType, overrideExisting );
 
-			if( MustNotMock( baseType ) )
+			if( MustAvoidMocking( baseType ) )
 				Services.AddTransient( baseType, implementationType );
 			else
 				Services.AddTransient( baseType, sp => GetMock( baseType ) );
@@ -142,7 +142,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 		{
 			PrepareOverrideExisting( baseType, overrideExisting );
 
-			if( MustNotMock( baseType ) )
+			if( MustAvoidMocking( baseType ) )
 				Services.AddTransient( baseType, implementationFactory );
 			else
 				Services.AddTransient( baseType, sp => GetMock( baseType ) );
@@ -186,17 +186,17 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			}
 		}
 
-		private bool MustNotMock( Type type )
+		private bool MustAvoidMocking( Type type )
 		{
-			// Some types must not be mocked because they are (normally) essential for the application.
-
-			return AutomatedMockingProvider == null || ActiveManualMocking || !type.IsInterface ||
-				typeof( IDontAutoMock ).IsAssignableFrom( type ) || Manager.ContainsExtensionDependency( type );
+			return
+				AutomatedMockingProvider == null ||
+				ActiveManualMocking ||
+				AutomatedMockingProvider.MustAvoidMocking( Manager, type );
 		}
 
 		private object GetMock( Type type )
 		{
-			return AutomatedMockingProvider!( type );
+			return AutomatedMockingProvider!.GetMock( Manager, type );
 		}
 	}
 }
