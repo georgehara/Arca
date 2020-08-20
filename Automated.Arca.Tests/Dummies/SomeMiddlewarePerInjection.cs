@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Automated.Arca.Tests
 {
-	[ChainMiddlewarePerScopeAttribute]
+	[ChainMiddlewarePerInjectionAttribute]
 	public class SomeMiddlewarePerInjection : IMiddleware, IProcessable
 	{
 		private readonly ILogger<SomeMiddlewarePerInjection> Logger;

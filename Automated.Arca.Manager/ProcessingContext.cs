@@ -12,6 +12,11 @@ namespace Automated.Arca.Manager
 			ExtensionDependencyProvider = extensionDependencyProvider;
 		}
 
+		public bool ContainsExtensionDependency( Type type )
+		{
+			return ExtensionDependencyProvider.ContainsExtensionDependency( type );
+		}
+
 		public object GetExtensionDependency( Type type )
 		{
 			return ExtensionDependencyProvider.GetExtensionDependency( type );

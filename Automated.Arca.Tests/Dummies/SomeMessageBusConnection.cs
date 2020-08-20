@@ -33,7 +33,8 @@ namespace Automated.Arca.Tests.Dummies
 					var logger = sp.GetRequiredService<ILogger<SomeMessageBusConnection>>();
 
 					return new SomeMessageBusConnection( logger, "Some connection string" );
-				} );
+				},
+				false );
 		}
 	}
 }

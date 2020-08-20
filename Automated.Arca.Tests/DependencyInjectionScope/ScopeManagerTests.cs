@@ -14,7 +14,7 @@ namespace Automated.Arca.Tests
 		public void InstantiatePerContainer_GetSameInstanceForGlobalScope()
 		{
 			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, false,
-				Assembly.GetExecutingAssembly() );
+				null, Assembly.GetExecutingAssembly() );
 
 			var instance1 = applicationPipeline.GetRequiredInstance<SomeInstantiatePerContainerComponent>();
 			var instance2 = applicationPipeline.GetRequiredInstance<SomeInstantiatePerContainerComponent>();
@@ -26,7 +26,7 @@ namespace Automated.Arca.Tests
 		public void InstantiatePerScope_GetSameInstanceForGlobalScope()
 		{
 			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, true,
-				Assembly.GetExecutingAssembly() );
+				null, Assembly.GetExecutingAssembly() );
 
 			var instance1 = applicationPipeline.GetRequiredInstance<ISomeTenantRequestProcessor>();
 			var instance2 = applicationPipeline.GetRequiredInstance<ISomeTenantRequestProcessor>();
@@ -42,7 +42,7 @@ namespace Automated.Arca.Tests
 		public void InstantiatePerScope_GetSameInstanceForSameScopeName()
 		{
 			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, false,
-				Assembly.GetExecutingAssembly() );
+				null, Assembly.GetExecutingAssembly() );
 
 			var scopedProvider1 = applicationPipeline.GetOrAddScopedProvider( ScopeName1 );
 			var scopedProvider2 = applicationPipeline.GetOrAddScopedProvider( ScopeName1 );
@@ -72,7 +72,7 @@ namespace Automated.Arca.Tests
 			// message handling method can then be called on the tenant-scoped processor.
 
 			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, false,
-				Assembly.GetExecutingAssembly() );
+				null, Assembly.GetExecutingAssembly() );
 
 			var scopedProvider1 = applicationPipeline.GetOrAddScopedProvider( ScopeName1 );
 			var scopedProvider2 = applicationPipeline.GetOrAddScopedProvider( ScopeName2 );

@@ -48,7 +48,7 @@ namespace Automated.Arca.Tests
 			ApplicationPipeline applicationPipeline;
 
 			applicationPipeline = new ApplicationPipeline( a, false, processOnlyTypesDerivedFromIProcessable, null, null,
-				simulateRegistrationAndConfiguration, false, Assembly.GetExecutingAssembly(),
+				simulateRegistrationAndConfiguration, false, null, Assembly.GetExecutingAssembly(),
 				x => x.AddAssembliesLoadedInProcess(),
 				x => x.RegisterFirst(),
 				x => x.ConfigureFirst() );

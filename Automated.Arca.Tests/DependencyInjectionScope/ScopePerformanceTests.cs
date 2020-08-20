@@ -11,7 +11,7 @@ namespace Automated.Arca.Tests
 		public void CreateScope()
 		{
 			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, false,
-				Assembly.GetExecutingAssembly() );
+				null, Assembly.GetExecutingAssembly() );
 
 			Stopwatch sw = new Stopwatch();
 			sw.Start();

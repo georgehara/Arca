@@ -5,18 +5,23 @@ namespace Automated.Arca.Abstractions.DependencyInjection
 {
 	public interface IInstantiationRegistry : IExtensionDependency
 	{
-		void ToInstantiatePerContainer( Type type );
-		void ToInstantiatePerContainer( Type baseType, Type implementationType );
-		void ToInstantiatePerContainer( Type baseType, Func<IServiceProvider, object> implementationFactory );
-		void ToInstantiatePerScope( Type type );
-		void ToInstantiatePerScope( Type baseType, Type implementationType );
-		void ToInstantiatePerScope( Type baseType, Func<IServiceProvider, object> implementationFactory );
-		void ToInstantiatePerInjection( Type type );
-		void ToInstantiatePerInjection( Type baseType, Type implementationType );
-		void ToInstantiatePerInjection( Type baseType, Func<IServiceProvider, object> implementationFactory );
+		void ActivateManualMocking();
 
-		void AddInstancePerContainer( Type baseType, object implementationInstance );
-		void AddInstancePerContainer<T>( T instance ) where T : notnull;
+		void ToInstantiatePerContainer( Type type, bool overrideExisting );
+		void ToInstantiatePerContainer( Type baseType, Type implementationType, bool overrideExisting );
+		void ToInstantiatePerContainer( Type baseType, Func<IServiceProvider, object> implementationFactory,
+			bool overrideExisting );
+		void ToInstantiatePerScope( Type type, bool overrideExisting );
+		void ToInstantiatePerScope( Type baseType, Type implementationType, bool overrideExisting );
+		void ToInstantiatePerScope( Type baseType, Func<IServiceProvider, object> implementationFactory,
+			bool overrideExisting );
+		void ToInstantiatePerInjection( Type type, bool overrideExisting );
+		void ToInstantiatePerInjection( Type baseType, Type implementationType, bool overrideExisting );
+		void ToInstantiatePerInjection( Type baseType, Func<IServiceProvider, object> implementationFactory,
+			bool overrideExisting );
+
+		void AddInstancePerContainer( Type baseType, object implementationInstance, bool overrideExisting );
+		void AddInstancePerContainer<T>( T instance, bool overrideExisting ) where T : notnull;
 
 		void AddGlobalInstanceProvider();
 	}

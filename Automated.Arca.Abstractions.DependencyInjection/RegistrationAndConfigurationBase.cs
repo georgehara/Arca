@@ -65,34 +65,55 @@ namespace Automated.Arca.Abstractions.DependencyInjection
 			return GetExtensionDependency<IInstantiationRegistry>( context );
 		}
 
-		protected void ToInstantiatePerContainer( IRegistrationContext context, Type type )
+		protected void ToInstantiatePerContainer( IRegistrationContext context, Type type, bool overrideExisting = false )
 		{
-			Registry( context ).ToInstantiatePerContainer( type );
+			Registry( context ).ToInstantiatePerContainer( type, overrideExisting );
 		}
 
-		protected void ToInstantiatePerContainer( IRegistrationContext context, Type baseType, Type implementationType )
+		protected void ToInstantiatePerContainer( IRegistrationContext context, Type baseType, Type implementationType,
+			bool overrideExisting = false )
 		{
-			Registry( context ).ToInstantiatePerContainer( baseType, implementationType );
+			Registry( context ).ToInstantiatePerContainer( baseType, implementationType, overrideExisting );
 		}
 
-		protected void ToInstantiatePerScope( IRegistrationContext context, Type type )
+		protected void ToInstantiatePerContainer( IRegistrationContext context, Type baseType,
+			Func<IServiceProvider, object> implementationFactory, bool overrideExisting = false )
 		{
-			Registry( context ).ToInstantiatePerScope( type );
+			Registry( context ).ToInstantiatePerContainer( baseType, implementationFactory, overrideExisting );
 		}
 
-		protected void ToInstantiatePerScope( IRegistrationContext context, Type baseType, Type implementationType )
+		protected void ToInstantiatePerScope( IRegistrationContext context, Type type, bool overrideExisting = false )
 		{
-			Registry( context ).ToInstantiatePerScope( baseType, implementationType );
+			Registry( context ).ToInstantiatePerScope( type, overrideExisting );
 		}
 
-		protected void ToInstantiatePerInjection( IRegistrationContext context, Type type )
+		protected void ToInstantiatePerScope( IRegistrationContext context, Type baseType, Type implementationType,
+			bool overrideExisting = false )
 		{
-			Registry( context ).ToInstantiatePerInjection( type );
+			Registry( context ).ToInstantiatePerScope( baseType, implementationType, overrideExisting );
 		}
 
-		protected void ToInstantiatePerInjection( IRegistrationContext context, Type baseType, Type implementationType )
+		protected void ToInstantiatePerScope( IRegistrationContext context, Type baseType,
+			Func<IServiceProvider, object> implementationFactory, bool overrideExisting = false )
 		{
-			Registry( context ).ToInstantiatePerInjection( baseType, implementationType );
+			Registry( context ).ToInstantiatePerScope( baseType, implementationFactory, overrideExisting );
+		}
+
+		protected void ToInstantiatePerInjection( IRegistrationContext context, Type type, bool overrideExisting = false )
+		{
+			Registry( context ).ToInstantiatePerInjection( type, overrideExisting );
+		}
+
+		protected void ToInstantiatePerInjection( IRegistrationContext context, Type baseType, Type implementationType,
+			bool overrideExisting = false )
+		{
+			Registry( context ).ToInstantiatePerInjection( baseType, implementationType, overrideExisting );
+		}
+
+		protected void ToInstantiatePerInjection( IRegistrationContext context, Type baseType,
+			Func<IServiceProvider, object> implementationFactory, bool overrideExisting = false )
+		{
+			Registry( context ).ToInstantiatePerInjection( baseType, implementationFactory, overrideExisting );
 		}
 
 		protected IGlobalInstanceProvider Provider( IConfigurationContext context )

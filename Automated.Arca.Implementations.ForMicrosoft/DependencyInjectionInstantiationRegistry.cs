@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using Automated.Arca.Abstractions.Core;
 using Automated.Arca.Abstractions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -6,83 +8,157 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 {
 	public class DependencyInjectionInstantiationRegistry : IInstantiationRegistry
 	{
+		protected IManager Manager { get; private set; }
 		protected IServiceCollection Services { get; private set; }
+		protected bool AllowMultipleImplementationsPerBaseType { get; private set; }
 		protected bool InstantiatePerContainerInsteadOfScope { get; private set; }
+		protected AutomatedMockingProvider? AutomatedMockingProvider { get; private set; }
+		protected bool ActiveManualMocking { get; private set; }
 
-		public DependencyInjectionInstantiationRegistry( IServiceCollection services, bool instantiatePerContainerInsteadOfScope,
+		public DependencyInjectionInstantiationRegistry( IManager manager, IServiceCollection services,
+			bool allowMultipleImplementationsPerBaseType, bool instantiatePerContainerInsteadOfScope, AutomatedMockingProvider? automatedMockingProvider,
 			bool addGlobalInstanceProvider )
 		{
+			Manager = manager;
 			Services = services;
-
+			AllowMultipleImplementationsPerBaseType = allowMultipleImplementationsPerBaseType;
 			InstantiatePerContainerInsteadOfScope = instantiatePerContainerInsteadOfScope;
+			AutomatedMockingProvider = automatedMockingProvider;
 
 			if( addGlobalInstanceProvider )
 				AddGlobalInstanceProvider();
 		}
 
-		public void ToInstantiatePerContainer( Type type )
+		public void ActivateManualMocking()
 		{
-			Services.AddSingleton( type );
+			ActiveManualMocking = true;
 		}
 
-		public void ToInstantiatePerContainer( Type baseType, Type implementationType )
+		public void ToInstantiatePerContainer( Type type, bool overrideExisting = false )
 		{
-			Services.AddSingleton( baseType, implementationType );
+			PrepareOverrideExisting( type, overrideExisting );
+
+			if( MustNotMock( type ) )
+				Services.AddSingleton( type );
+			else
+				Services.AddSingleton( type, sp => GetMock( type ) );
 		}
 
-		public void ToInstantiatePerContainer( Type baseType, Func<IServiceProvider, object> implementationFactory )
+		public void ToInstantiatePerContainer( Type baseType, Type implementationType, bool overrideExisting = false )
 		{
-			Services.AddSingleton( baseType, implementationFactory );
+			PrepareOverrideExisting( baseType, overrideExisting );
+
+			if( MustNotMock( baseType ) )
+				Services.AddSingleton( baseType, implementationType );
+			else
+				Services.AddSingleton( baseType, sp => GetMock( baseType ) );
 		}
 
-		public void ToInstantiatePerScope( Type type )
+		public void ToInstantiatePerContainer( Type baseType, Func<IServiceProvider, object> implementationFactory,
+			bool overrideExisting = false )
+		{
+			PrepareOverrideExisting( baseType, overrideExisting );
+
+			if( MustNotMock( baseType ) )
+				Services.AddSingleton( baseType, implementationFactory );
+			else
+				Services.AddSingleton( baseType, sp => GetMock( baseType ) );
+		}
+
+		public void ToInstantiatePerScope( Type type, bool overrideExisting = false )
 		{
 			if( InstantiatePerContainerInsteadOfScope )
+			{
 				ToInstantiatePerContainer( type );
+			}
 			else
-				Services.AddScoped( type );
+			{
+				PrepareOverrideExisting( type, overrideExisting );
+
+				if( MustNotMock( type ) )
+					Services.AddScoped( type );
+				else
+					Services.AddScoped( type, sp => GetMock( type ) );
+			}
 		}
 
-		public void ToInstantiatePerScope( Type baseType, Type implementationType )
+		public void ToInstantiatePerScope( Type baseType, Type implementationType, bool overrideExisting = false )
 		{
 			if( InstantiatePerContainerInsteadOfScope )
+			{
 				ToInstantiatePerContainer( baseType, implementationType );
+			}
 			else
-				Services.AddScoped( baseType, implementationType );
+			{
+				PrepareOverrideExisting( baseType, overrideExisting );
+
+				if( MustNotMock( baseType ) )
+					Services.AddScoped( baseType, implementationType );
+				else
+					Services.AddScoped( baseType, sp => GetMock( baseType ) );
+			}
 		}
 
-		public void ToInstantiatePerScope( Type baseType, Func<IServiceProvider, object> implementationFactory )
+		public void ToInstantiatePerScope( Type baseType, Func<IServiceProvider, object> implementationFactory,
+			bool overrideExisting = false )
 		{
 			if( InstantiatePerContainerInsteadOfScope )
+			{
 				ToInstantiatePerContainer( baseType, implementationFactory );
+			}
 			else
-				Services.AddScoped( baseType, implementationFactory );
+			{
+				PrepareOverrideExisting( baseType, overrideExisting );
+
+				if( MustNotMock( baseType ) )
+					Services.AddScoped( baseType, implementationFactory );
+				else
+					Services.AddScoped( baseType, sp => GetMock( baseType ) );
+			}
 		}
 
-		public void ToInstantiatePerInjection( Type type )
+		public void ToInstantiatePerInjection( Type type, bool overrideExisting = false )
 		{
-			Services.AddTransient( type );
+			PrepareOverrideExisting( type, overrideExisting );
+
+			if( MustNotMock( type ) )
+				Services.AddTransient( type );
+			else
+				Services.AddTransient( type, sp => GetMock( type ) );
 		}
 
-		public void ToInstantiatePerInjection( Type baseType, Type implementationType )
+		public void ToInstantiatePerInjection( Type baseType, Type implementationType, bool overrideExisting = false )
 		{
-			Services.AddTransient( baseType, implementationType );
+			PrepareOverrideExisting( baseType, overrideExisting );
+
+			if( MustNotMock( baseType ) )
+				Services.AddTransient( baseType, implementationType );
+			else
+				Services.AddTransient( baseType, sp => GetMock( baseType ) );
 		}
 
-		public void ToInstantiatePerInjection( Type baseType, Func<IServiceProvider, object> implementationFactory )
+		public void ToInstantiatePerInjection( Type baseType, Func<IServiceProvider, object> implementationFactory,
+			bool overrideExisting = false )
 		{
-			Services.AddTransient( baseType, implementationFactory );
+			PrepareOverrideExisting( baseType, overrideExisting );
+
+			if( MustNotMock( baseType ) )
+				Services.AddTransient( baseType, implementationFactory );
+			else
+				Services.AddTransient( baseType, sp => GetMock( baseType ) );
 		}
 
-		public void AddInstancePerContainer( Type baseType, object implementationInstance )
+		public void AddInstancePerContainer( Type baseType, object implementationInstance, bool overrideExisting = false )
 		{
+			PrepareOverrideExisting( baseType, overrideExisting );
+
 			Services.AddSingleton( baseType, implementationInstance );
 		}
 
-		public void AddInstancePerContainer<T>( T instance )
+		public void AddInstancePerContainer<T>( T instance, bool overrideExisting = false )
 			 where T : notnull
 		{
-			AddInstancePerContainer( typeof( T ), instance );
+			AddInstancePerContainer( typeof( T ), instance, overrideExisting );
 		}
 
 		public void AddGlobalInstanceProvider()
@@ -92,6 +168,35 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 
 			ToInstantiatePerContainer( typeof( IInstanceProvider ),
 				serviceProvider => serviceProvider.GetRequiredService<IGlobalInstanceProvider>() );
+		}
+
+		private void PrepareOverrideExisting( Type type, bool overrideExisting )
+		{
+			if( overrideExisting )
+			{
+				var toRemove = Services.FirstOrDefault( d => d.ServiceType == type );
+
+				if( toRemove != null )
+					Services.Remove( toRemove );
+			}
+			else if( !AllowMultipleImplementationsPerBaseType && Services.Any( d => d.ServiceType == type ) )
+			{
+				throw new InvalidOperationException( $"Multiple dependency injection implementation registrations are not" +
+					$" allowed for type '{type.Name}'." );
+			}
+		}
+
+		private bool MustNotMock( Type type )
+		{
+			// Some types must not be mocked because they are (normally) essential for the application.
+
+			return AutomatedMockingProvider == null || ActiveManualMocking || !type.IsInterface ||
+				typeof( IDontAutoMock ).IsAssignableFrom( type ) || Manager.ContainsExtensionDependency( type );
+		}
+
+		private object GetMock( Type type )
+		{
+			return AutomatedMockingProvider!( type );
 		}
 	}
 }

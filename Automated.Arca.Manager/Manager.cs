@@ -127,6 +127,14 @@ namespace Automated.Arca.Manager
 			return AddExtensionDependency( typeof( BaseType ), baseTypeImplementation );
 		}
 
+		public bool ContainsExtensionDependency( Type type )
+		{
+			lock( Lock )
+			{
+				return ExtensionDependencies.ContainsKey( type );
+			}
+		}
+
 		public object GetExtensionDependency( Type type )
 		{
 			lock( Lock )

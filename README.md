@@ -16,6 +16,7 @@
 [Support for middleware](#support-for-middleware)<br/>
 [Creating custom attributes](#creating-custom-attributes)<br/>
 [Performance considerations](#performance-considerations)<br/>
+[Mocking support](#mocking-support)<br/>
 [Package descriptions](#package-descriptions)<br/>
 [Examples](#examples)<br/>
 [Demo](#demo)<br/>
@@ -68,12 +69,12 @@ An attribute must be applied on the class that it marks for registration or conf
 
 A class may have applied on it only one attribute (derived from the `ProcessableAttribute` attribute).
 
-Some attributes allow you to specify an interface with which the (dependency injection) registration has to be made. They also offer you the option to not specify the interface, in which case the registration will be made with the default interface of the class on which the attribute is applied. The default interface of a class is considered to be the interface from which the class derives on the first ancestor level that has an interface; such an interface may be implemented either by the class itself, or by an ancestor class.
+Some attributes allow you to specify an interface with which the (dependency injection) registration has to be made. They also offer you the option to not specify the interface, in which case the registration will be made with the default interface of the class on which the attribute is applied. The default interface of a class is considered to be the interface that which the class implements on the first ancestor level that has an interface; such an interface may be implemented either by the class itself, or by an ancestor class.
 
 
 ## EXTENSIONS
 
-An extension is a class which derives from the `IExtensionForAttribute` interface; the interface may come from (anywhere in) the inheritance tree of the extension class.
+An extension is a class which implements the `IExtensionForAttribute` interface; the interface may come from (anywhere in) the inheritance tree of the extension class.
 
 The extension specifies which attribute it handles, in the `AttributeType` property, and provides methods for the registration and configuration of the class on which the attribute is applied; the attribute can't come from the inheritance tree of the class to process.
 
@@ -110,7 +111,7 @@ Examples of application dependencies which can be added as extension dependencie
 A class which can be marked for registration or configuration must:
 * Be public and concrete (= not abstract).
 * Have applied on it an attribute which derives from `ProcessableAttribute`; the attribute must be applied on the class, it's not enough to be applied on an ancestor of the class.
-* Optionally derive from `IProcessable`; any ancestor of the class may derive from this interface. The manager can be instructed to ignore this interface.
+* Optionally implement the `IProcessable` interface; any ancestor of the class may implement from this interface. The manager can be instructed to ignore this interface.
 
 
 ## PROCESSING WITH COMPLEX INPUT PARAMETERS
@@ -119,9 +120,9 @@ A class which can be marked for registration or configuration must:
 
 If the registration / configuration of a class requires complex input parameters, you can handle it in a registrator / configurator.
 
-A registrator must derive from `IRegistrator`.
+A registrator must implement the `IRegistrator` interface.
 
-A configurator must derive from `IConfigurator`.
+A configurator must implement the `IConfigurator` interface.
 
 The classes which are registered and configured by registrators and configurators should not have applied on them attributes (derived from the `ProcessableAttribute` attribute) because the attributes would trigger a separate processing of the classes.
 
@@ -140,7 +141,7 @@ The ARCA manager must be instantiated with a set of options that can be created 
 
 `ExcludeAssemblyName`: Excludes from processing all assemblies whose names are specified through this method. Each call of this method adds a name to a list.
 
-`UseOnlyClassesDerivedFromIProcessable`: If called, the manager will process only the classes which are derived from the `IProcessable` interface, which significantly speeds up the processing.
+`UseOnlyClassesDerivedFromIProcessable`: If called, the manager will process only the classes which implement the `IProcessable` interface, which significantly speeds up the processing.
 
 `Exclude`: Specifies a type that the manager will not process. This is useful when you want to override the implementation of an interface which is registered in an assembly that you can't modify. By excluding such a type, you can add another implementation, in another assembly.
 
@@ -178,7 +179,7 @@ After you instantiate the manager, at application startup, and you add assemblie
 * Configures the registered classes (based on extensions).
 * Runs the configurators. The configurators can't depend on one another because the manager doesn't know the order in which to run the configurators.
 
-Note: The `Register` and `Configure` manager methods may be called multiple times, but the manager checks the consistency of the state of each type that was loaded (by the manager) with an `AddXXX` manager method. So, for example if you call `AddXXX`, then `Register`, then `AddXXX` again, an exception is thrown because you didn't call `Configure` after `Register`. On top of this, Microsoft's dependency injection container stops registering components once the service provider is built, without throwing an exception, so trying to register new types after `Configure` was called is pointless.
+Note: The `Register` and `Configure` manager methods may be called multiple times, but the manager checks the consistency of the state of each type that was loaded (by the manager) with an `AddXXX` manager method. So, for example if you call `AddXXX`, then `Register`, then `AddXXX` again, an exception is thrown because you didn't call `Configure` after `Register`. Microsoft's dependency injection container stops registering components once the instantiation provider (`IServiceProvider`) is built, and the configuration phase of the manager starts, without throwing an exception, so it's pointless to register new types after the `Configure` manager method is called.
 
 Note: If the order of processing matters, use the `Prioritize` manager option.
 
@@ -256,7 +257,35 @@ To improve ARCA's performance:
 * Use specific assembly name prefixes in order to reduce the number of assemblies that have be loaded and scanned.
 * Do not pass a logger to the manager options.
 * Don't split the classes to process over a large number of tiny assemblies because assembly loading takes a lot of time.
-* Derive the classes to register and configure from the `IProcessable` interface. This works because checking if a class implements an interface is much faster (50 times) than calling `Type.GetCustomAttributes` for each class. By default, the manager ignores this interface because its effect is small in the entire context, in the vast majority of cases.
+* The classes to register and configure should implement the `IProcessable` interface. This works because checking if a class implements an interface is much faster (50 times) than calling `Type.GetCustomAttributes` for each class. By default, the manager ignores this interface because its effect is small in the entire context, in the vast majority of cases.
+
+
+## MOCKING SUPPORT
+
+Mocking support doesn't depend on the testing framework.
+
+
+### AUTOMATED MOCKING
+
+Use automated mocking in unit tests during which you need all the registered classes to be generically mocked.
+
+Automated mocking support for unit testing is supported for all the classes registered by the manager, with some limitations:
+* Only interfaces are supported.
+* Types which implement the `IDontAutoMock` interface are not mocked because they are essential for the application. Some types which already implement this interface are: `IInstanceProvider`, `IGlobalInstanceProvider`.
+* The types which are registered as extension dependencies for the manager are not mocked because they are essential for the manager.
+* Only the `ToInstantiatePerXXX` methods are supported, while the `AddInstancePerXXX` methods are not because they already specify an instance, so its presumed that the caller knows to create a mock if it's required.
+
+When the instantiation registries are added to the manager, an automated mocking provider can be specified. A simple version for NSubstitute can look like this:
+`static object automatedMockingProvider( Type t ) => Substitute.For( new Type[] { t }, new object[ 0 ] );`
+
+
+### MANUAL MOCKING
+
+Use manual mocking in unit tests during which you need to use a few specific mock implementations.
+
+Manual mocking can be activated with the `ManagerExtensions.ActivateManualMocking` method from the `Implementations.ForMicrosoft` package. This method receives a delegate parameter in which you can override the registered classes with manual mocks, by manually re-registering the mocked classes with the mock implementation (see the `overrideExisting` parameter of the `ToInstantiatePerXXX` methods). Once manual mocking starts, automated mocking stops.
+
+Microsoft's dependency injection container stops registering components once the instantiation provider (`IServiceProvider`) is built, and the configuration phase of the manager starts, without throwing an exception, so it's pointless to register new types after the `Configure` manager method is called.
 
 
 ## PACKAGE DESCRIPTIONS
