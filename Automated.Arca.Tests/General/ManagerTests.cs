@@ -198,7 +198,7 @@ namespace Automated.Arca.Tests
 		public void AutomatedMocking_Succeeds()
 		{
 			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, false,
-				new AutomatedMockingProvider(), Assembly.GetExecutingAssembly() );
+				new AutomatedMocker(), Assembly.GetExecutingAssembly() );
 
 			VerifyDummies( applicationPipeline, false );
 		}
@@ -207,11 +207,11 @@ namespace Automated.Arca.Tests
 		public void AutomatedAndManualMocking_Succeeds()
 		{
 			var applicationPipeline = new ApplicationPipeline( x => { }, true, false, null, null, false, false,
-				new AutomatedMockingProvider(), Assembly.GetExecutingAssembly(),
+				new AutomatedMocker(), Assembly.GetExecutingAssembly(),
 				x => { },
 				x => x
 					.RegisterFirst()
-					.ActivateManualMocking( ir =>
+					.WithManualMocking( ir =>
 					{
 						var mock = Substitute.For<ISomeComponentToSubstitute>();
 						mock.Get( Arg.Any<string>() ).ReturnsForAnyArgs( "Substituted value" );

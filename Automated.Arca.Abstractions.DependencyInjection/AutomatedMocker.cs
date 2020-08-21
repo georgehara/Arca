@@ -3,7 +3,7 @@ using Automated.Arca.Abstractions.Core;
 
 namespace Automated.Arca.Abstractions.DependencyInjection
 {
-	public abstract class AutomatedMockingProvider : IAutomatedMockingProvider
+	public abstract class AutomatedMocker : IAutomatedMocker
 	{
 		public virtual bool MustAvoidMocking( IManager manager, Type type )
 		{

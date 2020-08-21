@@ -5,7 +5,7 @@ using NSubstitute;
 
 namespace Automated.Arca.Tests
 {
-	public class AutomatedMockingProvider : Abstractions.DependencyInjection.AutomatedMockingProvider
+	public class AutomatedMocker : Abstractions.DependencyInjection.AutomatedMocker
 	{
 		public override object GetMock( IManager manager, Type type )
 		{

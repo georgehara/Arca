@@ -5,8 +5,6 @@ namespace Automated.Arca.Abstractions.DependencyInjection
 {
 	public interface IInstantiationRegistry : IExtensionDependency
 	{
-		void ActivateManualMocking();
-
 		void ToInstantiatePerContainer( Type type, bool overrideExisting );
 		void ToInstantiatePerContainer( Type baseType, Type implementationType, bool overrideExisting );
 		void ToInstantiatePerContainer( Type baseType, Func<IServiceProvider, object> implementationFactory,
@@ -24,5 +22,7 @@ namespace Automated.Arca.Abstractions.DependencyInjection
 		void AddInstancePerContainer<T>( T instance, bool overrideExisting ) where T : notnull;
 
 		void AddGlobalInstanceProvider();
+
+		IInstantiationRegistry WithManualMocking( ManualMocker manualMocker );
 	}
 }

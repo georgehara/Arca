@@ -274,7 +274,7 @@ Automated mocking support for unit testing is supported for all the classes regi
 * Types which implement the `IDontAutoMock` interface are not mocked because they are essential for the application. Some types which already implement this interface are: `IInstanceProvider`, `IGlobalInstanceProvider`.
 * The types which are registered as extension dependencies for the manager are not mocked because they are essential for the manager.
 
-When the instantiation registries are added to the manager, an automated mocking provider can be specified as an implementation of the `AutomatedMockingProvider` abstract class from the `Abstractions.DependencyInjection` package. The `MustAvoidMocking` method already handles the cases above. A simple version for NSubstitute can simply do this in the `GetMock` method: `return Substitute.For( new Type[] { type }, new object[ 0 ] );`
+When the instantiation registries are added to the manager, an automated mocker can be specified as an implementation of the `AutomatedMocker` abstract class from the `Abstractions.DependencyInjection` package. The `MustAvoidMocking` method already handles the cases above. A simple version for NSubstitute can simply do this in the `GetMock` method: `return Substitute.For( new Type[] { type }, new object[ 0 ] );`
 
 The `DependencyInjectionInstantiationRegistry` instantiation registry from the `Implementations.ForMicrosoft` supports mocking only in the `ToInstantiatePerXXX` methods; the `AddInstancePerXXX` methods don't support it because they already receive an implementation, so its presumed that the caller knows to send a mock if it's required.
 
@@ -285,7 +285,7 @@ See the `AutomatedAndManualMocking_Succeeds` test for details.
 
 Use manual mocking in unit tests during which you need to use a few specific mock implementations.
 
-Manual mocking can be activated with the `ManagerExtensions.ActivateManualMocking` method from the `Implementations.ForMicrosoft` package. This method receives a delegate parameter in which you can override the registered classes with manual mocks, by manually re-registering the mocked classes with the mock implementation (see the `overrideExisting` parameter of the `ToInstantiatePerXXX` methods). Once manual mocking starts, automated mocking stops.
+Manual mocking can be done with the `ManagerExtensions.WithManualMocking` method from the `Implementations.ForMicrosoft` package. This method receives a delegate parameter in which you can override the registered classes with manual mocks, by manually re-registering the mocked classes with the mock implementation (see the `overrideExisting` parameter of the `ToInstantiatePerXXX` methods). Once manual mocking is used, automated mocking stops.
 
 Microsoft's dependency injection container stops registering components once the instantiation provider (`IServiceProvider`) is built, and the configuration phase of the manager starts, without throwing an exception, so it's pointless to register new types after the `Configure` manager method is called.
 

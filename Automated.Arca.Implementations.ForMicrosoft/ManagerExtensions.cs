@@ -17,10 +17,10 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 
 		public static IManager AddDependencyInjectionInstantiationRegistry( this IManager manager, IServiceCollection services,
 			bool allowMultipleImplementationsPerBaseType, bool instantiatePerContainerInsteadOfScope,
-			AutomatedMockingProvider? automatedMockingProvider, bool addGlobalInstanceProvider )
+			AutomatedMocker? automatedMocker, bool addGlobalInstanceProvider )
 		{
 			var instantiationRegistry = new DependencyInjectionInstantiationRegistry( manager, services,
-				allowMultipleImplementationsPerBaseType, instantiatePerContainerInsteadOfScope, automatedMockingProvider,
+				allowMultipleImplementationsPerBaseType, instantiatePerContainerInsteadOfScope, automatedMocker,
 				addGlobalInstanceProvider );
 
 			return manager.AddExtensionDependency<Abstractions.DependencyInjection.IInstantiationRegistry>( instantiationRegistry );
@@ -35,11 +35,11 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 
 		public static IManager AddInstantiationRegistries( this IManager manager, IServiceCollection services,
 			bool allowMultipleImplementationsPerBaseType, bool instantiatePerContainerInsteadOfScope,
-			AutomatedMockingProvider? automatedMockingProvider, bool addGlobalInstanceProvider )
+			AutomatedMocker? automatedMocker, bool addGlobalInstanceProvider )
 		{
 			return manager
 				.AddDependencyInjectionInstantiationRegistry( services, allowMultipleImplementationsPerBaseType,
-					instantiatePerContainerInsteadOfScope, automatedMockingProvider, addGlobalInstanceProvider )
+					instantiatePerContainerInsteadOfScope, automatedMocker, addGlobalInstanceProvider )
 				.AddSpecializedInstantiationRegistry( services );
 		}
 
@@ -67,15 +67,12 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			return manager.AddExtensionDependency<IMiddlewareRegistry>( middlewareRegistry );
 		}
 
-		public static IManager ActivateManualMocking( this IManager manager, ManualMockingRegistrator manualMockingRegistrator )
+		public static Abstractions.DependencyInjection.IInstantiationRegistry WithManualMocking( this IManager manager,
+			ManualMocker manualMocker )
 		{
 			var instantiationRegistry = manager.GetExtensionDependency<Abstractions.DependencyInjection.IInstantiationRegistry>();
 
-			instantiationRegistry.ActivateManualMocking();
-
-			manualMockingRegistrator( instantiationRegistry );
-
-			return manager;
+			return instantiationRegistry.WithManualMocking( manualMocker );
 		}
 	}
 }

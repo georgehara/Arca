@@ -17,7 +17,7 @@ namespace Automated.Arca.Tests
 	public class ApplicationPipeline
 	{
 		private readonly bool InstantiatePerContainerInsteadOfScope;
-		private readonly AutomatedMockingProvider? AutomatedMockingProvider;
+		private readonly AutomatedMocker? AutomatedMocker;
 
 		private readonly IConfiguration ApplicationOptionsProvider;
 		private readonly IServiceCollection Services = new ServiceCollection();
@@ -30,11 +30,11 @@ namespace Automated.Arca.Tests
 		public ApplicationPipeline( Action<IManagerOptions> onCreateManagerOptions, bool useLogging,
 			bool processOnlyTypesDerivedFromIProcessable, ICollection<Type>? excludeTypes, IList<Type>? priorityTypes,
 			bool simulateRegistrationAndConfiguration, bool instantiatePerContainerInsteadOfScope,
-			AutomatedMockingProvider? automatedMockingProvider, Assembly rootAssembly, Action<IManager> onCreateManager,
+			AutomatedMocker? automatedMocker, Assembly rootAssembly, Action<IManager> onCreateManager,
 			Action<ApplicationPipeline> onManagerRegister, Action<ApplicationPipeline> onManagerConfigure )
 		{
 			InstantiatePerContainerInsteadOfScope = instantiatePerContainerInsteadOfScope;
-			AutomatedMockingProvider = automatedMockingProvider;
+			AutomatedMocker = automatedMocker;
 
 			ApplicationOptionsProvider = GetApplicationOptionsProvider();
 
@@ -57,10 +57,10 @@ namespace Automated.Arca.Tests
 
 		public static ApplicationPipeline GetInstanceAndCallRegisterAndConfigure( bool processOnlyTypesDerivedFromIProcessable,
 			ICollection<Type>? excludeTypes, IList<Type>? priorityTypes, bool instantiatePerContainerInsteadOfScope,
-			AutomatedMockingProvider? automatedMockingProvider, Assembly rootAssembly )
+			AutomatedMocker? automatedMocker, Assembly rootAssembly )
 		{
 			return new ApplicationPipeline( x => { }, true, processOnlyTypesDerivedFromIProcessable, excludeTypes, priorityTypes,
-				false, instantiatePerContainerInsteadOfScope, automatedMockingProvider, rootAssembly, x => { }, x => x.RegisterFirst(),
+				false, instantiatePerContainerInsteadOfScope, automatedMocker, rootAssembly, x => { }, x => x.RegisterFirst(),
 				x => x.ConfigureFirst() );
 		}
 
@@ -81,7 +81,7 @@ namespace Automated.Arca.Tests
 		public ApplicationPipeline RegisterFirst()
 		{
 			Manager
-				.AddInstantiationRegistries( Services, false, InstantiatePerContainerInsteadOfScope, AutomatedMockingProvider, true )
+				.AddInstantiationRegistries( Services, false, InstantiatePerContainerInsteadOfScope, AutomatedMocker, true )
 				.Register();
 
 			return this;
@@ -95,11 +95,9 @@ namespace Automated.Arca.Tests
 			return this;
 		}
 
-		public ApplicationPipeline ActivateManualMocking( ManualMockingRegistrator manualMockingRegistrator )
+		public IInstantiationRegistry WithManualMocking( ManualMocker manualMocker )
 		{
-			Manager.ActivateManualMocking( manualMockingRegistrator );
-
-			return this;
+			return Manager.WithManualMocking( manualMocker );
 		}
 
 		public ApplicationPipeline ConfigureFirst()
