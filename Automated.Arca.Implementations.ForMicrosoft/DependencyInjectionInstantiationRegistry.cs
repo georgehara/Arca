@@ -165,6 +165,13 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 				serviceProvider => serviceProvider.GetRequiredService<IGlobalInstanceProvider>() );
 		}
 
+		public IInstantiationRegistry ActivateManualMocking()
+		{
+			IsManualMocking = true;
+
+			return this;
+		}
+
 		public IInstantiationRegistry WithManualMocking( ManualMocker manualMocker )
 		{
 			IsManualMocking = true;

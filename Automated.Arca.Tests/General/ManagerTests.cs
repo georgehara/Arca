@@ -229,6 +229,12 @@ namespace Automated.Arca.Tests
 			Assert.Equal( "Substituted value", value );
 		}
 
+		[Fact]
+		public void SampleForAutomatedAndManualMocking()
+		{
+			AutomatedAndManualMocking_Succeeds();
+		}
+
 		private void VerifyDummies( ApplicationPipeline applicationPipeline, bool includeDummyAssembly )
 		{
 			var scopedProvider = applicationPipeline.GetOrAddScopedProvider( ScopeNames.Main );

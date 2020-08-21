@@ -2,7 +2,7 @@
 
 namespace Automated.Arca.Abstractions.DependencyInjection
 {
-	public interface IScopeNameProvider<TScopeName> : IProcessable, IDontAutoMock
+	public interface IScopeNameProvider<TScopeName> : IProcessable
 		where TScopeName : notnull
 	{
 		TScopeName ScopeName { get; set; }

@@ -3,7 +3,7 @@ using Automated.Arca.Abstractions.Core;
 
 namespace Automated.Arca.Abstractions.DependencyInjection
 {
-	public interface IInstanceProvider : IExtensionDependency, IDontAutoMock
+	public interface IInstanceProvider : IExtensionDependency
 	{
 		object GetInstanceOrNull( Type type );
 		T GetInstanceOrNull<T>();

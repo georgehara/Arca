@@ -190,7 +190,7 @@ In applications which are not based on client requests, like test projects and d
 * Retrieved from a scope, which is recommended.
 * Registered to be instantiated per container. This can be done when you call `Register`, by passing `true` to the `instantiatePerContainerInsteadOfScope` parameter of the `InstantiationRegistry` constructor.
 
-Scopes can be managed with an implementation of `ScopeManager`; you also have to implement either `IScopeNameProvider` (if the scope name is set from outside the provider) or `IScopeNameResolver` (if the scope name is set from inside the resolver). On the implementation, apply the `ScopeManagerAttribute` attribute so that ARCA can automatically add it to the dependency injection registry. Check the `TenantScopeUsage` test for a usage example.
+Scopes can be managed with an implementation of `ScopeManager`; you also have to implement either `IScopeNameProvider` (if the scope name is set from outside the provider) or `IScopeNameResolver` (if the scope name is set from inside the resolver). On the implementation, apply the `ScopeManagerAttribute` attribute so that ARCA can automatically add it to the dependency injection registry. See the `SampleForTenantScope` test for an example.
 
 Note: Every client request from a WebApi application gets its own scope; this is accessible (and even replaceable) through `IHttpContextAccessor.HttpContext.RequestServices`.
 
@@ -269,27 +269,31 @@ Mocking support doesn't depend on the testing framework.
 
 Use automated mocking in unit tests during which you need all the registered classes to be generically mocked.
 
-Automated mocking support for unit testing is supported for all the classes registered by the manager, with some limitations:
-* Only interfaces are supported.
-* Types which implement the `IDontAutoMock` interface are not mocked because they are essential for the application. Some types which already implement this interface are: `IInstanceProvider`, `IGlobalInstanceProvider`.
-* The types which are registered as extension dependencies for the manager are not mocked because they are essential for the manager.
+Automated mocking for unit testing is supported for all the classes registered by the manager, with minor limitations.
 
-When the instantiation registries are added to the manager, an automated mocker can be specified as an implementation of the `AutomatedMocker` abstract class from the `Abstractions.DependencyInjection` package. The `MustAvoidMocking` method already handles the cases above. A simple version for NSubstitute can simply do this in the `GetMock` method: `return Substitute.For( new Type[] { type }, new object[ 0 ] );`
+When the instantiation registries are added to the manager, an automated mocker can be specified as an implementation of the `IAutomatedMocker` interface from the `Abstractions.DependencyInjection` package; see the `AutomatedMocker` abstract class for a default implementation. This interface contains two methods:
+* `MustAvoidMocking`: Must return `true` if the automated mocking must be avoided for some classes. Return `true` for the classes that must preserve their production implementation even during testing.
+* `GetMock`: Must return the mock implementation. This is called only for the types for which `MustAvoidMocking` returns `false`. A basic version for NSubstitute can do this: `return Substitute.For( new Type[] { type }, new object[ 0 ] );`
 
-The `DependencyInjectionInstantiationRegistry` instantiation registry from the `Implementations.ForMicrosoft` supports mocking only in the `ToInstantiatePerXXX` methods; the `AddInstancePerXXX` methods don't support it because they already receive an implementation, so its presumed that the caller knows to send a mock if it's required.
+The default `GetMock` method returns `true` if any of the following is true:
+* The type is not an interface.
+* The type is any of the following: `IInstanceProvider`, `IScopeManager`, `IScopeNameProvider`. These types are (normally) essential for the application, but at some point they go through the dependency injection registration, so they must avoid the path on which the mockable types go.
+* The type is registered as an extension dependency for the manager.
 
-See the `AutomatedAndManualMocking_Succeeds` test for details.
+The `DependencyInjectionInstantiationRegistry` instantiation registry from the `Implementations.ForMicrosoft` package supports mocking only in the `ToInstantiatePerXXX` methods; the `AddInstancePerXXX` methods don't support it because they already receive an implementation, so its presumed that the caller knows to send a mock if it's required.
+
+ See the `SampleForAutomatedAndManualMocking` test for an example.
 
 
 ### MANUAL MOCKING
 
 Use manual mocking in unit tests during which you need to use a few specific mock implementations.
 
-Manual mocking can be done with the `ManagerExtensions.WithManualMocking` method from the `Implementations.ForMicrosoft` package. This method receives a delegate parameter in which you can override the registered classes with manual mocks, by manually re-registering the mocked classes with the mock implementation (see the `overrideExisting` parameter of the `ToInstantiatePerXXX` methods). Once manual mocking is used, automated mocking stops.
+Manual mocking can be done with the `ManagerExtensions.WithManualMocking` method from the `Implementations.ForMicrosoft` package; there is no need to call the `ActivateManualMocking` method. This method receives a delegate parameter in which you can override the registered classes with manual mocks, by manually re-registering the mocked classes with the mock implementation (see the `overrideExisting` parameter of the `ToInstantiatePerXXX` methods). Once manual mocking is used, automated mocking stops.
 
 Microsoft's dependency injection container stops registering components once the instantiation provider (`IServiceProvider`) is built, and the configuration phase of the manager starts, without throwing an exception, so it's pointless to register new types after the `Configure` manager method is called.
 
-See the `AutomatedAndManualMocking_Succeeds` test for details.
+See the `SampleForAutomatedAndManualMocking` test for an example.
 
 
 ## PACKAGE DESCRIPTIONS

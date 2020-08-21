@@ -1,5 +1,6 @@
 ﻿using System;
 using Automated.Arca.Abstractions.Core;
+using Automated.Arca.Libraries;
 
 namespace Automated.Arca.Abstractions.DependencyInjection
 {
@@ -11,7 +12,9 @@ namespace Automated.Arca.Abstractions.DependencyInjection
 
 			return
 				!type.IsInterface ||
-				typeof( IDontAutoMock ).IsAssignableFrom( type ) ||
+				typeof( IInstanceProvider ).IsAssignableFrom( type ) ||
+				type.DerivesFromGenericInterfaceWithSingleParameter( typeof( IScopeManager<> ) ) ||
+				type.DerivesFromGenericInterfaceWithSingleParameter( typeof( IScopeNameProvider<> ) ) ||
 				manager.ContainsExtensionDependency( type );
 		}
 

@@ -23,6 +23,7 @@ namespace Automated.Arca.Abstractions.DependencyInjection
 
 		void AddGlobalInstanceProvider();
 
+		IInstantiationRegistry ActivateManualMocking();
 		IInstantiationRegistry WithManualMocking( ManualMocker manualMocker );
 	}
 }

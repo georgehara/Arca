@@ -97,7 +97,7 @@ namespace Automated.Arca.Tests
 		}
 
 		[Fact]
-		public void TenantScopeUsage()
+		public void SampleForTenantScope()
 		{
 			InstantiatePerScope_GetDifferentInstancesForDifferentScopes();
 		}

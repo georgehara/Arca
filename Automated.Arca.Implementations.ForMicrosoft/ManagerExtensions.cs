@@ -67,6 +67,13 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			return manager.AddExtensionDependency<IMiddlewareRegistry>( middlewareRegistry );
 		}
 
+		public static Abstractions.DependencyInjection.IInstantiationRegistry ActivateManualMocking( this IManager manager )
+		{
+			var instantiationRegistry = manager.GetExtensionDependency<Abstractions.DependencyInjection.IInstantiationRegistry>();
+
+			return instantiationRegistry.ActivateManualMocking();
+		}
+
 		public static Abstractions.DependencyInjection.IInstantiationRegistry WithManualMocking( this IManager manager,
 			ManualMocker manualMocker )
 		{
