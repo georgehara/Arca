@@ -19,13 +19,13 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ManagerPerformanceWithoutRegistrationAndConfigurationAndWithoutIProcessable()
 		{
-			var statistics = GetManagerPerformance( true, false );
+			var statistics = GetManagerPerformance( false, true );
 
 			DisplayTrace( "Performance without 'IProcessable'", statistics );
 		}
 
-		private IManagerStatistics GetManagerPerformance( bool simulateRegistrationAndConfiguration,
-			bool processOnlyTypesDerivedFromIProcessable )
+		private IManagerStatistics GetManagerPerformance( bool processOnlyTypesDerivedFromIProcessable,
+			bool simulateOnlyUnprocessableTypes )
 		{
 			static void a( IManagerOptions x ) => x
 				.AddAssemblyNamePrefix( "" )
@@ -48,7 +48,7 @@ namespace Automated.Arca.Tests
 			ApplicationPipeline applicationPipeline;
 
 			applicationPipeline = new ApplicationPipeline( a, false, processOnlyTypesDerivedFromIProcessable, null, null,
-				simulateRegistrationAndConfiguration, false, null, Assembly.GetExecutingAssembly(),
+				simulateOnlyUnprocessableTypes, false, null, Assembly.GetExecutingAssembly(),
 				x => x.AddAssembliesLoadedInProcess(),
 				x => x.RegisterFirst(),
 				x => x.ConfigureFirst() );

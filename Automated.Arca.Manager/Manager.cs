@@ -10,7 +10,7 @@ namespace Automated.Arca.Manager
 	public class Manager : IManager
 	{
 		private readonly IManagerOptions Options;
-		private readonly bool SimulateRegistrationAndConfiguration;
+		private readonly bool SimulateOnlyUnprocessableTypes;
 
 		private readonly IDictionary<string, CachedAssembly> CachedAssemblies = new Dictionary<string, CachedAssembly>();
 		private readonly CachedTypes CachedTypes;
@@ -24,10 +24,10 @@ namespace Automated.Arca.Manager
 
 		public IManagerStatistics Statistics { get; } = new ManagerStatistics();
 
-		public Manager( IManagerOptions options, bool simulateRegistrationAndConfiguration = false )
+		public Manager( IManagerOptions options, bool simulateOnlyUnprocessableTypes = false )
 		{
 			Options = options;
-			SimulateRegistrationAndConfiguration = simulateRegistrationAndConfiguration;
+			SimulateOnlyUnprocessableTypes = simulateOnlyUnprocessableTypes;
 
 			CachedTypes = new CachedTypes( Options.PriorityTypes );
 
@@ -477,7 +477,7 @@ namespace Automated.Arca.Manager
 
 			// This also returns the attributes derived from "ProcessableAttribute".
 			var attribute = GetProcessableAttribute( cachedType.Type );
-			if( attribute == null )
+			if( attribute == null || SimulateOnlyUnprocessableTypes )
 			{
 				cachedType.ProcessableAttribute = null;
 				cachedType.State = ProcessingState.Registered;
@@ -538,8 +538,7 @@ namespace Automated.Arca.Manager
 			if( extension == null )
 				throw new ArgumentOutOfRangeException( $"Unhandled attribute '{attributeType.Name}'" );
 
-			if( !SimulateRegistrationAndConfiguration )
-				extension.Register( context, attribute, type );
+			extension.Register( context, attribute, type );
 
 			Statistics.RegisteredClasses++;
 
@@ -556,7 +555,7 @@ namespace Automated.Arca.Manager
 				return;
 			}
 
-			if( !cachedType.HasProcessableAttribute )
+			if( !cachedType.HasProcessableAttribute || SimulateOnlyUnprocessableTypes )
 			{
 				cachedType.State = ProcessingState.Configured;
 
@@ -591,8 +590,7 @@ namespace Automated.Arca.Manager
 			if( extension == null )
 				throw new ArgumentOutOfRangeException( $"Unhandled attribute '{attributeType.Name}'" );
 
-			if( !SimulateRegistrationAndConfiguration )
-				extension.Configure( context, attribute, type );
+			extension.Configure( context, attribute, type );
 
 			Options.Logger?.Log( $"Configured class '{type.Name}' with attribute '{attributeType.Name}'" );
 		}
@@ -609,7 +607,7 @@ namespace Automated.Arca.Manager
 
 		private void RunRegistrator( IRegistrationContext context, CachedType cachedType )
 		{
-			if( !MayRunRegistrator( cachedType ) )
+			if( !MayRunRegistrator( cachedType ) || SimulateOnlyUnprocessableTypes )
 			{
 				if( cachedType.State == ProcessingState.Registered )
 					cachedType.State = ProcessingState.RegistratorRan;
@@ -619,8 +617,7 @@ namespace Automated.Arca.Manager
 
 			var registrator = (IRegistrator)Activator.CreateInstance( cachedType.Type )!;
 
-			if( !SimulateRegistrationAndConfiguration )
-				registrator.Register( context );
+			registrator.Register( context );
 
 			cachedType.State = ProcessingState.RegistratorRan;
 
@@ -646,7 +643,7 @@ namespace Automated.Arca.Manager
 
 		private void RunConfigurator( IConfigurationContext context, CachedType cachedType )
 		{
-			if( !MayRunConfigurator( cachedType ) )
+			if( !MayRunConfigurator( cachedType ) || SimulateOnlyUnprocessableTypes )
 			{
 				if( cachedType.State == ProcessingState.Configured )
 					cachedType.State = ProcessingState.ConfiguratorRan;
@@ -656,8 +653,7 @@ namespace Automated.Arca.Manager
 
 			var registrator = (IConfigurator)Activator.CreateInstance( cachedType.Type )!;
 
-			if( !SimulateRegistrationAndConfiguration )
-				registrator.Configure( context );
+			registrator.Configure( context );
 
 			cachedType.State = ProcessingState.ConfiguratorRan;
 

@@ -32,6 +32,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automated.Arca.Abstractions
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.DummyAssembly", "Tests.DummyAssembly\Tests.DummyAssembly.csproj", "{AF7F52C9-4C0D-42A1-AFC0-18D8701C692C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automated.Arca.TestingConsole", "Automated.Arca.TestingConsole\Automated.Arca.TestingConsole.csproj", "{49D1405C-135E-4992-876C-4FAFCC25D9AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,6 +88,10 @@ Global
 		{AF7F52C9-4C0D-42A1-AFC0-18D8701C692C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF7F52C9-4C0D-42A1-AFC0-18D8701C692C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF7F52C9-4C0D-42A1-AFC0-18D8701C692C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49D1405C-135E-4992-876C-4FAFCC25D9AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49D1405C-135E-4992-876C-4FAFCC25D9AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49D1405C-135E-4992-876C-4FAFCC25D9AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49D1405C-135E-4992-876C-4FAFCC25D9AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

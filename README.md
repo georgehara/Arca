@@ -245,19 +245,17 @@ The manager (= the `Manager` class from the `Manager` package) and the scope man
 
 ## PERFORMANCE CONSIDERATIONS
 
-Any performance investigation has make a comparison because the automated processing that ARCA does and manual registration and configuration, to see if the extra processing required by the non-preferential automated processing has a significant performance impact.
+Any performance investigation has make a comparison between the automated processing that ARCA does and manual registration and configuration, to see if the extra processing required by the automated processing has a significant performance impact.
 
 ARCA has to load all the assemblies (referenced by an application) and has to use reflection to scan all the classes, at application startup, but this is done only once, no matter how many extensions are used. This means that the more extensions are used to perform all sorts of automated operations, the more effective ARCA becomes.
 
 The number of assemblies involved and their loading times are not relevant because the assemblies also have to be loaded during manual registration and configuration in order to perform assembly-local operations. So, from this point of view there is no performance advantage in doing manual registration and configuration, except for the occasional unnecessary loaded assembly. This means that the number of involved assemblies and their loading times can be ignored during a performance investigation.
 
- Since the time spent in the extensions to register and configure the processable classes has to also be spent during manual registration and configuration, it can be ignored by simulating the calls to the extensions, rather than actually making them.
+The performance-relevant time is the execution time for processing the unprocessable types, because the time spent doing this is not spent during manual registration and configuration. The time spent in the extensions to register and configure the processable classes has to also be spent during manual registration and configuration, so it's ignored by simulating the calls to the extensions, rather than actually making them.
  
- The remaining performance-relevant time is the execution time for processing the unprocessable types, because the time spent doing this is not spent during manual registration and configuration.
-
 An approximate performance can be viewed by executing the (release build of the) tests from the `ProcessingPerformanceTests` class. If you want to see the execution times without any caching from .Net, rebuild the solution before running each test separately.
 
-The tests process about 10'000 types. The relevant time is 14 ms if the `IProcessable` interface is used, and 18 ms if it's not used. This means that ARCA can process about 700'000 unprocessable types per second.
+The tests process about 10'000 types. The relevant time is 12 ms if the `IProcessable` interface is used, and 16 ms if it's not used. This means that ARCA can process about 800'000 unprocessable types per second.
 
 To improve ARCA's performance:
 * Use specific assembly name prefixes in order to reduce the number of assemblies that have be loaded and scanned.

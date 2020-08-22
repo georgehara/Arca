@@ -21,8 +21,8 @@ namespace Automated.Arca.Extensions.Specialized
 			var circuitBreakerEventCount = attributeTyped.CircuitBreakerEventCount;
 			var circuitBreakerDurationSeconds = attributeTyped.CircuitBreakerDurationSeconds;
 
-			SpecializedRegistry( context ).AddExternalService( interfaceType, typeWithAttribute,
-				baseAddress, retryCount, retryDelayMilliseconds, circuitBreakerEventCount, circuitBreakerDurationSeconds );
+			SpecializedRegistry( context ).AddExternalService( interfaceType, typeWithAttribute, baseAddress, retryCount,
+				retryDelayMilliseconds, circuitBreakerEventCount, circuitBreakerDurationSeconds );
 		}
 
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )

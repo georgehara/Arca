@@ -29,7 +29,7 @@ namespace Automated.Arca.Tests
 
 		public ApplicationPipeline( Action<IManagerOptions> onCreateManagerOptions, bool useLogging,
 			bool processOnlyTypesDerivedFromIProcessable, ICollection<Type>? excludeTypes, IList<Type>? priorityTypes,
-			bool simulateRegistrationAndConfiguration, bool instantiatePerContainerInsteadOfScope,
+			bool simulateOnlyUnprocessableTypes, bool instantiatePerContainerInsteadOfScope,
 			AutomatedMocker? automatedMocker, Assembly rootAssembly, Action<IManager> onCreateManager,
 			Action<ApplicationPipeline> onManagerRegister, Action<ApplicationPipeline> onManagerConfigure )
 		{
@@ -43,7 +43,7 @@ namespace Automated.Arca.Tests
 			var managerOptions = GetManagerOptions( onCreateManagerOptions, useLogging, processOnlyTypesDerivedFromIProcessable,
 				excludeTypes, priorityTypes );
 
-			Manager = GetManager( managerOptions, simulateRegistrationAndConfiguration, ApplicationOptionsProvider, rootAssembly );
+			Manager = GetManager( managerOptions, simulateOnlyUnprocessableTypes, ApplicationOptionsProvider, rootAssembly );
 
 			onCreateManager( Manager );
 			onManagerRegister( this );
@@ -144,10 +144,10 @@ namespace Automated.Arca.Tests
 				.Build();
 		}
 
-		private IManager GetManager( IManagerOptions managerOptions, bool simulateRegistrationAndConfiguration,
+		private IManager GetManager( IManagerOptions managerOptions, bool simulateOnlyUnprocessableTypes,
 			IConfiguration applicationOptionsProvider, Assembly rootAssembly )
 		{
-			return new Manager.Manager( managerOptions, simulateRegistrationAndConfiguration )
+			return new Manager.Manager( managerOptions, simulateOnlyUnprocessableTypes )
 				.AddAssembly( rootAssembly )
 				.AddAssemblyContainingType( typeof( ExtensionForInstantiatePerScopeAttribute ) )
 				.AddAssemblyContainingType( typeof( ExtensionForBoundedContextAttribute ) )
