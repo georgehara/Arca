@@ -434,7 +434,7 @@ namespace Automated.Arca.Tests.Dummies
 Here is a sample output:
 
 ```
-Created instance of 'CollectorLogger' at 2020-08-21T01:05:59
+Created instance of 'CollectorLogger' at 2020-08-23T00:42:42
 Using the assembly name prefix list: 'Automated.Arca.'
 Assembly names to exclude: 
 Excluded types: 
@@ -446,9 +446,9 @@ Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Abstractions.Core' ex
 Cached assembly 'Automated.Arca.Abstractions.Core'
 Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Libraries' executed in 0 ms.
 Cached assembly 'Automated.Arca.Libraries'
-Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.Specialized' executed in 21 ms.
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.Specialized' executed in 0 ms.
 Cached assembly 'Automated.Arca.Attributes.Specialized'
-Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.DependencyInjection' executed in 22 ms.
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.DependencyInjection' executed in 0 ms.
 Cached assembly 'Automated.Arca.Attributes.DependencyInjection'
 Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Extensions.DependencyInjection' executed in 0 ms.
 Cached assembly 'Automated.Arca.Extensions.DependencyInjection'
@@ -489,7 +489,7 @@ Cached extension 'ExtensionForOutboxProcessorAttribute' for attribute 'OutboxPro
 Method 'CacheReferencedAssembliesAndTypesAndExtensions' for assembly 'Automated.Arca.Demo.WebApi' executed in 53 ms.
 Registered class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Registered class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
-Method 'Register' executed in 2 ms. Registered 2 classes out of 130 cached types.
+Method 'Register' executed in 3 ms. Registered 2 classes out of 129 cached types.
 Configured class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Configured class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
 Method 'Configure' executed in 1 ms.
