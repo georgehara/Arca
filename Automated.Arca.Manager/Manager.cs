@@ -181,7 +181,10 @@ namespace Automated.Arca.Manager
 
 		public IEnumerable<Type> GetPriorityTypes()
 		{
-			return CachedTypes.GetPriorityTypes().Select( x => x.Type ).ToList();
+			lock( Lock )
+			{
+				return CachedTypes.GetPriorityTypes().Select( x => x.Type ).ToList();
+			}
 		}
 
 		private void LogOptions()

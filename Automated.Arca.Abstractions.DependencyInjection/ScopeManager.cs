@@ -9,10 +9,10 @@ namespace Automated.Arca.Abstractions.DependencyInjection
 	{
 		private class Pair
 		{
-			public IDisposable Scope;
-			public IScopedInstanceProvider<TScopeName> InstanceProvider;
+			internal IDisposable Scope;
+			internal IScopedInstanceProvider<TScopeName> InstanceProvider;
 
-			public Pair( IDisposable scope, IScopedInstanceProvider<TScopeName> instanceProvider )
+			internal Pair( IDisposable scope, IScopedInstanceProvider<TScopeName> instanceProvider )
 			{
 				Scope = scope;
 				InstanceProvider = instanceProvider;
