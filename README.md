@@ -15,6 +15,7 @@
 [Support for dependency injection](#support-for-dependency-injection)<br/>
 [Support for middleware](#support-for-middleware)<br/>
 [Creating custom attributes](#creating-custom-attributes)<br/>
+[Thread safety](#thread-safety)<br/>
 [Performance considerations](#performance-considerations)<br/>
 [Mocking support](#mocking-support)<br/>
 [Package descriptions](#package-descriptions)<br/>
@@ -235,6 +236,11 @@ Apply your attribute on the classes that you want to be registered and configure
 You can take a look at an existing attribute, like `BoundedContextAttribute` from the `Attributes.Specialized` package. This attribute has some parameters that the extension uses to load some data from the application's configuration (file), so it's a good example for a more complex registration scenario.
 
 The associated extension is `ExtensionForBoundedContextAttribute` from the `Extensions.Specialized` package.
+
+
+## THREAD SAFETY
+
+The manager (= the `Manager` class from the `Manager` package) and the scope manager (= the `ScopeManager` class from the `Abstractions.DependencyInjection` package) are thread safe.
 
 
 ## PERFORMANCE CONSIDERATIONS
