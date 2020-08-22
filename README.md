@@ -32,7 +32,7 @@ The main use cases are the (parametrized) registration and configuration of clas
 * CQRS: registration of events, commands, handlers
 * Custom registries that are not meant for dependency injection
 
-ARCA doesn't depend on a dependency injection container.
+ARCA doesn't depend on a dependency injection container. It doesn't even know what dependency injection is; that's known only to a few dedicated packages.
 
 
 ## HOW IT WORKS
@@ -44,8 +44,6 @@ Attributes are processed by the ARCA manager, through extensions.
 The combination between attributes and extensions allows you to easily perform any kind of automated registration and configuration.
 
 Both attributes and extensions can be in the consumer code.
-
-The manager ensures that all the attributes that are applied on classes have extensions that handle them.
 
 
 ### DEPENDENCY ISOLATION
@@ -71,6 +69,8 @@ An attribute must be applied on the class that it marks for registration or conf
 A class may have applied on it only one attribute (derived from the `ProcessableAttribute` attribute).
 
 Some attributes allow you to specify an interface with which the (dependency injection) registration has to be made. They also offer you the option to not specify the interface, in which case the registration will be made with the default interface of the class on which the attribute is applied. The default interface of a class is considered to be the interface that which the class implements on the first ancestor level that has an interface; such an interface may be implemented either by the class itself, or by an ancestor class.
+
+The manager ensures that all the attributes that are applied on classes have extensions that handle them.
 
 
 ## EXTENSIONS
@@ -297,7 +297,7 @@ Use manual mocking in unit tests during which you need to use a few specific moc
 
 Manual mocking can be done with the `ManagerExtensions.WithManualMocking` method from the `Implementations.ForMicrosoft` package; there is no need to call the `ActivateManualMocking` method. This method receives a delegate parameter in which you can override the registered classes with manual mocks, by manually re-registering the mocked classes with the mock implementation (see the `overrideExisting` parameter of the `ToInstantiatePerXXX` methods). Once manual mocking is used, automated mocking stops.
 
-Microsoft's dependency injection container stops registering components once the instantiation provider (`IServiceProvider`) is built, and the configuration phase of the manager starts, without throwing an exception, so it's pointless to register new types after the `Configure` manager method is called.
+Microsoft's dependency injection container stops registering components once the instantiation provider (`IServiceProvider`) is built, and the configuration phase of the manager starts, without throwing an exception, so it's pointless to register new types after the `Configure` manager method is called, which means that it's pointless to mock classes after `Configure` is called.
 
 See the `SampleForAutomatedAndManualMocking` test for an example.
 
