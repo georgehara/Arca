@@ -153,7 +153,7 @@ The ARCA manager must be instantiated with a set of options that can be created 
 
 `Prioritize`: Specifies a type that the manager will process first. The types are processed in the specified order, and before types which are not specified. This is particularly useful for middleware.
 
-Note: The attributes, extensions, registrators and configurators that you want to use must be defined in assemblies whose names start with a prefix from the prefix list. If the "Automated.Arca." prefix is added to the prefix list through the constructor of the options class, you can use the predefined attributes and extensions without specifying this prefix.
+Note: The extensions, registrators and configurators that you want to use, and the classes you want to register and configure, must be defined in assemblies whose names start with a prefix from the prefix list. The "Automated.Arca." prefix can be added automatically to the prefix list through the constructor of the options class.
 
 
 ### SPECIFYING ASSEMBLIES
@@ -185,7 +185,7 @@ After you instantiate the manager, at application startup, and you add assemblie
 * Configures the registered classes (based on extensions).
 * Runs the configurators. The configurators can't depend on one another because the manager doesn't know the order in which to run the configurators.
 
-Note: The `Register` and `Configure` manager methods may be called multiple times, but the manager checks the consistency of the state of each type that was loaded (by the manager) with an `AddXXX` manager method. So, for example if you call `AddXXX`, then `Register`, then `AddXXX` again, an exception is thrown because you didn't call `Configure` after `Register`. Microsoft's dependency injection container stops registering components once the instantiation provider (`IServiceProvider`) is built, and the configuration phase of the manager starts, without throwing an exception, so it's pointless to register new types after the `Configure` manager method is called.
+Note: The `Register` and `Configure` manager methods may be called multiple times, but the manager checks the consistency of the state of each type that was loaded (by the manager) with an `AddXXX` manager method. So, for example if you call `AddXXX`, then `Register`, then `AddXXX` again, an exception is thrown because you didn't call `Configure` after `Register`. Microsoft's dependency injection container stops registering components once the instantiation provider (`IServiceProvider`) is built, and the configuration phase of the manager starts, without throwing an exception, so it's pointless to register new types after the `Configure` manager method is called. ARCA allows multiple calls to `Register` and `Configure` because it can be used without dependency injection.
 
 Note: If the order of processing matters, use the `Prioritize` manager option.
 
