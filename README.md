@@ -53,6 +53,11 @@ ARCA doesn't depend on a dependency injection container. There is a single proje
 ![Dependency isolation](DependencyIsolation.png?raw=true)
 
 
+### ASSEMBLY ORGANIZATION
+
+![Assembly organization](AssemblyOrganization.png?raw=true)
+
+
 ## ATTRIBUTES VERSUS CONVENTIONS
 
 Conventions, and the associated scanning filters, must be manually maintained and enforced in order to prevent class changes from breaking conventions and scanning filters. On top of this, this maintenance is difficult because the registration code and the classes to register are in separate places in code, so the developer must dig in the code in order to create a fix.
