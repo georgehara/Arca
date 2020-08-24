@@ -7,6 +7,6 @@ namespace Automated.Arca.Extensions.DependencyInjection
 	public class ExtensionForScopeManagerAttribute : ExtensionForInstantiatePerContainerWithInterfaceAttribute
 	{
 		public override Type AttributeType => typeof( ScopeManagerAttribute );
-		public override Type? RootInterfaceOfTypeWithAttribute => typeof( IScopeManager<> );
+		public override Type? BaseInterfaceOfTypeWithAttribute => typeof( IScopeManager<> );
 	}
 }

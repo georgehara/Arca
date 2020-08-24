@@ -113,7 +113,7 @@ namespace Automated.Arca.Manager
 			{
 				if( !ExtensionDependencies.ContainsKey( baseType ) )
 				{
-					baseTypeImplementation.GetType().EnsureDerivesFrom( baseType );
+					baseTypeImplementation.GetType().EnsureDerivesFromNotEqual( baseType );
 
 					ExtensionDependencies[ baseType ] = baseTypeImplementation;
 				}
@@ -371,7 +371,7 @@ namespace Automated.Arca.Manager
 					$" has a cached extension '{ExtensionTypesByAttributeType[ extension.AttributeType ].Name}'." );
 			}
 
-			extension.AttributeType.EnsureDerivesFrom( typeof( ProcessableAttribute ) );
+			extension.AttributeType.EnsureDerivesFromNotEqual( typeof( ProcessableAttribute ) );
 
 			ExtensionInstancesByType.Add( cachedType.Type, extension );
 			ExtensionTypesByAttributeType.Add( extension.AttributeType, cachedType.Type );
@@ -533,10 +533,13 @@ namespace Automated.Arca.Manager
 		private void RegisterType( IRegistrationContext context, Type type, ProcessableAttribute attribute )
 		{
 			var attributeType = attribute.GetType();
-			var extension = GetExtensionForAttribute( attributeType );
 
+			var extension = GetExtensionForAttribute( attributeType );
 			if( extension == null )
 				throw new ArgumentOutOfRangeException( $"Unhandled attribute '{attributeType.Name}'" );
+
+			if( extension.BaseInterfaceOfTypeWithAttribute != null )
+				type.EnsureDerivesFromInterfaceOrGenericInterfaceWithUntypedParameter( extension.BaseInterfaceOfTypeWithAttribute );
 
 			extension.Register( context, attribute, type );
 

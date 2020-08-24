@@ -67,7 +67,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 		public void AddDatabaseContext( Type dbContextType, string connectionString, string migrationsHistoryTable,
 			string migrationsHistoryTableSchema, int retryCount, int retryDelaySeconds )
 		{
-			dbContextType.EnsureDerivesFrom( typeof( DbContext ) );
+			dbContextType.EnsureDerivesFromNotEqual( typeof( DbContext ) );
 
 			Action<DbContextOptionsBuilder> action = ob =>
 			{

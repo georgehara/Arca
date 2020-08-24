@@ -10,14 +10,14 @@
 [Processing with complex input parameters](#processing-with-complex-input-parameters)<br/>
 [Manager options](#manager-options)<br/>
 [Inter-class dependencies](#inter-class-dependencies)<br/>
-[Scopes](#scopes)<br/>
-[Dependencies registered by default](#dependencies-registered-by-default)<br/>
-[Support for dependency injection](#support-for-dependency-injection)<br/>
-[Support for middleware](#support-for-middleware)<br/>
 [Creating custom attributes](#creating-custom-attributes)<br/>
+[Support for dependency injection](#support-for-dependency-injection)<br/>
+[Support for scopes](#support-for-scopes)<br/>
+[Support for middleware](#support-for-middleware)<br/>
+[Support for CQRS](#support-for-cqrs)<br/>
+[Support for mocking](#support-for-mocking)<br/>
 [Thread safety](#thread-safety)<br/>
 [Performance considerations](#performance-considerations)<br/>
-[Mocking support](#mocking-support)<br/>
 [Package descriptions](#package-descriptions)<br/>
 [Examples](#examples)<br/>
 [Demo](#demo)<br/>
@@ -141,7 +141,7 @@ Registrators and configurators don't support dependency injection through their 
 
 The ARCA manager must be instantiated with a set of options that can be created with the following fluent methods:
 
-`UseLogger`: Specifies the logger which handles the processing messages of the manager. A logger significantly reduces the processing performance.
+`UseLogger`: Specifies the logger which handles the processing messages of the manager. A logger may reduce the processing performance.
 
 `AddAssemblyNamePrefix`: An assembly is processed only if its name starts with a prefix specified through this method. An empty text means that any assembly name matches. Each call of this method adds a prefix to the assembly name prefix list.
 
@@ -153,7 +153,7 @@ The ARCA manager must be instantiated with a set of options that can be created 
 
 `Prioritize`: Specifies a type that the manager will process first. The types are processed in the specified order, and before types which are not specified. This is particularly useful for middleware.
 
-Note: The extensions, registrators and configurators that you want to use, and the classes you want to register and configure, must be defined in assemblies whose names start with a prefix from the prefix list. The "Automated.Arca." prefix can be added automatically to the prefix list through the constructor of the options class.
+Note: The extensions, registrators and configurators that you want to use, and the classes you want to register and configure, must be defined in assemblies whose names start with a prefix from the prefix list. The `Automated.Arca.` prefix can be added automatically to the prefix list through the constructor of the options class.
 
 
 ### SPECIFYING ASSEMBLIES
@@ -190,44 +190,6 @@ Note: The `Register` and `Configure` manager methods may be called multiple time
 Note: If the order of processing matters, use the `Prioritize` manager option.
 
 
-## SCOPES
-
-In applications which are not based on client requests, like test projects and desktop applications, the dependency injection container may throw exceptions if you try to instantiate dependencies which were registered to be instantiated per scope. This is because, in such a context, the instantiation per client request is meaningless, and those dependencies should be either:
-* Retrieved from a scope, which is recommended.
-* Registered to be instantiated per container. This can be done when you call `Register`, by passing `true` to the `instantiatePerContainerInsteadOfScope` parameter of the `InstantiationRegistry` constructor.
-
-Scopes can be managed with an implementation of `ScopeManager`; you also have to implement either `IScopeNameProvider` (if the scope name is set from outside the provider) or `IScopeNameResolver` (if the scope name is set from inside the resolver). On the implementation, apply the `ScopeManagerAttribute` attribute so that ARCA can automatically add it to the dependency injection registry. See the `SampleForTenantScope` test for an example.
-
-Note: Every client request from a WebApi application gets its own scope; this is accessible (and even replaceable) through `IHttpContextAccessor.HttpContext.RequestServices`.
-
-
-## DEPENDENCIES REGISTERED BY DEFAULT
-
-When dependency injection is used, ARCA adds the following components to the instantiation registry (`IServiceCollection`), to be instantiated per container through the instance provider (`IServiceProvider`):
-* `IGlobalInstanceProvider`
-* `IInstanceProvider`
-
-You can add any of these interfaces as parameters to the constructors of your classes, so they can be injected by the dependency injection container.
-
-
-## SUPPORT FOR DEPENDENCY INJECTION
-
-Dependency injection support is provided by the `InstantiatePerContainerAttribute`, `InstantiatePerScopeAttribute` and `InstantiatePerInjectionAttribute` attributes from the `Attributes.DependencyInjection` package. The attributes register the classes, in the dependency injection container, for instantiation per container, scope or injection.
-
-In the terminology of Microsoft's dependency injection container, the instantiation per container is known as "singleton" (even though it's not a singleton per process), while the instantiation per injection is known as "transient".
-
-
-## SUPPORT FOR MIDDLEWARE
-
-Middleware support is provided by the `ChainMiddlewarePerContainerAttribute`, `ChainMiddlewarePerScopeAttribute` and `ChainMiddlewarePerInjectionAttribute` attributes from the `Attributes.Specialized` package. The attributes register the middleware, in the dependency injection container, for instantiation per container, scope or injection.
-
-The middleware class must implement the `IMiddleware` interface, and must have applied on it one of the attributes above. Then, when it's time to call it in the request pipeline, ASP.NET will instantiate it through the dependency injection container.
-
-Before you call the `Configure` manager method, call the `AddMiddlewareRegistry` extension method, on the manager. `Configure` must be called before calling the "IApplicationBuilder.UseEndpoints" extension method!
-
-Note: If the order of the middleware in the pipeline matters, use the `Prioritize` manager option.
-
-
 ## CREATING CUSTOM ATTRIBUTES
 
 To create your own attribute, you only have to:
@@ -241,6 +203,96 @@ Apply your attribute on the classes that you want to be registered and configure
 You can take a look at an existing attribute, like `BoundedContextAttribute` from the `Attributes.Specialized` package. This attribute has some parameters that the extension uses to load some data from the application's configuration (file), so it's a good example for a more complex registration scenario.
 
 The associated extension is `ExtensionForBoundedContextAttribute` from the `Extensions.Specialized` package.
+
+
+## SUPPORT FOR DEPENDENCY INJECTION
+
+Dependency injection support is provided by the `InstantiatePerContainerAttribute`, `InstantiatePerScopeAttribute` and `InstantiatePerInjectionAttribute` attributes from the `Attributes.DependencyInjection` package. The attributes register the classes, in the dependency injection container, for instantiation per container, scope or injection.
+
+In the terminology of Microsoft's dependency injection container, the instantiation per container is known as "singleton" (even though it's not a singleton per process), while the instantiation per injection is known as "transient".
+
+
+### DEPENDENCIES REGISTERED BY DEFAULT
+
+When dependency injection is used, ARCA adds the following components to the instantiation registry (`IServiceCollection`), to be instantiated per container through the instance provider (`IServiceProvider`):
+* `IGlobalInstanceProvider`
+* `IInstanceProvider`
+
+You can add any of these interfaces as parameters to the constructors of your classes, so they can be injected by the dependency injection container.
+
+
+## SUPPORT FOR SCOPES
+
+In applications which are not based on client requests, like test projects and desktop applications, the dependency injection container may throw exceptions if you try to instantiate dependencies which were registered to be instantiated per scope. This is because, in such a context, the instantiation per client request is meaningless, and those dependencies should be either:
+* Retrieved from a scope, which is recommended.
+* Registered to be instantiated per container. This can be done when you call `Register`, by passing `true` to the `instantiatePerContainerInsteadOfScope` parameter of the `InstantiationRegistry` constructor.
+
+Scopes can be managed with an implementation of `ScopeManager`; you also have to implement either `IScopeNameProvider` (if the scope name is set from outside the provider) or `IScopeNameResolver` (if the scope name is set from inside the resolver). On the implementation, apply the `ScopeManagerAttribute` attribute so that ARCA can automatically add it to the dependency injection registry. See the `SampleForTenantScope` test for an example.
+
+Note: Every client request from a WebApi application gets its own scope; this is accessible (and even replaceable) through `IHttpContextAccessor.HttpContext.RequestServices`.
+
+
+## SUPPORT FOR MIDDLEWARE
+
+Middleware support is provided by the `ChainMiddlewarePerContainerAttribute`, `ChainMiddlewarePerScopeAttribute` and `ChainMiddlewarePerInjectionAttribute` attributes from the `Attributes.Specialized` package. The attributes register the middleware, in the dependency injection container, for instantiation per container, scope or injection.
+
+The middleware class must implement the `IMiddleware` interface, and must have applied on it one of the attributes above. Then, when it's time to call it in the request pipeline, ASP.NET will instantiate it through the dependency injection container.
+
+Before you call the `Configure` manager method, call the `AddMiddlewareRegistry` extension method, on the manager. `Configure` must be called before calling the `IApplicationBuilder.UseEndpoints` extension method!
+
+Note: If the order of the middleware in the pipeline matters, use the `Prioritize` manager option.
+
+
+## SUPPORT FOR CQRS
+
+CQRS support is provided by various attributes from the `Attributes.Specialized` package.
+
+To benefit from the CQRS support, do the following in your application:
+* Implement the `ICommandHandlerRegistry` interface and apply the `CommandHandlerRegistryAttribute` attribute on it.
+* Implement the `IDomainEventHandlerRegistry` interface and apply the `DomainEventHandlerRegistryAttribute` attribute on it.
+* Implement the `IIntegrationEventHandlerRegistry` interface and apply the `IntegrationEventHandlerRegistryAttribute` attribute on it.
+* Apply the `CommandHandlerAttribute` attribute to every command handler.
+* Apply the `DomainEventHandlerAttribute` attribute to every domain event handler.
+* Apply the `IntegrationEventHandlerAttribute` attribute to every integration event handler.
+
+The result will be that:
+* The handler registries are automatically filled with the marked handlers.
+* The marked handler registries and handlers are registered for dependency injection.
+
+
+## SUPPORT FOR MOCKING
+
+Mocking support doesn't depend on the testing framework.
+
+
+### AUTOMATED MOCKING
+
+Use automated mocking in unit tests during which you need all the registered classes to be generically mocked.
+
+Automated mocking for unit testing is supported for all the classes registered by the manager.
+
+When the instantiation registries are added to the manager, an automated mocker can be specified as an implementation of the `IAutomatedMocker` interface from the `Abstractions.DependencyInjection` package. This interface contains two methods:
+* `MustAvoidMocking`: Must return `true` if the automated mocking must be avoided for some classes. Return `true` for the classes that must preserve their production implementation even during testing.
+* `GetMock`: Must return the mock implementation. This is called only for the types for which `MustAvoidMocking` returns `false`. A basic version for NSubstitute can do this: `return Substitute.For( new Type[] { type }, new object[ 0 ] );`
+
+See the `AutomatedMocker` class from the `Automated.Arca.Tests` project for a default implementation. The `GetMock` method returns `true` if any of the following is true:
+* The type is not an interface. NSubstitute can mock (well) only interfaces.
+* The type is an implementation of any of the following interfaces: `ITenantManager`, `ITenantNameProvider`. Because their implementations have attributes applied on them, they go through the dependency injection registration, so they go on the code path which mocks types, but they must not be mocked because their implementations are essential for testing.
+
+The `DependencyInjectionInstantiationRegistry` instantiation registry from the `Implementations.ForMicrosoft` package supports mocking only in the `ToInstantiatePerXXX` methods. The `AddInstancePerXXX` methods don't support it because they already receive an implementation, so its presumed that the caller knows to send a mock if it's required.
+
+ See the `SampleForAutomatedAndManualMocking` test for an example.
+
+
+### MANUAL MOCKING
+
+Use manual mocking in unit tests during which you need to use a few specific mock implementations.
+
+Manual mocking can be done with the `ManagerExtensions.WithManualMocking` method from the `Implementations.ForMicrosoft` package; there is no need to call the `ActivateManualMocking` method. This method receives a delegate parameter in which you can override the registered classes with manual mocks, by manually re-registering the mocked classes with the mock implementation (see the `overrideExisting` parameter of the `ToInstantiatePerXXX` methods). Once manual mocking is used, automated mocking stops.
+
+Microsoft's dependency injection container stops registering components once the instantiation provider (`IServiceProvider`) is built, and the configuration phase of the manager starts, without throwing an exception, so it's pointless to register new types after the `Configure` manager method is called, which means that it's pointless to mock classes after `Configure` is called.
+
+See the `SampleForAutomatedAndManualMocking` test for an example.
 
 
 ## THREAD SAFETY
@@ -264,45 +316,9 @@ The tests process about 10'000 types. The relevant time is 12 ms if the `IProces
 
 To improve ARCA's performance:
 * Use specific assembly name prefixes in order to reduce the number of assemblies that have be loaded and scanned.
-* Do not pass a logger to the manager options.
-* Don't split the classes to process over a large number of tiny assemblies because assembly loading takes a lot of time.
 * The classes to register and configure should implement the `IProcessable` interface. This works because checking if a class implements an interface is much faster (50 times) than calling `Type.GetCustomAttributes` for each class. By default, the manager ignores this interface because its effect is small in the entire context, in the vast majority of cases.
-
-
-## MOCKING SUPPORT
-
-Mocking support doesn't depend on the testing framework.
-
-
-### AUTOMATED MOCKING
-
-Use automated mocking in unit tests during which you need all the registered classes to be generically mocked.
-
-Automated mocking for unit testing is supported for all the classes registered by the manager, with minor limitations.
-
-When the instantiation registries are added to the manager, an automated mocker can be specified as an implementation of the `IAutomatedMocker` interface from the `Abstractions.DependencyInjection` package; see the `AutomatedMocker` abstract class for a default implementation. This interface contains two methods:
-* `MustAvoidMocking`: Must return `true` if the automated mocking must be avoided for some classes. Return `true` for the classes that must preserve their production implementation even during testing.
-* `GetMock`: Must return the mock implementation. This is called only for the types for which `MustAvoidMocking` returns `false`. A basic version for NSubstitute can do this: `return Substitute.For( new Type[] { type }, new object[ 0 ] );`
-
-The default `GetMock` method returns `true` if any of the following is true:
-* The type is not an interface.
-* The type is any of the following: `IInstanceProvider`, `IScopeManager`, `IScopeNameProvider`. These types are (normally) essential for the application, but at some point they go through the dependency injection registration, so they must avoid the path on which the mockable types go.
-* The type is registered as an extension dependency for the manager.
-
-The `DependencyInjectionInstantiationRegistry` instantiation registry from the `Implementations.ForMicrosoft` package supports mocking only in the `ToInstantiatePerXXX` methods; the `AddInstancePerXXX` methods don't support it because they already receive an implementation, so its presumed that the caller knows to send a mock if it's required.
-
- See the `SampleForAutomatedAndManualMocking` test for an example.
-
-
-### MANUAL MOCKING
-
-Use manual mocking in unit tests during which you need to use a few specific mock implementations.
-
-Manual mocking can be done with the `ManagerExtensions.WithManualMocking` method from the `Implementations.ForMicrosoft` package; there is no need to call the `ActivateManualMocking` method. This method receives a delegate parameter in which you can override the registered classes with manual mocks, by manually re-registering the mocked classes with the mock implementation (see the `overrideExisting` parameter of the `ToInstantiatePerXXX` methods). Once manual mocking is used, automated mocking stops.
-
-Microsoft's dependency injection container stops registering components once the instantiation provider (`IServiceProvider`) is built, and the configuration phase of the manager starts, without throwing an exception, so it's pointless to register new types after the `Configure` manager method is called, which means that it's pointless to mock classes after `Configure` is called.
-
-See the `SampleForAutomatedAndManualMocking` test for an example.
+* Do not pass a logger to the manager options.
+* Don't split the classes to process over a large number of tiny assemblies because assembly loading may have an overhead.
 
 
 ## PACKAGE DESCRIPTIONS
@@ -318,12 +334,12 @@ See the `SampleForAutomatedAndManualMocking` test for an example.
 * `Automated.Arca.Libraries` - Libraries for other packages.
 * `Automated.Arca.Manager` - The ARCA manager. Use during the startup of an application.
 
-The "ForMicrosoft" packages contain dependencies which are meant to be used in applications that use the Microsoft dependency injection container.
+The `ForMicrosoft` packages contain dependencies which are meant to be used in applications that use the Microsoft dependency injection container.
 
 
 ## EXAMPLES
 
-For more examples look in the "Automated.Arca.Tests" project.
+For more examples look in the `Automated.Arca.Tests` project.
 
 
 ### STARTING THE ARCA MANAGER
@@ -358,12 +374,11 @@ namespace FooCorp
 			ApplicationOptionsProvider = options;
 
 			var managerOptions = new ManagerOptions()
-				.AddAssemblyNamePrefix( "FooCorp" )
-				.UseOnlyClassesDerivedFromIProcessable();
+				.AddAssemblyNamePrefix( "FooCorp" );
 
 			Manager = new Manager.Manager( managerOptions )
 				.AddEntryAssembly()
-				.AddAssemblyContainingType( typeof( ExtensionForInstantiatePerScopeAttribute ) )
+				.AddAssemblyContainingType( typeof( ExtensionForInstantiatePerContainerAttribute ) )
 				.AddAssemblyContainingType( typeof( ExtensionForBoundedContextAttribute ) )
 				.AddKeyedOptionsProvider( ApplicationOptionsProvider );
 		}
@@ -374,7 +389,7 @@ namespace FooCorp
 			// ...
 
 			Manager
-				.AddInstantiationRegistries( services, false, false, null, true )
+				.AddInstantiationRegistries( services )
 				.Register();
 		}
 
@@ -434,12 +449,12 @@ namespace Automated.Arca.Tests.Dummies
 
 ## DEMO
 
-"Automated.Arca.Demo.WebApi" is a demo application which displays in the browser the logs generated by the ARCA manager.
+`Automated.Arca.Demo.WebApi` is a demo application which displays in the browser the logs generated by the ARCA manager.
 
 Here is a sample output:
 
 ```
-Created instance of 'CollectorLogger' at 2020-08-23T00:42:42
+Created instance of 'CollectorLogger' at 2020-08-25T01:02:33
 Using the assembly name prefix list: 'Automated.Arca.'
 Assembly names to exclude: 
 Excluded types: 
@@ -451,9 +466,9 @@ Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Abstractions.Core' ex
 Cached assembly 'Automated.Arca.Abstractions.Core'
 Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Libraries' executed in 0 ms.
 Cached assembly 'Automated.Arca.Libraries'
-Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.Specialized' executed in 0 ms.
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.Specialized' executed in 20 ms.
 Cached assembly 'Automated.Arca.Attributes.Specialized'
-Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.DependencyInjection' executed in 0 ms.
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.DependencyInjection' executed in 22 ms.
 Cached assembly 'Automated.Arca.Attributes.DependencyInjection'
 Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Extensions.DependencyInjection' executed in 0 ms.
 Cached assembly 'Automated.Arca.Extensions.DependencyInjection'
@@ -491,10 +506,10 @@ Cached extension 'ExtensionForMessageBusSubscribeForExchangeCommandQueueTargetAt
 Cached extension 'ExtensionForMessageBusSubscribeForExchangePublicationQueueBetweenAttribute' for attribute 'MessageBusSubscribeForExchangePublicationQueueBetweenAttribute'
 Cached extension 'ExtensionForOutboxAttribute' for attribute 'OutboxAttribute'
 Cached extension 'ExtensionForOutboxProcessorAttribute' for attribute 'OutboxProcessorAttribute'
-Method 'CacheReferencedAssembliesAndTypesAndExtensions' for assembly 'Automated.Arca.Demo.WebApi' executed in 53 ms.
+Method 'CacheReferencedAssembliesAndTypesAndExtensions' for assembly 'Automated.Arca.Demo.WebApi' executed in 54 ms.
 Registered class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Registered class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
-Method 'Register' executed in 3 ms. Registered 2 classes out of 129 cached types.
+Method 'Register' executed in 3 ms. Registered 2 classes out of 132 cached types.
 Configured class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Configured class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
 Method 'Configure' executed in 1 ms.

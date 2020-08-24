@@ -14,7 +14,7 @@ namespace Automated.Arca.Tests
 		public void TypeDerivesFromInterface()
 		{
 			var implementsInterface = typeof( IExtensionForProcessableAttribute ).IsAssignableFrom(
-				typeof( SomeExtensionForRegistration ) );
+				typeof( ExtensionForSomeProcessableAttribute ) );
 
 			Stopwatch sw = new Stopwatch();
 			sw.Start();
@@ -23,7 +23,7 @@ namespace Automated.Arca.Tests
 
 			for( int i = 0; i < iterations; i++ )
 				implementsInterface = typeof( IExtensionForProcessableAttribute ).IsAssignableFrom(
-					typeof( SomeExtensionForRegistration ) );
+					typeof( ExtensionForSomeProcessableAttribute ) );
 
 			Trace.WriteLine( $"Speed of '{nameof( TypeDerivesFromInterface )}' = {Speed( sw, iterations )}" );
 
@@ -33,7 +33,7 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void TypeDoesntDeriveFromInterface()
 		{
-			var implementsInterface = typeof( IProcessable ).IsAssignableFrom( typeof( SomeExtensionForRegistration ) );
+			var implementsInterface = typeof( IProcessable ).IsAssignableFrom( typeof( ExtensionForSomeProcessableAttribute ) );
 
 			Stopwatch sw = new Stopwatch();
 			sw.Start();
@@ -41,7 +41,7 @@ namespace Automated.Arca.Tests
 			const int iterations = 70000000;
 
 			for( int i = 0; i < iterations; i++ )
-				implementsInterface = typeof( IProcessable ).IsAssignableFrom( typeof( SomeExtensionForRegistration ) );
+				implementsInterface = typeof( IProcessable ).IsAssignableFrom( typeof( ExtensionForSomeProcessableAttribute ) );
 
 			Trace.WriteLine( $"Speed of '{nameof( TypeDoesntDeriveFromInterface )}' = {Speed( sw, iterations )}" );
 
@@ -69,7 +69,7 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void GetCustomAttributesWhenDontExist()
 		{
-			var customAttributes = typeof( SomeExtensionForRegistration ).GetCustomAttributes<ProcessableAttribute>();
+			var customAttributes = typeof( ExtensionForSomeProcessableAttribute ).GetCustomAttributes<ProcessableAttribute>();
 
 			Stopwatch sw = new Stopwatch();
 			sw.Start();
@@ -77,7 +77,7 @@ namespace Automated.Arca.Tests
 			const int iterations = 1400000;
 
 			for( int i = 0; i < iterations; i++ )
-				customAttributes = typeof( SomeExtensionForRegistration ).GetCustomAttributes<ProcessableAttribute>();
+				customAttributes = typeof( ExtensionForSomeProcessableAttribute ).GetCustomAttributes<ProcessableAttribute>();
 
 			Trace.WriteLine( $"Speed of '{nameof( GetCustomAttributesWhenDontExist )}' = {Speed( sw, iterations )}" );
 
@@ -87,7 +87,7 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void ExtractInterfaceMethodFromImplementation()
 		{
-			var registerMethod = ExtractExtensionForRegistrationMethod( typeof( SomeExtensionForRegistration ) );
+			var registerMethod = ExtractExtensionForRegistrationMethod( typeof( ExtensionForSomeProcessableAttribute ) );
 
 			Stopwatch sw = new Stopwatch();
 			sw.Start();
@@ -95,7 +95,7 @@ namespace Automated.Arca.Tests
 			const int iterations = 1000000;
 
 			for( int i = 0; i < iterations; i++ )
-				registerMethod = ExtractExtensionForRegistrationMethod( typeof( SomeExtensionForRegistration ) );
+				registerMethod = ExtractExtensionForRegistrationMethod( typeof( ExtensionForSomeProcessableAttribute ) );
 
 			Trace.WriteLine( $"Speed of '{nameof( ExtractInterfaceMethodFromImplementation )}' = {Speed( sw, iterations )}" );
 
@@ -146,33 +146,31 @@ namespace Automated.Arca.Tests
 		}
 	}
 
+	[AttributeUsage( validOn: AttributeTargets.Class, AllowMultiple = false )]
+	public class SomeProcessableAttribute : ProcessableAttribute
+	{
+	}
+
 	public interface IExtensionForRegistration<T> : IExtensionForProcessableAttribute
 	{
 		void Register( IRegistrationContext context, T attribute, Type typeWithAttribute );
 	}
 
-	public class SomeExtensionForRegistration : IExtensionForRegistration<SomeProcessableAttribute>
+	public class ExtensionForSomeProcessableAttribute : IExtensionForRegistration<SomeProcessableAttribute>
 	{
 		public Type AttributeType => typeof( SomeProcessableAttribute );
+		public Type? BaseInterfaceOfTypeWithAttribute => null;
 
-		public void Register( IRegistrationContext context,
-			SomeProcessableAttribute attribute, Type typeWithAttribute )
+		public void Register( IRegistrationContext context, SomeProcessableAttribute attribute, Type typeWithAttribute )
 		{
 		}
 
-		public void Register( IRegistrationContext context,
-			ProcessableAttribute attribute, Type typeWithAttribute )
+		public void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
 		}
 
-		public void Configure( IConfigurationContext context,
-			ProcessableAttribute attribute, Type typeWithAttribute )
+		public void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
 		}
-	}
-
-	[AttributeUsage( validOn: AttributeTargets.Class, AllowMultiple = false )]
-	public class SomeProcessableAttribute : ProcessableAttribute
-	{
 	}
 }

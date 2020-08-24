@@ -5,7 +5,7 @@ using Automated.Arca.Attributes.Specialized;
 
 namespace Automated.Arca.Extensions.Specialized
 {
-	public class ExtensionForExternalServiceAttribute : ExtensionForProcessableAttribute
+	public class ExtensionForExternalServiceAttribute : ExtensionForProcessableWithInterfaceAttribute
 	{
 		public override Type AttributeType => typeof( ExternalServiceAttribute );
 

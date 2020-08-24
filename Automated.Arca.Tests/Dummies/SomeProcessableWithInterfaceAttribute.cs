@@ -6,21 +6,21 @@ using Automated.Arca.Libraries;
 namespace Automated.Arca.Tests.Dummies
 {
 	[AttributeUsage( validOn: AttributeTargets.Class, AllowMultiple = false )]
-	public class SomeProcessableAttribute : ProcessableWithInterfaceAttribute
+	public class SomeProcessableWithInterfaceAttribute : ProcessableWithInterfaceAttribute
 	{
-		public SomeProcessableAttribute()
+		public SomeProcessableWithInterfaceAttribute()
 		{
 		}
 
-		public SomeProcessableAttribute( Type interfaceType )
+		public SomeProcessableWithInterfaceAttribute( Type interfaceType )
 			: base( interfaceType )
 		{
 		}
 	}
 
-	public class SomeExtensionForSomeProcessableAttribute : ExtensionForProcessableAttribute
+	public class ExtensionForSomeProcessableWithInterfaceAttribute : ExtensionForProcessableAttribute
 	{
-		public override Type AttributeType => typeof( SomeProcessableAttribute );
+		public override Type AttributeType => typeof( SomeProcessableWithInterfaceAttribute );
 
 		public override void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{

@@ -29,7 +29,7 @@ namespace Automated.Arca.Demo.WebApi
 
 			Manager = new Manager.Manager( managerOptions )
 				.AddEntryAssembly()
-				.AddAssemblyContainingType( typeof( ExtensionForInstantiatePerScopeAttribute ) )
+				.AddAssemblyContainingType( typeof( ExtensionForInstantiatePerContainerAttribute ) )
 				.AddAssemblyContainingType( typeof( ExtensionForBoundedContextAttribute ) )
 				.AddKeyedOptionsProvider( ApplicationOptionsProvider );
 		}

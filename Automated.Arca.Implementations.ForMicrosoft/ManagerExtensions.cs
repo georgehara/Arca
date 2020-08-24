@@ -17,13 +17,17 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 
 		public static IManager AddDependencyInjectionInstantiationRegistry( this IManager manager, IServiceCollection services,
 			bool allowMultipleImplementationsPerBaseType, bool instantiatePerContainerInsteadOfScope,
-			AutomatedMocker? automatedMocker, bool addGlobalInstanceProvider )
+			IAutomatedMocker? automatedMocker, bool addGlobalInstanceProvider )
 		{
 			var instantiationRegistry = new DependencyInjectionInstantiationRegistry( manager, services,
-				allowMultipleImplementationsPerBaseType, instantiatePerContainerInsteadOfScope, automatedMocker,
-				addGlobalInstanceProvider );
+				allowMultipleImplementationsPerBaseType, instantiatePerContainerInsteadOfScope, automatedMocker );
 
-			return manager.AddExtensionDependency<Abstractions.DependencyInjection.IInstantiationRegistry>( instantiationRegistry );
+			manager.AddExtensionDependency<Abstractions.DependencyInjection.IInstantiationRegistry>( instantiationRegistry );
+
+			if( addGlobalInstanceProvider )
+				manager.AddGlobalInstanceProvider( services );
+
+			return manager;
 		}
 
 		public static IManager AddSpecializedInstantiationRegistry( this IManager manager, IServiceCollection services )
@@ -34,8 +38,8 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 		}
 
 		public static IManager AddInstantiationRegistries( this IManager manager, IServiceCollection services,
-			bool allowMultipleImplementationsPerBaseType, bool instantiatePerContainerInsteadOfScope,
-			AutomatedMocker? automatedMocker, bool addGlobalInstanceProvider )
+			bool allowMultipleImplementationsPerBaseType = false, bool instantiatePerContainerInsteadOfScope = false,
+			IAutomatedMocker? automatedMocker = null, bool addGlobalInstanceProvider = true )
 		{
 			return manager
 				.AddDependencyInjectionInstantiationRegistry( services, allowMultipleImplementationsPerBaseType,
@@ -45,10 +49,23 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 
 		[Obsolete( "Use 'AddInstantiationRegistries' instead" )]
 		public static IManager AddInstantiationRegistry( this IManager manager, IServiceCollection services,
-			bool instantiatePerContainerInsteadOfScope, bool addGlobalInstanceProvider )
+		bool instantiatePerContainerInsteadOfScope, bool addGlobalInstanceProvider )
 		{
 			return manager.AddInstantiationRegistries( services, false, instantiatePerContainerInsteadOfScope, null,
 				addGlobalInstanceProvider );
+		}
+
+		public static IManager AddGlobalInstanceProvider( this IManager manager, IServiceCollection services )
+		{
+			// Don't call "ToInstantiatePerContainer" to avoid the possibility of mocking.
+
+			services.AddSingleton( typeof( IGlobalInstanceProvider ),
+				serviceProvider => new GlobalInstanceProvider( serviceProvider ) );
+
+			services.AddSingleton( typeof( IInstanceProvider ),
+				serviceProvider => serviceProvider.GetRequiredService<IGlobalInstanceProvider>() );
+
+			return manager;
 		}
 
 		public static IManager AddGlobalInstanceProvider( this IManager manager, IServiceProvider serviceProvider )

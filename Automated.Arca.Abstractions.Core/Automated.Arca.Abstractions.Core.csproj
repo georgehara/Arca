@@ -20,4 +20,8 @@ Core abstractions. Contains `IProcessable`. Use it to create your own attributes
 		<Version>1.0.5</Version>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\Automated.Arca.Libraries\Automated.Arca.Libraries.csproj" />
+	</ItemGroup>
+
 </Project>

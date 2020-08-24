@@ -5,9 +5,10 @@ using Automated.Arca.Attributes.Specialized;
 
 namespace Automated.Arca.Extensions.Specialized
 {
-	public class ExtensionForOutboxProcessorAttribute : ExtensionForProcessableAttribute
+	public class ExtensionForOutboxProcessorAttribute : ExtensionForProcessableWithInterfaceAttribute
 	{
 		public override Type AttributeType => typeof( OutboxProcessorAttribute );
+		public override Type? BaseInterfaceOfTypeWithAttribute => typeof( IOutboxProcessor );
 
 		public override void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{

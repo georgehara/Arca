@@ -21,8 +21,6 @@ namespace Automated.Arca.Abstractions.DependencyInjection
 		void AddInstancePerContainer( Type baseType, object implementationInstance, bool overrideExisting );
 		void AddInstancePerContainer<T>( T instance, bool overrideExisting ) where T : notnull;
 
-		void AddGlobalInstanceProvider();
-
 		IInstantiationRegistry ActivateManualMocking();
 		IInstantiationRegistry WithManualMocking( ManualMocker manualMocker );
 	}

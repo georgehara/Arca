@@ -24,7 +24,7 @@ namespace Automated.Arca.Extensions.Specialized
 		public static void SubscribeToMessageBus( IMessageBus messageBus, Type messageType, Type messageListenerType,
 			string exchange, string queue )
 		{
-			messageListenerType.EnsureDerivesFromGenericInterface( typeof( IMessageListener<> ), messageType );
+			messageListenerType.EnsureDerivesFromGenericInterfaceNotEqual( typeof( IMessageListener<> ), messageType );
 
 			MethodInfo? method = messageBus.GetType()
 				.GetMethod( nameof( IMessageBus.Subscribe ), 2, new Type[] { typeof( string ), typeof( string ) } );

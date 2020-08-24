@@ -13,7 +13,7 @@ namespace Automated.Arca.Attributes.Specialized
 		public int CircuitBreakerDurationSeconds { get; protected set; }
 
 		public ExternalServiceAttribute( string baseAddressConfigurationKey, int retryCount = 3,
-				int retryDelayMilliseconds = 500, int circuitBreakerEventCount = 5, int circuitBreakerDurationSeconds = 30 )
+			int retryDelayMilliseconds = 500, int circuitBreakerEventCount = 5, int circuitBreakerDurationSeconds = 30 )
 		{
 			BaseAddressConfigurationKey = baseAddressConfigurationKey;
 			RetryCount = retryCount;

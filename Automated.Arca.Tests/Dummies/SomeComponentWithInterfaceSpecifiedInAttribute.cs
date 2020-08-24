@@ -7,7 +7,7 @@ namespace Automated.Arca.Tests.Dummies
 	}
 
 	[SerializableAttribute] // Used to simulate multiple attributes applied on the class.
-	[SomeProcessableAttribute( typeof( ISomeComponentWithInterfaceSpecifiedInAttribute ) )]
+	[SomeProcessableWithInterfaceAttribute( typeof( ISomeComponentWithInterfaceSpecifiedInAttribute ) )]
 	public class SomeComponentWithInterfaceSpecifiedInAttribute : ISomeComponentWithInterfaceSpecifiedInAttribute
 	{
 		public bool Configured { get; set; }

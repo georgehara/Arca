@@ -42,19 +42,19 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void EnsureDerivesFrom_SomeClassDerivedFromClass_Succeeds()
 		{
-			typeof( SomeClassDerivedFromClass ).EnsureDerivesFrom( typeof( ISomeInterface ) );
+			typeof( SomeClassDerivedFromClass ).EnsureDerivesFromNotEqual( typeof( ISomeInterface ) );
 		}
 
 		[Fact]
 		public void EnsureDerivesFrom_SomeClassDerivedFromInterface_Succeeds()
 		{
-			typeof( SomeClassDerivedFromInterface ).EnsureDerivesFrom( typeof( ISomeInterface ) );
+			typeof( SomeClassDerivedFromInterface ).EnsureDerivesFromNotEqual( typeof( ISomeInterface ) );
 		}
 
 		[Fact]
 		public void EnsureDerivesFrom_SomeClassDerivedFromClass_Fails()
 		{
-			static void a() => typeof( SomeClassDerivedFromClass ).EnsureDerivesFrom( typeof( ISomeOtherInterface ) );
+			static void a() => typeof( SomeClassDerivedFromClass ).EnsureDerivesFromNotEqual( typeof( ISomeOtherInterface ) );
 
 			Assert.Throws<InvalidCastException>( a );
 		}
@@ -84,14 +84,14 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void EnsureDerivesFromGenericInterface_SomeGenericClass_Succeeds()
 		{
-			typeof( SomeGenericClass ).EnsureDerivesFromGenericInterface( typeof( ISomeGenericInterface<> )
+			typeof( SomeGenericClass ).EnsureDerivesFromGenericInterfaceNotEqual( typeof( ISomeGenericInterface<> )
 				, typeof( string ) );
 		}
 
 		[Fact]
 		public void EnsureDerivesFromGenericInterface_SomeClassDerivedFromClass_Fails()
 		{
-			static void a() => typeof( SomeClassDerivedFromClass ).EnsureDerivesFromGenericInterface(
+			static void a() => typeof( SomeClassDerivedFromClass ).EnsureDerivesFromGenericInterfaceNotEqual(
 				typeof( ISomeGenericInterface<> ), typeof( string ) );
 
 			Assert.Throws<InvalidCastException>( a );

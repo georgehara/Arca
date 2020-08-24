@@ -1,13 +1,25 @@
 ﻿using System;
 using Automated.Arca.Abstractions.Core;
+using Automated.Arca.Abstractions.DependencyInjection;
+using Automated.Arca.Libraries;
 using Automated.Arca.Tests.Dummies;
 using NSubstitute;
 
 namespace Automated.Arca.Tests
 {
-	public class AutomatedMocker : Abstractions.DependencyInjection.AutomatedMocker
+	public class AutomatedMocker : IAutomatedMocker
 	{
-		public override object GetMock( IManager manager, Type type )
+		public bool MustAvoidMocking( IManager manager, Type type )
+		{
+			// Some types must not be mocked because they are essential for testing.
+
+			return
+				!type.IsInterface ||
+				type.DerivesFromInterfaceOrGenericInterfaceWithUntypedParameter( typeof( ITenantManager ) ) ||
+				type.DerivesFromInterfaceOrGenericInterfaceWithUntypedParameter( typeof( ITenantNameProvider ) );
+		}
+
+		public object GetMock( IManager manager, Type type )
 		{
 			if( type == typeof( ISomeComponentWithInterfaceSpecifiedInAttribute ) ||
 				type == typeof( ISomeComponentWithInterfaceSpecifiedInAttribute ) )

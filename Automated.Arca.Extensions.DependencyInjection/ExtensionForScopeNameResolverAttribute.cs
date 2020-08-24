@@ -7,6 +7,6 @@ namespace Automated.Arca.Extensions.DependencyInjection
 	public class ExtensionForScopeNameResolverAttribute : ExtensionForInstantiatePerScopeWithInterfaceAttribute
 	{
 		public override Type AttributeType => typeof( ScopeNameResolverAttribute );
-		public override Type? RootInterfaceOfTypeWithAttribute => typeof( IScopeNameResolver<> );
+		public override Type? BaseInterfaceOfTypeWithAttribute => typeof( IScopeNameResolver<> );
 	}
 }

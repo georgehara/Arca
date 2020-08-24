@@ -15,10 +15,5 @@ namespace Automated.Arca.Abstractions.Core
 		{
 			InterfaceType = interfaceType;
 		}
-
-		public Type GetInterfaceOrDefault( Type typeWithAttribute )
-		{
-			return InterfaceType ?? typeWithAttribute.GetDefaultInterface();
-		}
 	}
 }

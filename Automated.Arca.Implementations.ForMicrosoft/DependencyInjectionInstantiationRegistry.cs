@@ -12,22 +12,19 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 		protected IServiceCollection Services { get; private set; }
 		protected bool AllowMultipleImplementationsPerBaseType { get; private set; }
 		protected bool InstantiatePerContainerInsteadOfScope { get; private set; }
-		protected AutomatedMocker? AutomatedMocker { get; private set; }
+		protected IAutomatedMocker? AutomatedMocker { get; private set; }
 
 		protected bool IsManualMocking { get; private set; }
 
 		public DependencyInjectionInstantiationRegistry( IManager manager, IServiceCollection services,
 			bool allowMultipleImplementationsPerBaseType, bool instantiatePerContainerInsteadOfScope,
-			AutomatedMocker? automatedMocker, bool addGlobalInstanceProvider )
+			IAutomatedMocker? automatedMocker )
 		{
 			Manager = manager;
 			Services = services;
 			AllowMultipleImplementationsPerBaseType = allowMultipleImplementationsPerBaseType;
 			InstantiatePerContainerInsteadOfScope = instantiatePerContainerInsteadOfScope;
 			AutomatedMocker = automatedMocker;
-
-			if( addGlobalInstanceProvider )
-				AddGlobalInstanceProvider();
 		}
 
 		public void ToInstantiatePerContainer( Type type, bool overrideExisting = false )
@@ -155,15 +152,6 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			 where T : notnull
 		{
 			AddInstancePerContainer( typeof( T ), instance, overrideExisting );
-		}
-
-		public void AddGlobalInstanceProvider()
-		{
-			Services.AddSingleton( typeof( IGlobalInstanceProvider ),
-				serviceProvider => new GlobalInstanceProvider( serviceProvider ) );
-
-			Services.AddSingleton( typeof( IInstanceProvider ),
-				serviceProvider => serviceProvider.GetRequiredService<IGlobalInstanceProvider>() );
 		}
 
 		public IInstantiationRegistry ActivateManualMocking()
