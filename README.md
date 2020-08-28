@@ -324,7 +324,7 @@ Multi-implementation means that you can have multiple implementations of a certa
 
 All you have to do is add one of the above attributes to each implementation of the interface, and specify an implementation key (which can be even the name of the implementation's type). The key has to be unique per interface, not per application.
 
-Then, in code, you'll have to manually get an instance of that interface, base on an implementation key which is determined at runtime, from a user's choice. The easiest way to do this would be to use an instance of the `ExtensionDependencyProxy` from the `Abstractions.DependencyInjection` package; simply inject this type in the constructor of the consumer class. When you do this manually, all the constructor parameters of the implementation class are automatically instantiated, regardless of the level of nesting, so you only have to do one manual operation.
+Then, in code, you'll have to manually get an instance of that interface, base on an implementation key which is determined at runtime, from a user's choice. The easiest way to do this would be to use an instance of the `IDependencyInjectionProxy` interface from the `Abstractions.DependencyInjection` package; simply inject this type in the constructor of the consumer class. When you do this manually, all the constructor parameters of the implementation class are automatically instantiated, regardless of the level of nesting, so you only have to do one manual operation.
 
 See the tests from the `MultiImplementationTests` class for examples.
 
