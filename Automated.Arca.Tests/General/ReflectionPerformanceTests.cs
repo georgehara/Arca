@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Automated.Arca.Abstractions.Core;
+using Automated.Arca.Abstractions.DependencyInjection;
 using Automated.Arca.Tests.Dummies;
 using Xunit;
 
@@ -156,20 +157,26 @@ namespace Automated.Arca.Tests
 		void Register( IRegistrationContext context, T attribute, Type typeWithAttribute );
 	}
 
-	public class ExtensionForSomeProcessableAttribute : IExtensionForRegistration<SomeProcessableAttribute>
+	public class ExtensionForSomeProcessableAttribute : ExtensionForDependencyInjectionAttribute,
+		IExtensionForRegistration<SomeProcessableAttribute>
 	{
-		public Type AttributeType => typeof( SomeProcessableAttribute );
-		public Type? BaseInterfaceOfTypeWithAttribute => null;
+		public override Type AttributeType => typeof( SomeProcessableAttribute );
+		public override Type? BaseInterfaceOfTypeWithAttribute => null;
+
+		public ExtensionForSomeProcessableAttribute( IExtensionDependencyProvider extensionDependencyProvider )
+			: base( extensionDependencyProvider )
+		{
+		}
 
 		public void Register( IRegistrationContext context, SomeProcessableAttribute attribute, Type typeWithAttribute )
 		{
 		}
 
-		public void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
+		public override void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
 		}
 
-		public void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
+		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
 		}
 	}

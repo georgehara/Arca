@@ -5,16 +5,22 @@ using Automated.Arca.Attributes.Specialized;
 
 namespace Automated.Arca.Extensions.Specialized
 {
-	public class ExtensionForDomainEventRegistryAttribute : ExtensionForProcessableWithInterfaceAttribute
+	public class ExtensionForDomainEventRegistryAttribute : ExtensionForSpecializedAttribute
 	{
 		public override Type AttributeType => typeof( DomainEventRegistryAttribute );
 		public override Type? BaseInterfaceOfTypeWithAttribute => typeof( IDomainEventRegistry );
 
+		public ExtensionForDomainEventRegistryAttribute( IExtensionDependencyProvider extensionDependencyProvider )
+			: base( extensionDependencyProvider )
+		{
+		}
+
 		public override void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
-			var interfaceType = ((ProcessableWithInterfaceAttribute)attribute).GetInterfaceOrDefault( typeWithAttribute );
+			var attributeTyped = (ProcessableWithInterfaceAttribute)attribute;
+			var interfaceType = attributeTyped.GetInterfaceOrDefault( typeWithAttribute );
 
-			ToInstantiatePerContainer( context, interfaceType, typeWithAttribute );
+			D.R.ToInstantiatePerContainer( interfaceType, typeWithAttribute, false );
 		}
 
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )

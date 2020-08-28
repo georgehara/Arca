@@ -8,14 +8,14 @@ namespace Automated.Arca.Abstractions.Core
 	{
 		IManagerStatistics Statistics { get; }
 
+		IManager AddExtensionDependency( Type baseType, IExtensionDependency baseTypeImplementation );
+		IManager AddExtensionDependency<BaseType>( IExtensionDependency baseTypeImplementation );
 		IManager AddAssembly( Assembly assembly );
 		IManager AddAssemblyFromFile( string assemblyFile );
 		IManager AddAssemblyContainingType( Type type );
 		IManager AddAssemblyContainingType<T>();
 		IManager AddEntryAssembly();
 		IManager AddAssembliesLoadedInProcess();
-		IManager AddExtensionDependency( Type baseType, IExtensionDependency baseTypeImplementation );
-		IManager AddExtensionDependency<BaseType>( IExtensionDependency baseTypeImplementation );
 		IManager Register();
 		IManager Configure();
 		IEnumerable<Type> GetPriorityTypes();

@@ -5,13 +5,18 @@ using Automated.Arca.Attributes.DependencyInjection;
 
 namespace Automated.Arca.Extensions.DependencyInjection
 {
-	public class ExtensionForInstantiatePerContainerAttribute : ExtensionForProcessableAttribute
+	public class ExtensionForInstantiatePerContainerAttribute : ExtensionForDependencyInjectionAttribute
 	{
 		public override Type AttributeType => typeof( InstantiatePerContainerAttribute );
 
+		public ExtensionForInstantiatePerContainerAttribute( IExtensionDependencyProvider extensionDependencyProvider )
+			: base( extensionDependencyProvider )
+		{
+		}
+
 		public override void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
-			ToInstantiatePerContainer( context, typeWithAttribute );
+			D.R.ToInstantiatePerContainer( typeWithAttribute, false );
 		}
 
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )

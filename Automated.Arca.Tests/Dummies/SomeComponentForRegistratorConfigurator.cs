@@ -8,16 +8,21 @@ namespace Automated.Arca.Tests.Dummies
 		public bool Configured { get; set; }
 	}
 
-	public class SomeForRegistratorConfigurator : RegistrationAndConfigurationBase, IRegistrator, IConfigurator
+	public class SomeForRegistratorConfigurator : DependencyInjectionRegistratorConfigurator
 	{
-		public void Register( IRegistrationContext context )
+		public SomeForRegistratorConfigurator( IExtensionDependencyProvider extensionDependencyProvider )
+			: base( extensionDependencyProvider )
 		{
-			ToInstantiatePerContainer( context, typeof( SomeComponentForRegistratorConfigurator ) );
 		}
 
-		public void Configure( IConfigurationContext context )
+		public override void Register( IRegistrationContext context )
 		{
-			var component = GetRequiredInstance<SomeComponentForRegistratorConfigurator>( context );
+			D.R.ToInstantiatePerContainer( typeof( SomeComponentForRegistratorConfigurator ), false );
+		}
+
+		public override void Configure( IConfigurationContext context )
+		{
+			var component = D.P.GetRequiredInstance<SomeComponentForRegistratorConfigurator>();
 
 			component.Configured = true;
 		}

@@ -16,6 +16,7 @@
 [Support for middleware](#support-for-middleware)<br/>
 [Support for CQRS](#support-for-cqrs)<br/>
 [Support for mocking](#support-for-mocking)<br/>
+[Support for multi-implementation](#support-for-multi-implementation)<br/>
 [Thread safety](#thread-safety)<br/>
 [Performance considerations](#performance-considerations)<br/>
 [Package descriptions](#package-descriptions)<br/>
@@ -82,11 +83,15 @@ The manager ensures that all the attributes that are applied on classes have ext
 
 An extension is a class which implements the `IExtensionForAttribute` interface; the interface may come from (anywhere in) the inheritance tree of the extension class.
 
+An extension must have a constructor with a single `IExtensionDependencyProvider` parameter.
+
+To make it easier to use, an extension should derive either from `ExtensionForDependencyInjectionAttribute` (from the `Abstractions.DependencyInjection` package), or from `ExtensionForSpecializedAttribute` (from the `Abstractions.Specialized` package).
+
 The extension specifies which attribute it handles, in the `AttributeType` property, and provides methods for the registration and configuration of the class on which the attribute is applied; the attribute can't come from the inheritance tree of the class to process.
 
-Extensions are instantiated once per manager.
+Extensions are instantiated once per manager, so they are reused for every class that has applied on it the attribute which is handled by the extension.
 
-Extensions don't support dependency injection through their constructors because the dependency injection container is not set up when the extensions are instantiated by the manager. However, in the `Configure` method you can instantiate classes from the dependency injection container because the instance provider (`IServiceProvider`) is available at that point.
+Extensions don't support dependency injection through their constructors because the dependency injection container is not set up when the extensions are instantiated by the manager. However, in the `Configure` method you can manually instantiate classes from the dependency injection container because the instance provider (`IServiceProvider`) is available at that point.
 
 
 ### REGISTER
@@ -122,19 +127,19 @@ A class which can be marked for registration or configuration must:
 
 ## PROCESSING WITH COMPLEX INPUT PARAMETERS
 
-### REGISTRATORS AND CONFIGURATORS
+### REGISTRATOR-CONFIGURATORS
 
-If the registration / configuration of a class requires complex input parameters, you can handle it in a registrator / configurator.
+If the registration or configuration of a class requires complex input parameters, you can handle it in a registrator-configurator.
 
-A registrator must implement the `IRegistrator` interface.
+A registrator-configurator must implement the `IRegistratorConfigurator` interface, and must have a constructor with a single `IExtensionDependencyProvider` parameter.
 
-A configurator must implement the `IConfigurator` interface.
+To make it easier to use, a registrator-configurator should derive either from `DependencyInjectionRegistratorConfigurator` (from the `Abstractions.DependencyInjection` package), or from `SpecializedRegistratorConfigurator` (from the `Abstractions.Specialized` package).
 
-The classes which are registered and configured by registrators and configurators should not have applied on them attributes (derived from the `ProcessableAttribute` attribute) because the attributes would trigger a separate processing of the classes.
+The classes which are registered and configured by registrator-configurators should not have applied on them attributes (derived from the `ProcessableAttribute` attribute) because the attributes would trigger a separate processing of such classes.
 
-Registrators and configurators are instantiated once per manager.
+Registrator-configurators are instantiated once per manager.
 
-Registrators and configurators don't support dependency injection through their constructors because the dependency injection container is not set up when the registrators / configurators are instantiated by the manager. However, a configurator can instantiate classes from the dependency injection container because the instance provider (`IServiceProvider`) is available at that point.
+Registrator-configurators don't support dependency injection through their constructors because the dependency injection container is not set up when the registrator-configurators are instantiated by the manager. However, in the `Configure` method you can manually instantiate classes from the dependency injection container because the instance provider (`IServiceProvider`) is available at that point.
 
 
 ## MANAGER OPTIONS
@@ -153,7 +158,7 @@ The ARCA manager must be instantiated with a set of options that can be created 
 
 `Prioritize`: Specifies a type that the manager will process first. The types are processed in the specified order, and before types which are not specified. This is particularly useful for middleware.
 
-Note: The extensions, registrators and configurators that you want to use, and the classes you want to register and configure, must be defined in assemblies whose names start with a prefix from the prefix list. The `Automated.Arca.` prefix can be added automatically to the prefix list through the constructor of the options class.
+Note: The extensions, the registrator-configurators that you want to use, and the classes you want to register and configure, must be declared in assemblies whose names start with a prefix from the prefix list. The `Automated.Arca.` prefix can be added automatically to the prefix list through the constructor of the options class.
 
 
 ### SPECIFYING ASSEMBLIES
@@ -181,9 +186,9 @@ Note about recursiveness:
 
 After you instantiate the manager, at application startup, and you add assemblies to it, you must call `Register` first, and only then call `Configure`. This is because the manager must register and configure classes based on their dependencies. This is what the manager does:
 * Registers classes (based on extensions).
-* Runs the registrators. The registrators can't depend on one another because the manager doesn't know the order in which to run the registrators.
+* Runs the registrators, that is, the `Register` methods from registrator-configurators. The registrators can't depend on one another because the manager doesn't know the order in which to run the registrators.
 * Configures the registered classes (based on extensions).
-* Runs the configurators. The configurators can't depend on one another because the manager doesn't know the order in which to run the configurators.
+* Runs the configurators, that is, the `Configure` methods from registrator-configurators. The configurators can't depend on one another because the manager doesn't know the order in which to run the configurators.
 
 Note: The `Register` and `Configure` manager methods may be called multiple times, but the manager checks the consistency of the state of each type that was loaded (by the manager) with an `AddXXX` manager method. So, for example if you call `AddXXX`, then `Register`, then `AddXXX` again, an exception is thrown because you didn't call `Configure` after `Register`. Microsoft's dependency injection container stops registering components once the instantiation provider (`IServiceProvider`) is built, and the configuration phase of the manager starts, without throwing an exception, so it's pointless to register new types after the `Configure` manager method is called. ARCA allows multiple calls to `Register` and `Configure` because it can be used without dependency injection.
 
@@ -214,11 +219,27 @@ In the terminology of Microsoft's dependency injection container, the instantiat
 
 ### DEPENDENCIES REGISTERED BY DEFAULT
 
-When dependency injection is used, ARCA adds the following components to the instantiation registry (`IServiceCollection`), to be instantiated per container through the instance provider (`IServiceProvider`):
-* `IGlobalInstanceProvider`
-* `IInstanceProvider`
+When using the `AddDependencies` manager extension method from the `Implementations.ForMicrosoft` package, the following extension dependency instances are added to the manager, to be retrieved through an instance of `IExtensionDependencyProvider`:
+* `IDependencyInjectionProxy` from the `Abstractions.DependencyInjection` package
+* `ISpecializedProxy` from the `Abstractions.Specialized` package
+* `IKeyedOptionsProvider` from the `Abstractions.DependencyInjection` package
+* `IInstantiationRegistry` from the `Abstractions.DependencyInjection` package
+* `IMultiInstantiationRegistry` from the `Abstractions.DependencyInjection` package
+* `ISpecializedRegistry` from the `Abstractions.Specialized` package
+* `IInstanceProvider` from the `Abstractions.DependencyInjection` package, only during the configuration phase
+* `IGlobalInstanceProvider` from the `Abstractions.DependencyInjection` package, only during the configuration phase
+* `IMiddlewareRegistry` from the `Abstractions.Specialized` package
 
-You can add any of these interfaces as parameters to the constructors of your classes, so they can be injected by the dependency injection container.
+When using the `AddDependencies` manager extension method from the `Implementations.ForMicrosoft` package, the following instances (per container) are added to the instantiation registry (`IServiceCollection`), to be retrieved through the parameters of the constructors of classes or through the instance provider (`IServiceProvider`):
+* `IExtensionDependencyProvider` from the `Abstractions.Core` package
+* `IDependencyInjectionProxy` from the `Abstractions.DependencyInjection` package
+* `ISpecializedProxy` from the `Abstractions.Specialized` package
+* `IKeyedOptionsProvider` from the `Abstractions.DependencyInjection` package
+* `IInstantiationRegistry` from the `Abstractions.DependencyInjection` package
+* `IMultiInstantiationRegistry` from the `Abstractions.DependencyInjection` package
+* `ISpecializedRegistry` from the `Abstractions.Specialized` package
+* `IInstanceProvider` from the `Abstractions.DependencyInjection` package, only during the configuration phase
+* `IGlobalInstanceProvider` from the `Abstractions.DependencyInjection` package, only during the configuration phase
 
 
 ## SUPPORT FOR SCOPES
@@ -279,7 +300,7 @@ See the `AutomatedMocker` class from the `Automated.Arca.Tests` project for a de
 * The type is not an interface. NSubstitute can mock (well) only interfaces.
 * The type is an implementation of any of the following interfaces: `ITenantManager`, `ITenantNameProvider`. Because their implementations have attributes applied on them, they go through the dependency injection registration, so they go on the code path which mocks types, but they must not be mocked because their implementations are essential for testing.
 
-The `DependencyInjectionInstantiationRegistry` instantiation registry from the `Implementations.ForMicrosoft` package supports mocking only in the `ToInstantiatePerXXX` methods. The `AddInstancePerXXX` methods don't support it because they already receive an implementation, so its presumed that the caller knows to send a mock if it's required.
+The `InstantiationRegistry` class from the `Implementations.ForMicrosoft` package supports mocking only in the `ToInstantiatePerXXX` methods. The `AddInstancePerXXX` methods don't support it because they already receive an implementation, so its presumed that the caller knows to send a mock if it's required.
 
  See the `SampleForAutomatedAndManualMocking` test for an example.
 
@@ -293,6 +314,19 @@ Manual mocking can be done with the `ManagerExtensions.WithManualMocking` method
 Microsoft's dependency injection container stops registering components once the instantiation provider (`IServiceProvider`) is built, and the configuration phase of the manager starts, without throwing an exception, so it's pointless to register new types after the `Configure` manager method is called, which means that it's pointless to mock classes after `Configure` is called.
 
 See the `SampleForAutomatedAndManualMocking` test for an example.
+
+
+## SUPPORT FOR MULTI-IMPLEMENTATION
+
+Dependency injection support for multi-implementation per interface is provided by the `MultiInstantiatePerContainerAttribute`, `MultiInstantiatePerScopeAttribute` and `MultiInstantiatePerInjectionAttribute` attributes from the `Attributes.DependencyInjection` package.
+
+Multi-implementation means that you can have multiple implementations of a certain interface, and you can get an instance of that interface, based on an implementation key, from the dependency injection container rather than make `if` based decisions in your code.
+
+All you have to do is add one of the above attributes to each implementation of the interface, and specify an implementation key (which can be even the name of the implementation's type). The key has to be unique per interface, not per application.
+
+Then, in code, you'll have to manually get an instance of that interface, base on an implementation key which is determined at runtime, from a user's choice. The easiest way to do this would be to use an instance of the `ExtensionDependencyProxy` from the `Abstractions.DependencyInjection` package; simply inject this type in the constructor of the consumer class. When you do this manually, all the constructor parameters of the implementation class are automatically instantiated, regardless of the level of nesting, so you only have to do one manual operation.
+
+See the tests from the `MultiImplementationTests` class for examples.
 
 
 ## THREAD SAFETY
@@ -312,7 +346,7 @@ The performance-relevant time is the execution time for processing the unprocess
  
 An approximate performance can be viewed by executing the (release build of the) tests from the `ProcessingPerformanceTests` class. If you want to see the execution times without any caching from .Net, rebuild the solution before running each test separately.
 
-The tests process about 10'000 types. The relevant time is 12 ms if the `IProcessable` interface is used, and 16 ms if it's not used. This means that ARCA can process about 800'000 unprocessable types per second.
+The tests process about 10'000 types. The relevant time is 10 ms if the `IProcessable` interface is used, and 14 ms if it's not used. This means that ARCA can process about 1'000'000 unprocessable types per second.
 
 To improve ARCA's performance:
 * Use specific assembly name prefixes in order to reduce the number of assemblies that have be loaded and scanned.
@@ -389,7 +423,7 @@ namespace FooCorp
 			// ...
 
 			Manager
-				.AddInstantiationRegistries( services )
+				.AddDependencies( services )
 				.Register();
 		}
 
@@ -454,7 +488,7 @@ namespace Automated.Arca.Tests.Dummies
 Here is a sample output:
 
 ```
-Created instance of 'CollectorLogger' at 2020-08-25T01:02:33
+Created instance of 'CollectorLogger' at 2020-08-28T22:24:59
 Using the assembly name prefix list: 'Automated.Arca.'
 Assembly names to exclude: 
 Excluded types: 
@@ -466,9 +500,9 @@ Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Abstractions.Core' ex
 Cached assembly 'Automated.Arca.Abstractions.Core'
 Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Libraries' executed in 0 ms.
 Cached assembly 'Automated.Arca.Libraries'
-Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.Specialized' executed in 20 ms.
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.Specialized' executed in 21 ms.
 Cached assembly 'Automated.Arca.Attributes.Specialized'
-Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.DependencyInjection' executed in 22 ms.
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.DependencyInjection' executed in 18 ms.
 Cached assembly 'Automated.Arca.Attributes.DependencyInjection'
 Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Extensions.DependencyInjection' executed in 0 ms.
 Cached assembly 'Automated.Arca.Extensions.DependencyInjection'
@@ -486,6 +520,9 @@ Cached extension 'ExtensionForInstantiatePerInjectionAttribute' for attribute 'I
 Cached extension 'ExtensionForInstantiatePerInjectionWithInterfaceAttribute' for attribute 'InstantiatePerInjectionWithInterfaceAttribute'
 Cached extension 'ExtensionForInstantiatePerScopeAttribute' for attribute 'InstantiatePerScopeAttribute'
 Cached extension 'ExtensionForInstantiatePerScopeWithInterfaceAttribute' for attribute 'InstantiatePerScopeWithInterfaceAttribute'
+Cached extension 'ExtensionForMultiInstantiatePerContainerAttribute' for attribute 'MultiInstantiatePerContainerAttribute'
+Cached extension 'ExtensionForMultiInstantiatePerInjectionAttribute' for attribute 'MultiInstantiatePerInjectionAttribute'
+Cached extension 'ExtensionForMultiInstantiatePerScopeAttribute' for attribute 'MultiInstantiatePerScopeAttribute'
 Cached extension 'ExtensionForScopeManagerAttribute' for attribute 'ScopeManagerAttribute'
 Cached extension 'ExtensionForScopeNameProviderAttribute' for attribute 'ScopeNameProviderAttribute'
 Cached extension 'ExtensionForScopeNameResolverAttribute' for attribute 'ScopeNameResolverAttribute'
@@ -506,10 +543,10 @@ Cached extension 'ExtensionForMessageBusSubscribeForExchangeCommandQueueTargetAt
 Cached extension 'ExtensionForMessageBusSubscribeForExchangePublicationQueueBetweenAttribute' for attribute 'MessageBusSubscribeForExchangePublicationQueueBetweenAttribute'
 Cached extension 'ExtensionForOutboxAttribute' for attribute 'OutboxAttribute'
 Cached extension 'ExtensionForOutboxProcessorAttribute' for attribute 'OutboxProcessorAttribute'
-Method 'CacheReferencedAssembliesAndTypesAndExtensions' for assembly 'Automated.Arca.Demo.WebApi' executed in 54 ms.
+Method 'CacheReferencedAssembliesAndTypesAndExtensions' for assembly 'Automated.Arca.Demo.WebApi' executed in 51 ms.
 Registered class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Registered class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
-Method 'Register' executed in 3 ms. Registered 2 classes out of 132 cached types.
+Method 'Register' executed in 3 ms. Registered 2 classes out of 143 cached types.
 Configured class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Configured class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
 Method 'Configure' executed in 1 ms.

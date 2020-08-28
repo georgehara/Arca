@@ -5,15 +5,21 @@ using Automated.Arca.Attributes.DependencyInjection;
 
 namespace Automated.Arca.Extensions.DependencyInjection
 {
-	public class ExtensionForInstantiatePerScopeWithInterfaceAttribute : ExtensionForProcessableWithInterfaceAttribute
+	public class ExtensionForInstantiatePerScopeWithInterfaceAttribute : ExtensionForDependencyInjectionAttribute
 	{
 		public override Type AttributeType => typeof( InstantiatePerScopeWithInterfaceAttribute );
 
+		public ExtensionForInstantiatePerScopeWithInterfaceAttribute( IExtensionDependencyProvider extensionDependencyProvider )
+			: base( extensionDependencyProvider )
+		{
+		}
+
 		public override void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
-			var interfaceType = ((ProcessableWithInterfaceAttribute)attribute).GetInterfaceOrDefault( typeWithAttribute );
+			var attributeTyped = (ProcessableWithInterfaceAttribute)attribute;
+			var interfaceType = attributeTyped.GetInterfaceOrDefault( typeWithAttribute );
 
-			ToInstantiatePerScope( context, interfaceType, typeWithAttribute );
+			D.R.ToInstantiatePerScope( interfaceType, typeWithAttribute, false );
 		}
 
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )

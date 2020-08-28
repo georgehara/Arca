@@ -16,8 +16,8 @@ namespace Automated.Arca.Tests
 			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, false,
 				null, Assembly.GetExecutingAssembly() );
 
-			var instance1 = applicationPipeline.GetRequiredInstance<SomeInstantiatePerContainerComponent>();
-			var instance2 = applicationPipeline.GetRequiredInstance<SomeInstantiatePerContainerComponent>();
+			var instance1 = applicationPipeline.D.P.GetRequiredInstance<SomeInstantiatePerContainerComponent>();
+			var instance2 = applicationPipeline.D.P.GetRequiredInstance<SomeInstantiatePerContainerComponent>();
 
 			Assert.Equal( instance1, instance2 );
 		}
@@ -28,8 +28,8 @@ namespace Automated.Arca.Tests
 			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, true,
 				null, Assembly.GetExecutingAssembly() );
 
-			var instance1 = applicationPipeline.GetRequiredInstance<ISomeTenantRequestProcessor>();
-			var instance2 = applicationPipeline.GetRequiredInstance<ISomeTenantRequestProcessor>();
+			var instance1 = applicationPipeline.D.P.GetRequiredInstance<ISomeTenantRequestProcessor>();
+			var instance2 = applicationPipeline.D.P.GetRequiredInstance<ISomeTenantRequestProcessor>();
 
 			Assert.Equal( instance1, instance2 );
 			Assert.Equal( "", instance1.ScopeName );
@@ -44,8 +44,8 @@ namespace Automated.Arca.Tests
 			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, false,
 				null, Assembly.GetExecutingAssembly() );
 
-			var scopedProvider1 = applicationPipeline.GetOrAddScopedProvider( ScopeName1 );
-			var scopedProvider2 = applicationPipeline.GetOrAddScopedProvider( ScopeName1 );
+			var scopedProvider1 = applicationPipeline.SP( ScopeName1 );
+			var scopedProvider2 = applicationPipeline.SP( ScopeName1 );
 
 			var tenantNameProvider1 = scopedProvider1.GetRequiredInstance<ITenantNameProvider>();
 			var tenantNameProvider2 = scopedProvider2.GetRequiredInstance<ITenantNameProvider>();
@@ -68,14 +68,14 @@ namespace Automated.Arca.Tests
 		{
 			// This test proves that the (automatic) instantiation of the parameters of a class happens from the scope from which
 			// the class was (manually) instantiated. This allows the developer to manually create a tenant-scoped processor which
-			// has all its constructor parameters automatically instantiated, regardless of the level of imbrication. A request /
+			// has all its constructor parameters automatically instantiated, regardless of the level of nesting. A request /
 			// message handling method can then be called on the tenant-scoped processor.
 
 			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, false,
 				null, Assembly.GetExecutingAssembly() );
 
-			var scopedProvider1 = applicationPipeline.GetOrAddScopedProvider( ScopeName1 );
-			var scopedProvider2 = applicationPipeline.GetOrAddScopedProvider( ScopeName2 );
+			var scopedProvider1 = applicationPipeline.SP( ScopeName1 );
+			var scopedProvider2 = applicationPipeline.SP( ScopeName2 );
 
 			var tenantNameProvider1 = scopedProvider1.GetRequiredInstance<ITenantNameProvider>();
 			var tenantNameProvider2 = scopedProvider2.GetRequiredInstance<ITenantNameProvider>();

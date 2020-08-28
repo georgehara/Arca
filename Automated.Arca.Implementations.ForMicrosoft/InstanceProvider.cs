@@ -13,16 +13,6 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			ServiceProvider = serviceProvider;
 		}
 
-		public object GetInstanceOrNull( Type type )
-		{
-			return ServiceProvider.GetService( type );
-		}
-
-		public T GetInstanceOrNull<T>()
-		{
-			return ServiceProvider.GetService<T>();
-		}
-
 		public object GetRequiredInstance( Type type )
 		{
 			return ServiceProvider.GetRequiredService( type );
@@ -31,6 +21,17 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 		public T GetRequiredInstance<T>()
 		{
 			return ServiceProvider.GetRequiredService<T>();
+		}
+
+		public object? GetInstanceOrNull( Type type )
+		{
+			return ServiceProvider.GetService( type );
+		}
+
+		public T? GetInstanceOrNull<T>()
+			where T : class
+		{
+			return ServiceProvider.GetService<T>();
 		}
 	}
 }

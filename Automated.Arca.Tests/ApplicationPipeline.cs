@@ -26,12 +26,14 @@ namespace Automated.Arca.Tests
 		private readonly IApplicationBuilder ApplicationBuilder;
 
 		public IManagerStatistics Statistics => Manager.Statistics;
+		public IDependencyInjectionProxy D => Manager.GetExtensionDependency<IDependencyInjectionProxy>();
+		public IScopedInstanceProvider<string> SP( string scopeName ) => D.SP<ITenantManager, string>( scopeName );
 
 		public ApplicationPipeline( Action<IManagerOptions> onCreateManagerOptions, bool useLogging,
 			bool processOnlyTypesDerivedFromIProcessable, ICollection<Type>? excludeTypes, IList<Type>? priorityTypes,
-			bool simulateOnlyUnprocessableTypes, bool instantiatePerContainerInsteadOfScope,
-			AutomatedMocker? automatedMocker, Assembly rootAssembly, Action<IManager> onCreateManager,
-			Action<ApplicationPipeline> onManagerRegister, Action<ApplicationPipeline> onManagerConfigure )
+			bool simulateOnlyUnprocessableTypes, bool instantiatePerContainerInsteadOfScope, AutomatedMocker? automatedMocker,
+			Assembly rootAssembly, Action<IManager> onCreateManager, Action<ApplicationPipeline> onManagerRegister,
+			Action<ApplicationPipeline> onManagerConfigure )
 		{
 			InstantiatePerContainerInsteadOfScope = instantiatePerContainerInsteadOfScope;
 			AutomatedMocker = automatedMocker;
@@ -64,6 +66,11 @@ namespace Automated.Arca.Tests
 				x => x.ConfigureFirst() );
 		}
 
+		public IEnumerable<Type> GetPriorityTypes()
+		{
+			return Manager.GetPriorityTypes();
+		}
+
 		public ApplicationPipeline AddAssemblyContainingType<T>()
 		{
 			Manager.AddAssemblyContainingType<T>();
@@ -81,7 +88,7 @@ namespace Automated.Arca.Tests
 		public ApplicationPipeline RegisterFirst()
 		{
 			Manager
-				.AddInstantiationRegistries( Services, false, InstantiatePerContainerInsteadOfScope, AutomatedMocker, true )
+				.AddDependencies( Services, InstantiatePerContainerInsteadOfScope, AutomatedMocker )
 				.Register();
 
 			return this;
@@ -116,23 +123,6 @@ namespace Automated.Arca.Tests
 				.Configure();
 
 			return this;
-		}
-
-		public IScopedInstanceProvider<string> GetOrAddScopedProvider( string scopeName )
-		{
-			var scopeManager = Manager.GetExtensionDependency<IGlobalInstanceProvider>().GetRequiredInstance<ITenantManager>();
-
-			return scopeManager.GetOrAdd( scopeName );
-		}
-
-		public T GetRequiredInstance<T>()
-		{
-			return Manager.GetExtensionDependency<IGlobalInstanceProvider>().GetRequiredInstance<T>();
-		}
-
-		public IEnumerable<Type> GetPriorityTypes()
-		{
-			return Manager.GetPriorityTypes();
 		}
 
 		private IConfiguration GetApplicationOptionsProvider()

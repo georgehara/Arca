@@ -5,9 +5,14 @@ using Automated.Arca.Attributes.Specialized;
 
 namespace Automated.Arca.Extensions.Specialized
 {
-	public class ExtensionForExternalServiceAttribute : ExtensionForProcessableWithInterfaceAttribute
+	public class ExtensionForExternalServiceAttribute : ExtensionForSpecializedAttribute
 	{
 		public override Type AttributeType => typeof( ExternalServiceAttribute );
+
+		public ExtensionForExternalServiceAttribute( IExtensionDependencyProvider extensionDependencyProvider )
+			: base( extensionDependencyProvider )
+		{
+		}
 
 		public override void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
@@ -15,14 +20,14 @@ namespace Automated.Arca.Extensions.Specialized
 
 			var interfaceType = attributeTyped.GetInterfaceOrDefault( typeWithAttribute );
 			var baseAddressConfigurationKey = attributeTyped.BaseAddressConfigurationKey;
-			var baseAddress = Options( context ).GetRequiredString( baseAddressConfigurationKey );
+			var baseAddress = D.O.GetRequiredString( baseAddressConfigurationKey );
 			var retryCount = attributeTyped.RetryCount;
 			var retryDelayMilliseconds = attributeTyped.RetryDelayMilliseconds;
 			var circuitBreakerEventCount = attributeTyped.CircuitBreakerEventCount;
 			var circuitBreakerDurationSeconds = attributeTyped.CircuitBreakerDurationSeconds;
 
-			SpecializedRegistry( context ).AddExternalService( interfaceType, typeWithAttribute, baseAddress, retryCount,
-				retryDelayMilliseconds, circuitBreakerEventCount, circuitBreakerDurationSeconds );
+			S.R.AddExternalService( interfaceType, typeWithAttribute, baseAddress, retryCount, retryDelayMilliseconds,
+				circuitBreakerEventCount, circuitBreakerDurationSeconds );
 		}
 
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )

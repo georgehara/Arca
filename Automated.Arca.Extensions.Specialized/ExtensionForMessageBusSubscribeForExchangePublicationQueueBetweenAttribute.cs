@@ -6,9 +6,15 @@ using Automated.Arca.Attributes.Specialized;
 namespace Automated.Arca.Extensions.Specialized
 {
 	public class ExtensionForMessageBusSubscribeForExchangePublicationQueueBetweenAttribute :
-		ExtensionForProcessableAttribute
+		ExtensionForSpecializedAttribute
 	{
 		public override Type AttributeType => typeof( MessageBusSubscribeForExchangePublicationQueueBetweenAttribute );
+
+		public ExtensionForMessageBusSubscribeForExchangePublicationQueueBetweenAttribute(
+				IExtensionDependencyProvider extensionDependencyProvider )
+			: base( extensionDependencyProvider )
+		{
+		}
 
 		public override void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
@@ -18,7 +24,7 @@ namespace Automated.Arca.Extensions.Specialized
 		{
 			var attributeTyped = (MessageBusSubscribeForExchangePublicationQueueBetweenAttribute)attribute;
 
-			var messageBus = Provider( context ).GetRequiredInstance<IMessageBus>();
+			var messageBus = D.P.GetRequiredInstance<IMessageBus>();
 			var messageTypes = attributeTyped.MessageTypes;
 
 			var sourceBoundedContext = attributeTyped.SourceBoundedContext;

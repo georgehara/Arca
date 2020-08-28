@@ -27,7 +27,7 @@ namespace Automated.Arca.Tests
 
 			VerifyDummies( applicationPipeline, false );
 
-			void a() => applicationPipeline.GetRequiredInstance<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>();
+			void a() => applicationPipeline.D.P.GetRequiredInstance<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>();
 
 			Assert.Throws<InvalidOperationException>( a );
 		}
@@ -102,7 +102,7 @@ namespace Automated.Arca.Tests
 
 			VerifyDummies( applicationPipeline, false );
 
-			void a() => applicationPipeline.GetRequiredInstance<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>();
+			void a() => applicationPipeline.D.P.GetRequiredInstance<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>();
 
 			Assert.Throws<InvalidOperationException>( a );
 		}
@@ -125,7 +125,7 @@ namespace Automated.Arca.Tests
 			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, false,
 				null, Assembly.GetCallingAssembly() );
 
-			void a() => applicationPipeline.GetRequiredInstance<SomeInstantiatePerScopeComponent>();
+			void a() => applicationPipeline.D.P.GetRequiredInstance<SomeInstantiatePerScopeComponent>();
 
 			Assert.Throws<InvalidOperationException>( a );
 		}
@@ -136,7 +136,7 @@ namespace Automated.Arca.Tests
 			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( false, null, null, false,
 				null, Assembly.GetExecutingAssembly() );
 
-			Assert.NotNull( applicationPipeline.GetRequiredInstance<SomeComponentNotDerivedFromIProcessable>() );
+			Assert.NotNull( applicationPipeline.D.P.GetRequiredInstance<SomeComponentNotDerivedFromIProcessable>() );
 		}
 
 		[Fact]
@@ -145,7 +145,7 @@ namespace Automated.Arca.Tests
 			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, false,
 				null, Assembly.GetExecutingAssembly() );
 
-			void a() => applicationPipeline.GetRequiredInstance<SomeComponentNotDerivedFromIProcessable>();
+			void a() => applicationPipeline.D.P.GetRequiredInstance<SomeComponentNotDerivedFromIProcessable>();
 
 			Assert.Throws<InvalidOperationException>( a );
 		}
@@ -159,7 +159,7 @@ namespace Automated.Arca.Tests
 				x => x.RegisterFirst(),
 				x => x.ConfigureFirst() );
 
-			Assert.NotNull( applicationPipeline.GetRequiredInstance<SomeInstantiatePerContainerComponent>() );
+			Assert.NotNull( applicationPipeline.D.P.GetRequiredInstance<SomeInstantiatePerContainerComponent>() );
 		}
 
 		[Fact]
@@ -173,7 +173,7 @@ namespace Automated.Arca.Tests
 				x => x.RegisterFirst(),
 				x => x.ConfigureFirst() );
 
-			void a() => applicationPipeline.GetRequiredInstance<SomeInstantiatePerContainerComponent>();
+			void a() => applicationPipeline.D.P.GetRequiredInstance<SomeInstantiatePerContainerComponent>();
 
 			Assert.Throws<InvalidOperationException>( a );
 		}
@@ -221,7 +221,7 @@ namespace Automated.Arca.Tests
 
 			VerifyDummies( applicationPipeline, false );
 
-			var scopedProvider = applicationPipeline.GetOrAddScopedProvider( ScopeNames.ManualMocking );
+			var scopedProvider = applicationPipeline.SP( ScopeNames.ManualMocking );
 			var instance = scopedProvider.GetRequiredInstance<ISomeComponentToSubstitute>();
 
 			var value = instance.Get( "Some key" );
@@ -237,17 +237,17 @@ namespace Automated.Arca.Tests
 
 		private void VerifyDummies( ApplicationPipeline applicationPipeline, bool includeDummyAssembly )
 		{
-			var scopedProvider = applicationPipeline.GetOrAddScopedProvider( ScopeNames.Main );
+			var scopedProvider = applicationPipeline.SP( ScopeNames.Main );
 
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeAttributeWithInstantiatePerScopeAttribute>() );
 
-			Assert.NotNull( applicationPipeline.GetRequiredInstance<SomeBoundedContext>() );
+			Assert.NotNull( applicationPipeline.D.P.GetRequiredInstance<SomeBoundedContext>() );
 
-			Assert.NotNull( applicationPipeline.GetRequiredInstance<ICommandHandlerRegistry>() );
+			Assert.NotNull( applicationPipeline.D.P.GetRequiredInstance<ICommandHandlerRegistry>() );
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeCommandHandler>() );
 
 			var someComponentForRegistratorConfigurator
-				= applicationPipeline.GetRequiredInstance<SomeComponentForRegistratorConfigurator>();
+				= applicationPipeline.D.P.GetRequiredInstance<SomeComponentForRegistratorConfigurator>();
 			Assert.True( someComponentForRegistratorConfigurator.Configured );
 
 			// "SomeComponentNotDerivedFromIProcessable" is checked separately.
@@ -255,38 +255,38 @@ namespace Automated.Arca.Tests
 			Assert.NotNull( scopedProvider.GetRequiredInstance<ISomeComponentToSubstitute>() );
 
 			var someComponentWithInterfaceSpecifiedInAttribute
-				= applicationPipeline.GetRequiredInstance<ISomeComponentWithInterfaceSpecifiedInAttribute>();
+				= applicationPipeline.D.P.GetRequiredInstance<ISomeComponentWithInterfaceSpecifiedInAttribute>();
 			Assert.True( someComponentWithInterfaceSpecifiedInAttribute.Configured );
 
 			var someComponentWithoutInterfaceSpecifiedInAttribute
-				= applicationPipeline.GetRequiredInstance<ISomeComponentWithoutInterfaceSpecifiedInAttribute>();
+				= applicationPipeline.D.P.GetRequiredInstance<ISomeComponentWithoutInterfaceSpecifiedInAttribute>();
 			Assert.True( someComponentWithoutInterfaceSpecifiedInAttribute.Configured );
 
-			Assert.NotNull( applicationPipeline.GetRequiredInstance<IDomainEventRegistry>() );
-			Assert.NotNull( applicationPipeline.GetRequiredInstance<IDomainEventHandlerRegistry>() );
+			Assert.NotNull( applicationPipeline.D.P.GetRequiredInstance<IDomainEventRegistry>() );
+			Assert.NotNull( applicationPipeline.D.P.GetRequiredInstance<IDomainEventHandlerRegistry>() );
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeDomainEventHandler>() );
 
-			Assert.NotNull( applicationPipeline.GetRequiredInstance<ISomeExternalService>() );
+			Assert.NotNull( applicationPipeline.D.P.GetRequiredInstance<ISomeExternalService>() );
 
-			Assert.NotNull( applicationPipeline.GetRequiredInstance<SomeInstantiatePerContainerComponent>() );
-			Assert.NotNull( applicationPipeline.GetRequiredInstance<ISomeInstantiatePerContainerComponentWithInterface>() );
-			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeInstantiatePerInjectionComponent>() );
-			Assert.NotNull( scopedProvider.GetRequiredInstance<ISomeInstantiatePerInjectionComponentWithInterface>() );
+			Assert.NotNull( applicationPipeline.D.P.GetRequiredInstance<SomeInstantiatePerContainerComponent>() );
+			Assert.NotNull( applicationPipeline.D.P.GetRequiredInstance<ISomeInstantiatePerContainerComponentWithInterface>() );
+			Assert.NotNull( applicationPipeline.D.P.GetRequiredInstance<SomeInstantiatePerInjectionComponent>() );
+			Assert.NotNull( applicationPipeline.D.P.GetRequiredInstance<ISomeInstantiatePerInjectionComponentWithInterface>() );
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeInstantiatePerScopeComponent>() );
 			Assert.NotNull( scopedProvider.GetRequiredInstance<ISomeInstantiatePerScopeComponentWithInterface>() );
 
-			Assert.NotNull( applicationPipeline.GetRequiredInstance<IIntegrationEventHandlerRegistry>() );
+			Assert.NotNull( applicationPipeline.D.P.GetRequiredInstance<IIntegrationEventHandlerRegistry>() );
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeIntegrationEventHandler>() );
 
-			var someMessageBusConnection = applicationPipeline.GetRequiredInstance<ISomeMessageBusConnection>();
+			var someMessageBusConnection = applicationPipeline.D.P.GetRequiredInstance<ISomeMessageBusConnection>();
 			Assert.NotNull( someMessageBusConnection.Connection );
 
-			Assert.NotNull( applicationPipeline.GetRequiredInstance<SomeMiddlewarePerContainer>() );
-			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeMiddlewarePerInjection>() );
+			Assert.NotNull( applicationPipeline.D.P.GetRequiredInstance<SomeMiddlewarePerContainer>() );
+			Assert.NotNull( applicationPipeline.D.P.GetRequiredInstance<SomeMiddlewarePerInjection>() );
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeMiddlewarePerScope>() );
 
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeOutbox>() );
-			Assert.NotNull( applicationPipeline.GetRequiredInstance<IOutboxProcessor>() );
+			Assert.NotNull( applicationPipeline.D.P.GetRequiredInstance<IOutboxProcessor>() );
 
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeProcessableAttributeWithInstantiatePerScopeAttribute>() );
 
@@ -299,7 +299,7 @@ namespace Automated.Arca.Tests
 
 		private void VerifyDummiesFromDummyAssembly( ApplicationPipeline applicationPipeline )
 		{
-			var scopedProvider = applicationPipeline.GetOrAddScopedProvider( ScopeNames.Main );
+			var scopedProvider = applicationPipeline.SP( ScopeNames.Main );
 
 			Assert.NotNull( scopedProvider.GetRequiredInstance<global::Tests.DummyAssembly.SomeInstantiatePerScopeComponent>() );
 		}

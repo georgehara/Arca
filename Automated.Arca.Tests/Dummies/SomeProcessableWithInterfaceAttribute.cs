@@ -1,7 +1,6 @@
 ﻿using System;
 using Automated.Arca.Abstractions.Core;
 using Automated.Arca.Abstractions.DependencyInjection;
-using Automated.Arca.Libraries;
 
 namespace Automated.Arca.Tests.Dummies
 {
@@ -18,27 +17,28 @@ namespace Automated.Arca.Tests.Dummies
 		}
 	}
 
-	public class ExtensionForSomeProcessableWithInterfaceAttribute : ExtensionForProcessableAttribute
+	public class ExtensionForSomeProcessableWithInterfaceAttribute : ExtensionForDependencyInjectionAttribute
 	{
 		public override Type AttributeType => typeof( SomeProcessableWithInterfaceAttribute );
+		public override Type? BaseInterfaceOfTypeWithAttribute => typeof( ISomeConfigurable );
+
+		public ExtensionForSomeProcessableWithInterfaceAttribute( IExtensionDependencyProvider extensionDependencyProvider )
+			: base( extensionDependencyProvider )
+		{
+		}
 
 		public override void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
 			var interfaceType = ((ProcessableWithInterfaceAttribute)attribute).GetInterfaceOrDefault( typeWithAttribute );
 
-			typeWithAttribute.EnsureDerivesFromInterface( interfaceType );
-
-			ToInstantiatePerContainer( context, interfaceType, typeWithAttribute );
+			D.R.ToInstantiatePerContainer( interfaceType, typeWithAttribute, false );
 		}
 
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
 			var interfaceType = ((ProcessableWithInterfaceAttribute)attribute).GetInterfaceOrDefault( typeWithAttribute );
 
-			typeWithAttribute.EnsureDerivesFromInterface( interfaceType );
-			interfaceType.EnsureDerivesFromInterface( typeof( ISomeConfigurable ) );
-
-			var instance = (ISomeConfigurable)GetRequiredInstance( context, interfaceType );
+			var instance = (ISomeConfigurable)D.P.GetRequiredInstance( interfaceType );
 
 			instance.Configured = true;
 		}

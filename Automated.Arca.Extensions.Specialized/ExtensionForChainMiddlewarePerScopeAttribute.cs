@@ -8,9 +8,14 @@ namespace Automated.Arca.Extensions.Specialized
 	{
 		public override Type AttributeType => typeof( ChainMiddlewarePerScopeAttribute );
 
+		public ExtensionForChainMiddlewarePerScopeAttribute( IExtensionDependencyProvider extensionDependencyProvider )
+			: base( extensionDependencyProvider )
+		{
+		}
+
 		public override void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
-			ToInstantiatePerScope( context, typeWithAttribute );
+			D.R.ToInstantiatePerScope( typeWithAttribute, false );
 		}
 	}
 }

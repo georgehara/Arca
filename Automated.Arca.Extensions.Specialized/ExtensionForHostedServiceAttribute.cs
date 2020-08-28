@@ -5,13 +5,18 @@ using Automated.Arca.Attributes.Specialized;
 
 namespace Automated.Arca.Extensions.Specialized
 {
-	public class ExtensionForHostedServiceAttribute : ExtensionForProcessableAttribute
+	public class ExtensionForHostedServiceAttribute : ExtensionForSpecializedAttribute
 	{
 		public override Type AttributeType => typeof( HostedServiceAttribute );
 
+		public ExtensionForHostedServiceAttribute( IExtensionDependencyProvider extensionDependencyProvider )
+			: base( extensionDependencyProvider )
+		{
+		}
+
 		public override void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
-			SpecializedRegistry( context ).AddHostedService( typeWithAttribute );
+			S.R.AddHostedService( typeWithAttribute );
 		}
 
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )

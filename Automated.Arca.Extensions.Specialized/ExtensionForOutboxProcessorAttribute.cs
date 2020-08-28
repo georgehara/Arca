@@ -5,23 +5,29 @@ using Automated.Arca.Attributes.Specialized;
 
 namespace Automated.Arca.Extensions.Specialized
 {
-	public class ExtensionForOutboxProcessorAttribute : ExtensionForProcessableWithInterfaceAttribute
+	public class ExtensionForOutboxProcessorAttribute : ExtensionForSpecializedAttribute
 	{
 		public override Type AttributeType => typeof( OutboxProcessorAttribute );
 		public override Type? BaseInterfaceOfTypeWithAttribute => typeof( IOutboxProcessor );
 
+		public ExtensionForOutboxProcessorAttribute( IExtensionDependencyProvider extensionDependencyProvider )
+			: base( extensionDependencyProvider )
+		{
+		}
+
 		public override void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
-			var interfaceType = ((ProcessableWithInterfaceAttribute)attribute).GetInterfaceOrDefault( typeWithAttribute );
+			var attributeTyped = (ProcessableWithInterfaceAttribute)attribute;
+			var interfaceType = attributeTyped.GetInterfaceOrDefault( typeWithAttribute );
 
-			ToInstantiatePerContainer( context, interfaceType, typeWithAttribute );
+			D.R.ToInstantiatePerContainer( interfaceType, typeWithAttribute, false );
 		}
 
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
 			var key = ((OutboxProcessorAttribute)attribute).ScheduleConfigurationKey;
-			var scheduleConfiguration = Options( context ).GetRequiredString( key );
-			var outboxProcessor = Provider( context ).GetRequiredInstance<IOutboxProcessor>();
+			var scheduleConfiguration = D.O.GetRequiredString( key );
+			var outboxProcessor = D.P.GetRequiredInstance<IOutboxProcessor>();
 
 			outboxProcessor.Schedule( scheduleConfiguration );
 		}

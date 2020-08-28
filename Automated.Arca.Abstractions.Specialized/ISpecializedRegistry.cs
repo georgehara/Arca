@@ -3,7 +3,7 @@ using Automated.Arca.Abstractions.Core;
 
 namespace Automated.Arca.Abstractions.Specialized
 {
-	public interface IInstantiationRegistry : IExtensionDependency
+	public interface ISpecializedRegistry : IExtensionDependency
 	{
 		void AddExternalService( Type serviceInterfaceType, Type serviceImplementationType, string baseAddress, int retryCount,
 			int retryDelayMilliseconds, int circuitBreakerEventCount, int circuitBreakerDurationSeconds );

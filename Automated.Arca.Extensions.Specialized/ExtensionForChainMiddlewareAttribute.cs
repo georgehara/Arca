@@ -4,21 +4,16 @@ using Automated.Arca.Abstractions.Specialized;
 
 namespace Automated.Arca.Extensions.Specialized
 {
-	public abstract class ExtensionForChainMiddlewareAttribute : ExtensionForProcessableAttribute
+	public abstract class ExtensionForChainMiddlewareAttribute : ExtensionForSpecializedAttribute
 	{
+		public ExtensionForChainMiddlewareAttribute( IExtensionDependencyProvider extensionDependencyProvider )
+			: base( extensionDependencyProvider )
+		{
+		}
+
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
-			ChainMiddleware( context, typeWithAttribute );
-		}
-
-		protected IMiddlewareRegistry MiddlewareRegistry( IConfigurationContext context )
-		{
-			return GetExtensionDependency<IMiddlewareRegistry>( context );
-		}
-
-		protected void ChainMiddleware( IConfigurationContext context, Type type )
-		{
-			MiddlewareRegistry( context ).Chain( type );
+			S.M.Chain( typeWithAttribute );
 		}
 	}
 }

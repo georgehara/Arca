@@ -20,7 +20,7 @@ namespace Automated.Arca.Tests
 			IScopedInstanceProvider<string> scopedProvider;
 
 			for( int i = 0; i < iterations; i++ )
-				scopedProvider = applicationPipeline.GetOrAddScopedProvider( ScopeNames.Main );
+				scopedProvider = applicationPipeline.SP( ScopeNames.Main );
 
 			Trace.WriteLine( $"Speed of '{nameof( CreateScope )}' = {Speed( sw, iterations )}" );
 		}

@@ -7,11 +7,11 @@ namespace Automated.Arca.Tests
 {
 	public class InstantiationRegistryTests
 	{
-		private readonly SpecializedInstantiationRegistry Registry;
+		private readonly SpecializedRegistry Registry;
 
 		public InstantiationRegistryTests()
 		{
-			Registry = new SpecializedInstantiationRegistry( new ServiceCollection() );
+			Registry = new SpecializedRegistry( new ServiceCollection() );
 		}
 
 		[Fact]

@@ -10,11 +10,11 @@ using Polly;
 
 namespace Automated.Arca.Implementations.ForMicrosoft
 {
-	public class SpecializedInstantiationRegistry : IInstantiationRegistry
+	public class SpecializedRegistry : ISpecializedRegistry
 	{
 		protected IServiceCollection Services { get; private set; }
 
-		public SpecializedInstantiationRegistry( IServiceCollection services )
+		public SpecializedRegistry( IServiceCollection services )
 		{
 			Services = services;
 		}

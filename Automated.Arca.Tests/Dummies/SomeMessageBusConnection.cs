@@ -22,12 +22,16 @@ namespace Automated.Arca.Tests.Dummies
 		}
 	}
 
-	public class SomeMessageBusConnectionRegistrator : IRegistrator
+	public class SomeMessageBusConnectionRegistrator : DependencyInjectionRegistratorConfigurator
 	{
-		public void Register( IRegistrationContext context )
+		public SomeMessageBusConnectionRegistrator( IExtensionDependencyProvider extensionDependencyProvider )
+			: base( extensionDependencyProvider )
 		{
-			context.GetExtensionDependency<IInstantiationRegistry>().ToInstantiatePerContainer(
-				typeof( ISomeMessageBusConnection ),
+		}
+
+		public override void Register( IRegistrationContext context )
+		{
+			D.R.ToInstantiatePerContainer( typeof( ISomeMessageBusConnection ),
 				sp =>
 				{
 					var logger = sp.GetRequiredService<ILogger<SomeMessageBusConnection>>();
@@ -35,6 +39,10 @@ namespace Automated.Arca.Tests.Dummies
 					return new SomeMessageBusConnection( logger, "Some connection string" );
 				},
 				false );
+		}
+
+		public override void Configure( IConfigurationContext context )
+		{
 		}
 	}
 }

@@ -5,18 +5,23 @@ using Automated.Arca.Attributes.Specialized;
 
 namespace Automated.Arca.Extensions.Specialized
 {
-	public class ExtensionForCommandHandlerAttribute : ExtensionForProcessableAttribute
+	public class ExtensionForCommandHandlerAttribute : ExtensionForSpecializedAttribute
 	{
 		public override Type AttributeType => typeof( CommandHandlerAttribute );
 
+		public ExtensionForCommandHandlerAttribute( IExtensionDependencyProvider extensionDependencyProvider )
+			: base( extensionDependencyProvider )
+		{
+		}
+
 		public override void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
-			ToInstantiatePerScope( context, typeWithAttribute );
+			D.R.ToInstantiatePerScope( typeWithAttribute, false );
 		}
 
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
-			var commandHandlerRegistry = Provider( context ).GetRequiredInstance<ICommandHandlerRegistry>();
+			var commandHandlerRegistry = D.P.GetRequiredInstance<ICommandHandlerRegistry>();
 
 			commandHandlerRegistry.Add( typeWithAttribute );
 		}

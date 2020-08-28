@@ -34,6 +34,54 @@ namespace Automated.Arca.Manager
 			LogOptions();
 		}
 
+		public IManager AddExtensionDependency( Type baseType, IExtensionDependency baseTypeImplementation )
+		{
+			lock( Lock )
+			{
+				if( !ExtensionDependencies.ContainsKey( baseType ) )
+				{
+					baseTypeImplementation.GetType().EnsureDerivesFromNotEqual( baseType );
+
+					ExtensionDependencies[ baseType ] = baseTypeImplementation;
+				}
+
+				return this;
+			}
+		}
+
+		public IManager AddExtensionDependency<BaseType>( IExtensionDependency baseTypeImplementation )
+		{
+			return AddExtensionDependency( typeof( BaseType ), baseTypeImplementation );
+		}
+
+		public bool ContainsExtensionDependency( Type type )
+		{
+			lock( Lock )
+			{
+				return ExtensionDependencies.ContainsKey( type );
+			}
+		}
+
+		public object GetExtensionDependency( Type type )
+		{
+			lock( Lock )
+			{
+				if( !ExtensionDependencies.ContainsKey( type ) )
+				{
+					throw new InvalidOperationException( $"There is no extension dependency registered for the type" +
+						$" '{type.Name}'. Register one with the '{nameof( AddExtensionDependency )}' method, before" +
+						$" calling the '{nameof( Register )}' and '{nameof( Configure )}' methods." );
+				}
+
+				return ExtensionDependencies[ type ];
+			}
+		}
+
+		public T GetExtensionDependency<T>()
+		{
+			return (T)GetExtensionDependency( typeof( T ) );
+		}
+
 		public IManager AddAssembly( Assembly assembly )
 		{
 			lock( Lock )
@@ -105,54 +153,6 @@ namespace Automated.Arca.Manager
 
 				return this;
 			}
-		}
-
-		public IManager AddExtensionDependency( Type baseType, IExtensionDependency baseTypeImplementation )
-		{
-			lock( Lock )
-			{
-				if( !ExtensionDependencies.ContainsKey( baseType ) )
-				{
-					baseTypeImplementation.GetType().EnsureDerivesFromNotEqual( baseType );
-
-					ExtensionDependencies[ baseType ] = baseTypeImplementation;
-				}
-
-				return this;
-			}
-		}
-
-		public IManager AddExtensionDependency<BaseType>( IExtensionDependency baseTypeImplementation )
-		{
-			return AddExtensionDependency( typeof( BaseType ), baseTypeImplementation );
-		}
-
-		public bool ContainsExtensionDependency( Type type )
-		{
-			lock( Lock )
-			{
-				return ExtensionDependencies.ContainsKey( type );
-			}
-		}
-
-		public object GetExtensionDependency( Type type )
-		{
-			lock( Lock )
-			{
-				if( !ExtensionDependencies.ContainsKey( type ) )
-				{
-					throw new InvalidOperationException( $"There is no extension dependency registered for the type" +
-						$" '{type.Name}'. Register one with the '{nameof( AddExtensionDependency )}' method, before" +
-						$" calling the '{nameof( Register )}' and '{nameof( Configure )}' methods." );
-				}
-
-				return ExtensionDependencies[ type ];
-			}
-		}
-
-		public T GetExtensionDependency<T>()
-		{
-			return (T)GetExtensionDependency( typeof( T ) );
 		}
 
 		public IManager Register()
@@ -361,9 +361,10 @@ namespace Automated.Arca.Manager
 			}
 
 			if( ExtensionInstancesByType.ContainsKey( cachedType.Type ) )
-				return;
+				throw new InvalidOperationException( $"The type '{cachedType.Type}' already has a cached extension." );
 
-			var extension = (IExtensionForProcessableAttribute)Activator.CreateInstance( cachedType.Type )!;
+			var extension = (IExtensionForProcessableAttribute)Activator.CreateInstance( cachedType.Type,
+				(IExtensionDependencyProvider)this )!;
 
 			if( ExtensionTypesByAttributeType.ContainsKey( extension.AttributeType ) )
 			{
@@ -475,22 +476,21 @@ namespace Automated.Arca.Manager
 				return;
 			}
 
+			if( cachedType.ProcessableAttribute != null )
+				throw new InvalidOperationException( $"The type '{cachedType.Type}' already has a cached processable attribute." );
+
 			// This also returns the attributes derived from "ProcessableAttribute".
-			var attribute = GetProcessableAttribute( cachedType.Type );
+			var attribute = cachedType.Type.GetProcessableAttribute();
 			if( attribute == null || SimulateOnlyUnprocessableTypes )
 			{
-				cachedType.ProcessableAttribute = null;
 				cachedType.State = ProcessingState.Registered;
 
 				return;
 			}
-			else
-			{
-				cachedType.ProcessableAttribute = attribute;
-			}
 
 			RegisterType( context, cachedType.Type, attribute );
 
+			cachedType.ProcessableAttribute = attribute;
 			cachedType.State = ProcessingState.Registered;
 		}
 
@@ -511,32 +511,13 @@ namespace Automated.Arca.Manager
 				(!Options.ProcessOnlyClassesDerivedFromIProcessable || typeof( IProcessable ).IsAssignableFrom( type ));
 		}
 
-		private ProcessableAttribute? GetProcessableAttribute( Type type )
-		{
-			var attributes = type.GetCustomAttributes<ProcessableAttribute>( false );
-			if( attributes == null )
-				return null;
-
-			var count = attributes.Count();
-			if( count <= 0 )
-				return null;
-
-			if( count > 1 )
-			{
-				throw new InvalidOperationException( $"Class '{type.Name}' may have applied on it only one attribute" +
-					$" (derived from the '{nameof( ProcessableAttribute )}' attribute)." );
-			}
-
-			return attributes.SingleOrDefault();
-		}
-
 		private void RegisterType( IRegistrationContext context, Type type, ProcessableAttribute attribute )
 		{
 			var attributeType = attribute.GetType();
 
 			var extension = GetExtensionForAttribute( attributeType );
 			if( extension == null )
-				throw new ArgumentOutOfRangeException( $"Unhandled attribute '{attributeType.Name}'" );
+				throw new InvalidOperationException( $"Unhandled attribute '{attributeType.Name}'" );
 
 			if( extension.BaseInterfaceOfTypeWithAttribute != null )
 				type.EnsureDerivesFromInterfaceOrGenericInterfaceWithUntypedParameter( extension.BaseInterfaceOfTypeWithAttribute );
@@ -591,7 +572,7 @@ namespace Automated.Arca.Manager
 			var extension = GetExtensionForAttribute( attributeType );
 
 			if( extension == null )
-				throw new ArgumentOutOfRangeException( $"Unhandled attribute '{attributeType.Name}'" );
+				throw new InvalidOperationException( $"Unhandled attribute '{attributeType.Name}'" );
 
 			extension.Configure( context, attribute, type );
 
@@ -618,10 +599,15 @@ namespace Automated.Arca.Manager
 				return;
 			}
 
-			var registrator = (IRegistrator)Activator.CreateInstance( cachedType.Type )!;
+			if( cachedType.RegistratorConfigurator != null )
+				throw new InvalidOperationException( $"The type '{cachedType.Type}' already has a cached registrator-configurator." );
 
-			registrator.Register( context );
+			var registratorConfigurator = (IRegistratorConfigurator)Activator.CreateInstance( cachedType.Type,
+				(IExtensionDependencyProvider)this )!;
 
+			registratorConfigurator.Register( context );
+
+			cachedType.RegistratorConfigurator = registratorConfigurator;
 			cachedType.State = ProcessingState.RegistratorRan;
 
 			Options.Logger?.Log( $"Ran registrator '{cachedType.Type.Name}'" );
@@ -640,8 +626,8 @@ namespace Automated.Arca.Manager
 
 			var type = cachedType.Type;
 
-			return type.IsClass && !type.IsAbstract && typeof( IRegistrator ).IsAssignableFrom( type ) &&
-				type != typeof( IRegistrator );
+			return type.IsClass && !type.IsAbstract && typeof( IRegistratorConfigurator ).IsAssignableFrom( type ) &&
+				type != typeof( IRegistratorConfigurator );
 		}
 
 		private void RunConfigurator( IConfigurationContext context, CachedType cachedType )
@@ -654,9 +640,7 @@ namespace Automated.Arca.Manager
 				return;
 			}
 
-			var registrator = (IConfigurator)Activator.CreateInstance( cachedType.Type )!;
-
-			registrator.Configure( context );
+			cachedType.RegistratorConfigurator!.Configure( context );
 
 			cachedType.State = ProcessingState.ConfiguratorRan;
 
@@ -674,10 +658,7 @@ namespace Automated.Arca.Manager
 					$" '{ProcessingState.Configured}' but is '{cachedType.State}'." );
 			}
 
-			var type = cachedType.Type;
-
-			return type.IsClass && !type.IsAbstract && typeof( IConfigurator ).IsAssignableFrom( type ) &&
-				type != typeof( IConfigurator );
+			return cachedType.RegistratorConfigurator != null;
 		}
 	}
 }
