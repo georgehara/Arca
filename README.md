@@ -91,7 +91,7 @@ The extension specifies which attribute it handles, in the `AttributeType` prope
 
 Extensions are instantiated once per manager, so they are reused for every class that has applied on it the attribute which is handled by the extension.
 
-Extensions don't support dependency injection through their constructors because the dependency injection container is not set up when the extensions are instantiated by the manager. However, in the `Configure` method you can manually instantiate classes from the dependency injection container because the instance provider (`IServiceProvider`) is available at that point.
+Extensions don't support dependency injection through their constructors because the dependency injection container is not set up when the extensions are instantiated by the manager. However, in the `Configure` method you can manually instantiate classes from the dependency injection container because the instance provider (`IInstanceProvider` / `IServiceProvider`) is available at that point.
 
 
 ### REGISTER
@@ -114,7 +114,10 @@ Extension dependencies allow ARCA to be completely independent from the internal
 
 Extension dependencies can be added to the manager with the `AddExtensionDependencyXXX` manager methods.
 
-Examples of application dependencies which can be added as extension dependencies: `IConfiguration`, `IServiceCollection`, `IServiceProvider`.
+Examples of application dependencies which can be added as extension dependencies:
+* `IKeyedOptionsProvider` (containing `IConfiguration`)
+* `IInstantiationRegistry` (containing `IServiceCollection`)
+* `IInstanceProvider` (containing `IServiceProvider`)
 
 
 ## PROCESSABLE CLASSES
@@ -139,7 +142,7 @@ The classes which are registered and configured by registrator-configurators sho
 
 Registrator-configurators are instantiated once per manager.
 
-Registrator-configurators don't support dependency injection through their constructors because the dependency injection container is not set up when the registrator-configurators are instantiated by the manager. However, in the `Configure` method you can manually instantiate classes from the dependency injection container because the instance provider (`IServiceProvider`) is available at that point.
+Registrator-configurators don't support dependency injection through their constructors because the dependency injection container is not set up when the registrator-configurators are instantiated by the manager. However, in the `Configure` method you can manually instantiate classes from the dependency injection container because the instance provider (`IInstanceProvider` / `IServiceProvider`) is available at that point.
 
 
 ## MANAGER OPTIONS
@@ -190,7 +193,7 @@ After you instantiate the manager, at application startup, and you add assemblie
 * Configures the registered classes (based on extensions).
 * Runs the configurators, that is, the `Configure` methods from registrator-configurators. The configurators can't depend on one another because the manager doesn't know the order in which to run the configurators.
 
-Note: The `Register` and `Configure` manager methods may be called multiple times, but the manager checks the consistency of the state of each type that was loaded (by the manager) with an `AddXXX` manager method. So, for example if you call `AddXXX`, then `Register`, then `AddXXX` again, an exception is thrown because you didn't call `Configure` after `Register`. Microsoft's dependency injection container stops registering components once the instantiation provider (`IServiceProvider`) is built, and the configuration phase of the manager starts, without throwing an exception, so it's pointless to register new types after the `Configure` manager method is called. ARCA allows multiple calls to `Register` and `Configure` because it can be used without dependency injection.
+Note: The `Register` and `Configure` manager methods may be called multiple times, but the manager checks the consistency of the state of each type that was loaded (by the manager) with an `AddXXX` manager method. So, for example if you call `AddXXX`, then `Register`, then `AddXXX` again, an exception is thrown because you didn't call `Configure` after `Register`. Microsoft's dependency injection container stops registering components once the instantiation provider (`IInstanceProvider` / `IServiceProvider`) is built, and the configuration phase of the manager starts, without throwing an exception, so it's pointless to register new types after the `Configure` manager method is called. ARCA allows multiple calls to `Register` and `Configure` because it can be used without dependency injection.
 
 Note: If the order of processing matters, use the `Prioritize` manager option.
 
@@ -232,7 +235,7 @@ When using the `AddDependencies` manager extension method from the `Implementati
 * `IGlobalInstanceProvider` from the `Abstractions.DependencyInjection` package, only during the configuration phase
 * `IMiddlewareRegistry` from the `Abstractions.Specialized` package
 
-When using the `AddDependencies` manager extension method from the `Implementations.ForMicrosoft` package, the following instances (per container) are added to the instantiation registry (`IServiceCollection`), to be retrieved through the parameters of the constructors of classes or through the instance provider (`IServiceProvider`):
+When using the `AddDependencies` manager extension method from the `Implementations.ForMicrosoft` package, the following instances (per container) are added to the instantiation registry (`IInstantiationRegistry` - `IServiceCollection`), to be retrieved through the parameters of the constructors of classes or through the instance provider (`IInstanceProvider` / `IServiceProvider`):
 * `IExtensionDependencyProvider` from the `Abstractions.Core` package
 * `IDependencyInjectionProxy` from the `Abstractions.DependencyInjection` package
 * `ISpecializedProxy` from the `Abstractions.Specialized` package
@@ -313,7 +316,7 @@ Use manual mocking in unit tests during which you need to use a few specific moc
 
 Manual mocking can be done with the `ManagerExtensions.WithManualMocking` method from the `Implementations.ForMicrosoft` package; there is no need to call the `ActivateManualMocking` method. This method receives a delegate parameter in which you can override the registered classes with manual mocks, by manually re-registering the mocked classes with the mock implementation (see the `overrideExisting` parameter of the `InstantiatePerXXX` methods). Once manual mocking is used, automated mocking stops.
 
-Microsoft's dependency injection container stops registering components once the instantiation provider (`IServiceProvider`) is built, and the configuration phase of the manager starts, without throwing an exception, so it's pointless to register new types after the `Configure` manager method is called, which means that it's pointless to mock classes after `Configure` is called.
+Microsoft's dependency injection container stops registering components once the instantiation provider (`IInstanceProvider` / `IServiceProvider`) is built, and the configuration phase of the manager starts, without throwing an exception, so it's pointless to register new types after the `Configure` manager method is called, which means that it's pointless to mock classes after `Configure` is called.
 
 See the `SampleForAutomatedAndManualMocking` test for an example.
 
