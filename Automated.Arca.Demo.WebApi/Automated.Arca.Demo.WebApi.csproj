@@ -9,10 +9,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Automated.Arca.Extensions.DependencyInjection" Version="1.0.5" />
-		<PackageReference Include="Automated.Arca.Extensions.Specialized" Version="1.0.5" />
-		<PackageReference Include="Automated.Arca.Implementations.ForMicrosoft" Version="1.0.5" />
-		<PackageReference Include="Automated.Arca.Manager" Version="1.0.5" />
+		<PackageReference Include="Automated.Arca.Extensions.DependencyInjection" Version="1.1.0" />
+		<PackageReference Include="Automated.Arca.Extensions.Specialized" Version="1.1.0" />
+		<PackageReference Include="Automated.Arca.Implementations.ForMicrosoft" Version="1.1.0" />
+		<PackageReference Include="Automated.Arca.Manager" Version="1.1.0" />
 	</ItemGroup>
 
 </Project>
