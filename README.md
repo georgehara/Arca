@@ -54,9 +54,9 @@ ARCA doesn't depend on a dependency injection container. There is a single proje
 ![Dependency isolation](DependencyIsolation.png?raw=true)
 
 
-### ASSEMBLY ORGANIZATION
+### ASSEMBLY LINKING
 
-![Assembly organization](AssemblyOrganization.png?raw=true)
+![Assembly linking](AssemblyLinking.png?raw=true)
 
 
 ## ATTRIBUTES VERSUS CONVENTIONS
