@@ -6,13 +6,12 @@ namespace Automated.Arca.Abstractions.DependencyInjection
 	public class DependencyInjectionProxy : IDependencyInjectionProxy
 	{
 		public IExtensionDependencyProvider ExtensionDependencyProvider { get; }
-
 		public object X( Type type ) => ExtensionDependencyProvider.GetExtensionDependency( type );
 		public T X<T>() => ExtensionDependencyProvider.GetExtensionDependency<T>();
 
 		public IKeyedOptionsProvider O => X<IKeyedOptionsProvider>();
 		public IInstantiationRegistry R => X<IInstantiationRegistry>();
-		public IMultiInstantiationRegistry M => X<IMultiInstantiationRegistry>();
+		public IMultiImplementationRegistry M => X<IMultiImplementationRegistry>();
 		public IInstanceProvider P => X<IInstanceProvider>();
 		public IGlobalInstanceProvider GP => X<IGlobalInstanceProvider>();
 

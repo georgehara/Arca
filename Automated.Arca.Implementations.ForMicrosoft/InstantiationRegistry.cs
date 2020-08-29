@@ -24,9 +24,9 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			AutomatedMocker = automatedMocker;
 		}
 
-		public void ToInstantiatePerContainer( Type type, bool overrideExisting )
+		public void InstantiatePerContainer( Type type, bool overrideExisting )
 		{
-			SetupToInstantiate( type, overrideExisting );
+			SetupInstantiate( type, overrideExisting );
 
 			if( MustAvoidAutomatedMocking( type ) )
 				Services.AddSingleton( type );
@@ -34,9 +34,9 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 				Services.AddSingleton( type, sp => GetMock( type ) );
 		}
 
-		public void ToInstantiatePerContainer( Type baseType, Type implementationType, bool overrideExisting )
+		public void InstantiatePerContainer( Type baseType, Type implementationType, bool overrideExisting )
 		{
-			SetupToInstantiate( baseType, overrideExisting );
+			SetupInstantiate( baseType, overrideExisting );
 
 			if( MustAvoidAutomatedMocking( baseType ) )
 				Services.AddSingleton( baseType, implementationType );
@@ -44,10 +44,10 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 				Services.AddSingleton( baseType, sp => GetMock( baseType ) );
 		}
 
-		public void ToInstantiatePerContainer( Type baseType, Func<IServiceProvider, object> implementationFactory,
+		public void InstantiatePerContainer( Type baseType, Func<IServiceProvider, object> implementationFactory,
 			bool overrideExisting )
 		{
-			SetupToInstantiate( baseType, overrideExisting );
+			SetupInstantiate( baseType, overrideExisting );
 
 			if( MustAvoidAutomatedMocking( baseType ) )
 				Services.AddSingleton( baseType, implementationFactory );
@@ -55,15 +55,15 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 				Services.AddSingleton( baseType, sp => GetMock( baseType ) );
 		}
 
-		public void ToInstantiatePerScope( Type type, bool overrideExisting )
+		public void InstantiatePerScope( Type type, bool overrideExisting )
 		{
 			if( InstantiatePerContainerInsteadOfScope )
 			{
-				ToInstantiatePerContainer( type, overrideExisting );
+				InstantiatePerContainer( type, overrideExisting );
 			}
 			else
 			{
-				SetupToInstantiate( type, overrideExisting );
+				SetupInstantiate( type, overrideExisting );
 
 				if( MustAvoidAutomatedMocking( type ) )
 					Services.AddScoped( type );
@@ -72,15 +72,15 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			}
 		}
 
-		public void ToInstantiatePerScope( Type baseType, Type implementationType, bool overrideExisting )
+		public void InstantiatePerScope( Type baseType, Type implementationType, bool overrideExisting )
 		{
 			if( InstantiatePerContainerInsteadOfScope )
 			{
-				ToInstantiatePerContainer( baseType, implementationType, overrideExisting );
+				InstantiatePerContainer( baseType, implementationType, overrideExisting );
 			}
 			else
 			{
-				SetupToInstantiate( baseType, overrideExisting );
+				SetupInstantiate( baseType, overrideExisting );
 
 				if( MustAvoidAutomatedMocking( baseType ) )
 					Services.AddScoped( baseType, implementationType );
@@ -89,16 +89,16 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			}
 		}
 
-		public void ToInstantiatePerScope( Type baseType, Func<IServiceProvider, object> implementationFactory,
+		public void InstantiatePerScope( Type baseType, Func<IServiceProvider, object> implementationFactory,
 			bool overrideExisting )
 		{
 			if( InstantiatePerContainerInsteadOfScope )
 			{
-				ToInstantiatePerContainer( baseType, implementationFactory, overrideExisting );
+				InstantiatePerContainer( baseType, implementationFactory, overrideExisting );
 			}
 			else
 			{
-				SetupToInstantiate( baseType, overrideExisting );
+				SetupInstantiate( baseType, overrideExisting );
 
 				if( MustAvoidAutomatedMocking( baseType ) )
 					Services.AddScoped( baseType, implementationFactory );
@@ -107,9 +107,9 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			}
 		}
 
-		public void ToInstantiatePerInjection( Type type, bool overrideExisting )
+		public void InstantiatePerInjection( Type type, bool overrideExisting )
 		{
-			SetupToInstantiate( type, overrideExisting );
+			SetupInstantiate( type, overrideExisting );
 
 			if( MustAvoidAutomatedMocking( type ) )
 				Services.AddTransient( type );
@@ -117,9 +117,9 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 				Services.AddTransient( type, sp => GetMock( type ) );
 		}
 
-		public void ToInstantiatePerInjection( Type baseType, Type implementationType, bool overrideExisting )
+		public void InstantiatePerInjection( Type baseType, Type implementationType, bool overrideExisting )
 		{
-			SetupToInstantiate( baseType, overrideExisting );
+			SetupInstantiate( baseType, overrideExisting );
 
 			if( MustAvoidAutomatedMocking( baseType ) )
 				Services.AddTransient( baseType, implementationType );
@@ -127,10 +127,10 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 				Services.AddTransient( baseType, sp => GetMock( baseType ) );
 		}
 
-		public void ToInstantiatePerInjection( Type baseType, Func<IServiceProvider, object> implementationFactory,
+		public void InstantiatePerInjection( Type baseType, Func<IServiceProvider, object> implementationFactory,
 			bool overrideExisting )
 		{
-			SetupToInstantiate( baseType, overrideExisting );
+			SetupInstantiate( baseType, overrideExisting );
 
 			if( MustAvoidAutomatedMocking( baseType ) )
 				Services.AddTransient( baseType, implementationFactory );
@@ -140,7 +140,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 
 		public void AddInstancePerContainer( Type baseType, object implementationInstance, bool overrideExisting )
 		{
-			SetupToInstantiate( baseType, overrideExisting );
+			SetupInstantiate( baseType, overrideExisting );
 
 			Services.AddSingleton( baseType, implementationInstance );
 		}
@@ -167,7 +167,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			return this;
 		}
 
-		private void SetupToInstantiate( Type type, bool overrideExisting )
+		private void SetupInstantiate( Type type, bool overrideExisting )
 		{
 			if( overrideExisting )
 			{

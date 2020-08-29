@@ -20,7 +20,7 @@ namespace Automated.Arca.Extensions.DependencyInjection
 
 			D.M.Add( attributeTyped.InterfaceType, attributeTyped.ImplementationKey, typeWithAttribute );
 
-			D.R.ToInstantiatePerScope( typeWithAttribute, false );
+			D.R.InstantiatePerScope( typeWithAttribute, false );
 		}
 
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )

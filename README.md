@@ -216,6 +216,8 @@ Dependency injection support is provided by the `InstantiatePerContainerAttribut
 
 In the terminology of Microsoft's dependency injection container, the instantiation per container is known as "singleton" (even though it's not a singleton per process), while the instantiation per injection is known as "transient".
 
+CLARIFICATION: There are differences between the concepts of implementation, instantiation (registry) and instance (provider). An implementation is a class which implements an interface. An instantiation registry collects information about implementations and the rules to instantiate them. An instance provider creates instances of implementations based on the instantiation rules (of those implementations).
+
 
 ### DEPENDENCIES REGISTERED BY DEFAULT
 
@@ -224,7 +226,7 @@ When using the `AddDependencies` manager extension method from the `Implementati
 * `ISpecializedProxy` from the `Abstractions.Specialized` package
 * `IKeyedOptionsProvider` from the `Abstractions.DependencyInjection` package
 * `IInstantiationRegistry` from the `Abstractions.DependencyInjection` package
-* `IMultiInstantiationRegistry` from the `Abstractions.DependencyInjection` package
+* `IMultiImplementationRegistry` from the `Abstractions.DependencyInjection` package
 * `ISpecializedRegistry` from the `Abstractions.Specialized` package
 * `IInstanceProvider` from the `Abstractions.DependencyInjection` package, only during the configuration phase
 * `IGlobalInstanceProvider` from the `Abstractions.DependencyInjection` package, only during the configuration phase
@@ -236,7 +238,7 @@ When using the `AddDependencies` manager extension method from the `Implementati
 * `ISpecializedProxy` from the `Abstractions.Specialized` package
 * `IKeyedOptionsProvider` from the `Abstractions.DependencyInjection` package
 * `IInstantiationRegistry` from the `Abstractions.DependencyInjection` package
-* `IMultiInstantiationRegistry` from the `Abstractions.DependencyInjection` package
+* `IMultiImplementationRegistry` from the `Abstractions.DependencyInjection` package
 * `ISpecializedRegistry` from the `Abstractions.Specialized` package
 * `IInstanceProvider` from the `Abstractions.DependencyInjection` package, only during the configuration phase
 * `IGlobalInstanceProvider` from the `Abstractions.DependencyInjection` package, only during the configuration phase
@@ -300,7 +302,7 @@ See the `AutomatedMocker` class from the `Automated.Arca.Tests` project for a de
 * The type is not an interface. NSubstitute can mock (well) only interfaces.
 * The type is an implementation of any of the following interfaces: `ITenantManager`, `ITenantNameProvider`. Because their implementations have attributes applied on them, they go through the dependency injection registration, so they go on the code path which mocks types, but they must not be mocked because their implementations are essential for testing.
 
-The `InstantiationRegistry` class from the `Implementations.ForMicrosoft` package supports mocking only in the `ToInstantiatePerXXX` methods. The `AddInstancePerXXX` methods don't support it because they already receive an implementation, so its presumed that the caller knows to send a mock if it's required.
+Any implementation of the `IInstantiationRegistry` interface must support mocking only for the `InstantiatePerXXX` methods. The `AddInstancePerXXX` methods must not support it because they already receive an implementation, so its presumed that the caller knows to send a mock if it's required.
 
  See the `SampleForAutomatedAndManualMocking` test for an example.
 
@@ -309,7 +311,7 @@ The `InstantiationRegistry` class from the `Implementations.ForMicrosoft` packag
 
 Use manual mocking in unit tests during which you need to use a few specific mock implementations.
 
-Manual mocking can be done with the `ManagerExtensions.WithManualMocking` method from the `Implementations.ForMicrosoft` package; there is no need to call the `ActivateManualMocking` method. This method receives a delegate parameter in which you can override the registered classes with manual mocks, by manually re-registering the mocked classes with the mock implementation (see the `overrideExisting` parameter of the `ToInstantiatePerXXX` methods). Once manual mocking is used, automated mocking stops.
+Manual mocking can be done with the `ManagerExtensions.WithManualMocking` method from the `Implementations.ForMicrosoft` package; there is no need to call the `ActivateManualMocking` method. This method receives a delegate parameter in which you can override the registered classes with manual mocks, by manually re-registering the mocked classes with the mock implementation (see the `overrideExisting` parameter of the `InstantiatePerXXX` methods). Once manual mocking is used, automated mocking stops.
 
 Microsoft's dependency injection container stops registering components once the instantiation provider (`IServiceProvider`) is built, and the configuration phase of the manager starts, without throwing an exception, so it's pointless to register new types after the `Configure` manager method is called, which means that it's pointless to mock classes after `Configure` is called.
 
@@ -346,7 +348,7 @@ The performance-relevant time is the execution time for processing the unprocess
  
 An approximate performance can be viewed by executing the (release build of the) tests from the `ProcessingPerformanceTests` class. If you want to see the execution times without any caching from .Net, rebuild the solution before running each test separately.
 
-The tests process about 10'000 types. The relevant time is 10 ms if the `IProcessable` interface is used, and 14 ms if it's not used. This means that ARCA can process about 1'000'000 unprocessable types per second.
+The tests process about 10'000 types. The relevant time is 10 ms if the `IProcessable` interface is used, and 15 ms if it's not used. This means that ARCA can process about 1'000'000 unprocessable types per second.
 
 To improve ARCA's performance:
 * Use specific assembly name prefixes in order to reduce the number of assemblies that have be loaded and scanned.

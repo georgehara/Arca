@@ -31,7 +31,7 @@ namespace Automated.Arca.Tests.Dummies
 		{
 			var interfaceType = ((ProcessableWithInterfaceAttribute)attribute).GetInterfaceOrDefault( typeWithAttribute );
 
-			D.R.ToInstantiatePerContainer( interfaceType, typeWithAttribute, false );
+			D.R.InstantiatePerContainer( interfaceType, typeWithAttribute, false );
 		}
 
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )

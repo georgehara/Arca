@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Automated.Arca.Implementations.ForMicrosoft
 {
 	/// <summary>
-	/// Don't call "ToInstantiatePerContainer" to avoid the possibility of mocking.
+	/// Don't call "IInstantiationRegistry.InstantiatePerXXX" in order to avoid the possibility of mocking.
 	/// </summary>
 	public static class ManagerExtensions
 	{
@@ -77,13 +77,13 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			return manager;
 		}
 
-		public static IManager AddMultiInstantiationRegistry( this IManager manager, IServiceCollection services )
+		public static IManager AddMultiImplementationRegistry( this IManager manager, IServiceCollection services )
 		{
-			var multiInstantiationRegistry = new MultiInstantiationRegistry();
+			var multiImplementationRegistry = new MultiImplementationRegistry();
 
-			manager.AddExtensionDependency<IMultiInstantiationRegistry>( multiInstantiationRegistry );
+			manager.AddExtensionDependency<IMultiImplementationRegistry>( multiImplementationRegistry );
 
-			services.AddSingleton<IMultiInstantiationRegistry>( multiInstantiationRegistry );
+			services.AddSingleton<IMultiImplementationRegistry>( multiImplementationRegistry );
 
 			return manager;
 		}
@@ -104,7 +104,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 		{
 			return manager
 				.AddInstantiationRegistry( services, instantiatePerContainerInsteadOfScope, automatedMocker )
-				.AddMultiInstantiationRegistry( services )
+				.AddMultiImplementationRegistry( services )
 				.AddSpecializedRegistry( services );
 		}
 

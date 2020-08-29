@@ -20,7 +20,7 @@ namespace Automated.Arca.Extensions.DependencyInjection
 
 			D.M.Add( attributeTyped.InterfaceType, attributeTyped.ImplementationKey, typeWithAttribute );
 
-			D.R.ToInstantiatePerInjection( typeWithAttribute, false );
+			D.R.InstantiatePerInjection( typeWithAttribute, false );
 		}
 
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )

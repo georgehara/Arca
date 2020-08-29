@@ -2,7 +2,7 @@
 
 namespace Automated.Arca.Abstractions.Core
 {
-	public interface IExtensionForProcessableAttribute
+	public interface IExtensionForProcessableAttribute : IExtensionDependencyProviderContainer
 	{
 		Type AttributeType { get; }
 		Type? BaseInterfaceOfTypeWithAttribute { get; }

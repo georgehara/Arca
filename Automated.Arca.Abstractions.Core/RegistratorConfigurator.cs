@@ -4,10 +4,9 @@ namespace Automated.Arca.Abstractions.Core
 {
 	public abstract class RegistratorConfigurator : IRegistratorConfigurator
 	{
-		protected IExtensionDependencyProvider ExtensionDependencyProvider { get; }
-
-		protected object X( Type type ) => ExtensionDependencyProvider.GetExtensionDependency( type );
-		protected T X<T>() => ExtensionDependencyProvider.GetExtensionDependency<T>();
+		public IExtensionDependencyProvider ExtensionDependencyProvider { get; }
+		public object X( Type type ) => ExtensionDependencyProvider.GetExtensionDependency( type );
+		public T X<T>() => ExtensionDependencyProvider.GetExtensionDependency<T>();
 
 		public RegistratorConfigurator( IExtensionDependencyProvider extensionDependencyProvider )
 		{

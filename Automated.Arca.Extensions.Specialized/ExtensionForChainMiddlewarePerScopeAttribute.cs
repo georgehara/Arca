@@ -15,7 +15,7 @@ namespace Automated.Arca.Extensions.Specialized
 
 		public override void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
-			D.R.ToInstantiatePerScope( typeWithAttribute, false );
+			D.R.InstantiatePerScope( typeWithAttribute, false );
 		}
 	}
 }

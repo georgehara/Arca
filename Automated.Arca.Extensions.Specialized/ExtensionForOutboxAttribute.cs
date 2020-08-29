@@ -19,7 +19,7 @@ namespace Automated.Arca.Extensions.Specialized
 		{
 			// The registration is performed without an interface because each type of outbox has to be registered.
 
-			D.R.ToInstantiatePerScope( typeWithAttribute, false );
+			D.R.InstantiatePerScope( typeWithAttribute, false );
 		}
 
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )

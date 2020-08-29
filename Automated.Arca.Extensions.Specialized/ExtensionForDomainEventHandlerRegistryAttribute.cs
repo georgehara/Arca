@@ -20,7 +20,7 @@ namespace Automated.Arca.Extensions.Specialized
 			var attributeTyped = (ProcessableWithInterfaceAttribute)attribute;
 			var interfaceType = attributeTyped.GetInterfaceOrDefault( typeWithAttribute );
 
-			D.R.ToInstantiatePerContainer( interfaceType, typeWithAttribute, false );
+			D.R.InstantiatePerContainer( interfaceType, typeWithAttribute, false );
 		}
 
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )

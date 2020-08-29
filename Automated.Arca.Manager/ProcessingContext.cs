@@ -6,25 +6,12 @@ namespace Automated.Arca.Manager
 	public abstract class ProcessingContext : IProcessingContext
 	{
 		public IExtensionDependencyProvider ExtensionDependencyProvider { get; }
+		public object X( Type type ) => ExtensionDependencyProvider.GetExtensionDependency( type );
+		public T X<T>() => ExtensionDependencyProvider.GetExtensionDependency<T>();
 
 		public ProcessingContext( IExtensionDependencyProvider extensionDependencyProvider )
 		{
 			ExtensionDependencyProvider = extensionDependencyProvider;
-		}
-
-		public bool ContainsExtensionDependency( Type type )
-		{
-			return ExtensionDependencyProvider.ContainsExtensionDependency( type );
-		}
-
-		public object GetExtensionDependency( Type type )
-		{
-			return ExtensionDependencyProvider.GetExtensionDependency( type );
-		}
-
-		public T GetExtensionDependency<T>()
-		{
-			return (T)ExtensionDependencyProvider.GetExtensionDependency( typeof( T ) );
 		}
 	}
 }

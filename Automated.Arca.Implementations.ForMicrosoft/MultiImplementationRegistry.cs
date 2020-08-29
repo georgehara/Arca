@@ -6,12 +6,12 @@ using Automated.Arca.Libraries;
 
 namespace Automated.Arca.Implementations.ForMicrosoft
 {
-	public class MultiInstantiationRegistry : IMultiInstantiationRegistry
+	public class MultiImplementationRegistry : IMultiImplementationRegistry
 	{
 		private readonly IDictionary<Type, IDictionary<string, Type>> Registrations =
 			new Dictionary<Type, IDictionary<string, Type>>();
 
-		public MultiInstantiationRegistry()
+		public MultiImplementationRegistry()
 		{
 		}
 
@@ -26,7 +26,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 
 			if( implementationKeys.ContainsKey( implementationKey ) )
 			{
-				throw new InvalidOperationException( $"A multi-instantiation record for the implementation key" +
+				throw new InvalidOperationException( $"A multi-implementation record for the implementation key" +
 					$" '{implementationKey}' already exists for the interface '{interfaceType.Name}'" );
 			}
 
@@ -49,7 +49,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			var nl = Environment.NewLine;
 
 			return
-				$"A multi-instantiation record doesn't exist for the interface '{interfaceType.Name}' and implementation key" +
+				$"A multi-implementation record doesn't exist for the interface '{interfaceType.Name}' and implementation key" +
 					$" '{implementationKey}'" +
 				$"{nl}Check that there is an implementation class which:" +
 				$"{nl}\t* Is public, concrete, and implements '{interfaceType.Name}'." +

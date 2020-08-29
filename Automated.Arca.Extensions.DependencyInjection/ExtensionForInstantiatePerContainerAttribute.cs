@@ -16,7 +16,7 @@ namespace Automated.Arca.Extensions.DependencyInjection
 
 		public override void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
-			D.R.ToInstantiatePerContainer( typeWithAttribute, false );
+			D.R.InstantiatePerContainer( typeWithAttribute, false );
 		}
 
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )

@@ -215,7 +215,7 @@ namespace Automated.Arca.Tests
 					{
 						var mock = Substitute.For<ISomeComponentToSubstitute>();
 						mock.Get( Arg.Any<string>() ).ReturnsForAnyArgs( "Substituted value" );
-						ir.ToInstantiatePerScope( typeof( ISomeComponentToSubstitute ), sp => mock, true );
+						ir.InstantiatePerScope( typeof( ISomeComponentToSubstitute ), sp => mock, true );
 					} ),
 				x => x.ConfigureFirst() );
 

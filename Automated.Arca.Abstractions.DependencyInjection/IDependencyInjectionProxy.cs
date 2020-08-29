@@ -3,11 +3,11 @@ using Automated.Arca.Abstractions.Core;
 
 namespace Automated.Arca.Abstractions.DependencyInjection
 {
-	public interface IDependencyInjectionProxy : IExtensionDependency
+	public interface IDependencyInjectionProxy : IExtensionDependency, IExtensionDependencyProviderContainer
 	{
 		IKeyedOptionsProvider O { get; }
 		IInstantiationRegistry R { get; }
-		IMultiInstantiationRegistry M { get; }
+		IMultiImplementationRegistry M { get; }
 		IInstanceProvider P { get; }
 		IGlobalInstanceProvider GP { get; }
 

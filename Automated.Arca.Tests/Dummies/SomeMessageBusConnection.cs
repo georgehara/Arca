@@ -31,7 +31,7 @@ namespace Automated.Arca.Tests.Dummies
 
 		public override void Register( IRegistrationContext context )
 		{
-			D.R.ToInstantiatePerContainer( typeof( ISomeMessageBusConnection ),
+			D.R.InstantiatePerContainer( typeof( ISomeMessageBusConnection ),
 				sp =>
 				{
 					var logger = sp.GetRequiredService<ILogger<SomeMessageBusConnection>>();

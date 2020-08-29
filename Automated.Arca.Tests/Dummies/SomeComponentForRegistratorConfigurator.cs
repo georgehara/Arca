@@ -17,7 +17,7 @@ namespace Automated.Arca.Tests.Dummies
 
 		public override void Register( IRegistrationContext context )
 		{
-			D.R.ToInstantiatePerContainer( typeof( SomeComponentForRegistratorConfigurator ), false );
+			D.R.InstantiatePerContainer( typeof( SomeComponentForRegistratorConfigurator ), false );
 		}
 
 		public override void Configure( IConfigurationContext context )

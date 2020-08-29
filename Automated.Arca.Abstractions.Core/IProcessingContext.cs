@@ -1,7 +1,6 @@
 ﻿namespace Automated.Arca.Abstractions.Core
 {
-	public interface IProcessingContext : IExtensionDependencyProvider
+	public interface IProcessingContext : IExtensionDependencyProviderContainer
 	{
-		IExtensionDependencyProvider ExtensionDependencyProvider { get; }
 	}
 }

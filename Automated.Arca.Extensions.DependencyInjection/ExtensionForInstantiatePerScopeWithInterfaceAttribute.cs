@@ -19,7 +19,7 @@ namespace Automated.Arca.Extensions.DependencyInjection
 			var attributeTyped = (ProcessableWithInterfaceAttribute)attribute;
 			var interfaceType = attributeTyped.GetInterfaceOrDefault( typeWithAttribute );
 
-			D.R.ToInstantiatePerScope( interfaceType, typeWithAttribute, false );
+			D.R.InstantiatePerScope( interfaceType, typeWithAttribute, false );
 		}
 
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
