@@ -1,6 +1,7 @@
 ﻿using System;
 using Automated.Arca.Abstractions.Core;
 using Automated.Arca.Libraries;
+using Automated.Arca.Tests.Dummies;
 using Xunit;
 
 namespace Automated.Arca.Tests
@@ -111,57 +112,6 @@ namespace Automated.Arca.Tests
 				typeof( ISomeGenericInterface<> ), typeof( string ) );
 
 			Assert.Throws<InvalidCastException>( a );
-		}
-
-		private class SomeClassDerivedFromClass : SomeClassDerivedFromInterface
-		{
-		}
-
-		private class SomeClassDerivedFromInterfaceWithInterface : ISomeInterfaceDerivedFromInterface
-		{
-		}
-
-		private class SomeClassDerivedFromClassWithInterfaceAndInterface : SomeClassDerivedFromInterface,
-			ISomeInterfaceDerivedFromInterface
-		{
-		}
-
-		private class SomeClassDerivedFromClassDerivedFromClassWithInterfaceAndInterface :
-			SomeClassDerivedFromClassWithInterfaceAndInterface
-		{
-		}
-
-		private class SomeClassDerivedFromInterface : ISomeInterface
-		{
-		}
-
-		private interface ISomeInterface
-		{
-		}
-
-		private interface ISomeInterfaceDerivedFromInterface : ISomeOtherInterface
-		{
-		}
-
-		private interface ISomeOtherInterface
-		{
-		}
-
-		private class SomeClassDerivedFromInterfaceWithInterfaceAndInterface : ISomeInterfaceDerivedFromInterface,
-			ISomeInterfaceToFail
-		{
-		}
-
-		private interface ISomeInterfaceToFail
-		{
-		}
-
-		private class SomeGenericClass : ISomeGenericInterface<string>
-		{
-		}
-
-		private interface ISomeGenericInterface<T>
-		{
 		}
 	}
 }

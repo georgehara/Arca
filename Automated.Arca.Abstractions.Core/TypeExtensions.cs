@@ -51,29 +51,31 @@ namespace Automated.Arca.Abstractions.Core
 
 		private static Type[] GetImmediateInterfaces( Type type )
 		{
-			var typeWhoseBaseTypeHasFewerInterfaces = GetTypeWhoseBaseTypeHasFewerInterfaces( type );
+			var (typeInterfaces, baseTypeInterfaces) = GetInterfacesOfTypeWhoseBaseTypeHasFewerInterfaces( type );
 
-			var allInterfaces = typeWhoseBaseTypeHasFewerInterfaces.GetInterfaces();
-			var immediateInterfaces = new HashSet<Type>( allInterfaces );
+			var immediateInterfaces = new HashSet<Type>( typeInterfaces );
 
-			if( typeWhoseBaseTypeHasFewerInterfaces.BaseType != null )
-				immediateInterfaces.ExceptWith( typeWhoseBaseTypeHasFewerInterfaces.BaseType.GetInterfaces() );
+			if( baseTypeInterfaces != null )
+				immediateInterfaces.ExceptWith( baseTypeInterfaces );
 
-			foreach( var i in allInterfaces )
-				immediateInterfaces.ExceptWith( i.GetInterfaces() );
+			if( immediateInterfaces.Count > 1 )
+			{
+				foreach( var i in typeInterfaces )
+					immediateInterfaces.ExceptWith( i.GetInterfaces() );
+			}
 
 			return immediateInterfaces.ToArray();
 		}
 
-		private static Type GetTypeWhoseBaseTypeHasFewerInterfaces( Type type )
+		private static (Type[], Type[]?) GetInterfacesOfTypeWhoseBaseTypeHasFewerInterfaces( Type type )
 		{
 			if( type.BaseType == null )
-				return type;
+				return (type.GetInterfaces(), null);
 
 			if( type.GetInterfaces().Length != type.BaseType.GetInterfaces().Length )
-				return type;
+				return (type.GetInterfaces(), type.BaseType.GetInterfaces());
 
-			return GetTypeWhoseBaseTypeHasFewerInterfaces( type.BaseType );
+			return GetInterfacesOfTypeWhoseBaseTypeHasFewerInterfaces( type.BaseType );
 		}
 	}
 }

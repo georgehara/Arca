@@ -121,6 +121,23 @@ namespace Automated.Arca.Tests
 			Assert.Null( registerMethod );
 		}
 
+		[Fact]
+		public void GetDefaultInterfaceFromSomeClassDerivedFromClassDerivedFromClassWithInterfaceAndInterface()
+		{
+			Type interfaceType;
+
+			Stopwatch sw = new Stopwatch();
+			sw.Start();
+
+			const int iterations = 1400000;
+
+			for( int i = 0; i < iterations; i++ )
+				interfaceType = typeof( SomeClassDerivedFromClassDerivedFromClassWithInterfaceAndInterface ).GetDefaultInterface();
+
+			Trace.WriteLine( $"Speed of '{nameof( GetDefaultInterfaceFromSomeClassDerivedFromClassDerivedFromClassWithInterfaceAndInterface )}'" +
+				$" = {Speed( sw, iterations )}" );
+		}
+
 		private MethodInfo? ExtractExtensionForRegistrationMethod( Type implementationType )
 		{
 			var interfaces = implementationType.GetInterfaces();
