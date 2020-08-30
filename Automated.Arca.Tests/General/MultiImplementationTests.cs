@@ -36,7 +36,7 @@ namespace Automated.Arca.Tests
 			SomeComponent SomeComponent { get; }
 		}
 
-		[MultiInstantiatePerContainerAttribute( typeof( ISomeMultiImplementation ), "Left" )]
+		[MultiInstantiatePerContainerAttribute( "Left" )]
 		public class SomeLeftImplementation : ISomeMultiImplementation
 		{
 			public string Name => "Left";

@@ -51,19 +51,29 @@ namespace Automated.Arca.Abstractions.Core
 
 		private static Type[] GetImmediateInterfaces( Type type )
 		{
-			var allInterfaces = type.GetInterfaces();
+			var typeWhoseBaseTypeHasFewerInterfaces = GetTypeWhoseBaseTypeHasFewerInterfaces( type );
+
+			var allInterfaces = typeWhoseBaseTypeHasFewerInterfaces.GetInterfaces();
 			var immediateInterfaces = new HashSet<Type>( allInterfaces );
+
+			if( typeWhoseBaseTypeHasFewerInterfaces.BaseType != null )
+				immediateInterfaces.ExceptWith( typeWhoseBaseTypeHasFewerInterfaces.BaseType.GetInterfaces() );
 
 			foreach( var i in allInterfaces )
 				immediateInterfaces.ExceptWith( i.GetInterfaces() );
 
-			if( immediateInterfaces.Count >= 2 && type.BaseType != null )
-			{
-				var baseTypeInterfaces = type.BaseType.GetInterfaces();
-				immediateInterfaces.ExceptWith( baseTypeInterfaces );
-			}
-
 			return immediateInterfaces.ToArray();
+		}
+
+		private static Type GetTypeWhoseBaseTypeHasFewerInterfaces( Type type )
+		{
+			if( type.BaseType == null )
+				return type;
+
+			if( type.GetInterfaces().Length != type.BaseType.GetInterfaces().Length )
+				return type;
+
+			return GetTypeWhoseBaseTypeHasFewerInterfaces( type.BaseType );
 		}
 	}
 }

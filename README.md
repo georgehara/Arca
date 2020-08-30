@@ -74,7 +74,7 @@ An attribute must be applied on the class that it marks for registration or conf
 
 A class may have applied on it only one attribute (derived from the `ProcessableAttribute` attribute).
 
-Some attributes allow you to specify an interface with which the (dependency injection) registration has to be made. They also offer you the option to not specify the interface, in which case the registration will be made with the default interface of the class on which the attribute is applied. The default interface of a class is considered to be the interface that which the class implements on the first ancestor level that has an interface; such an interface may be implemented either by the class itself, or by an ancestor class.
+Some attributes allow you to specify an interface with which the (dependency injection) registration has to be made. They also offer you the option to not specify the interface, in which case the registration will be made with the default interface of the class on which the attribute is applied. The default interface of a class is considered to be the interface that the class implements on the first ancestor level that has an interface; such an interface may be implemented either by the class itself, or by an ancestor class. Such an attribute has a constructor with an interface-type parameter, and another without the interface-type parameter.
 
 The manager ensures that all the attributes that are applied on classes have extensions that handle them.
 

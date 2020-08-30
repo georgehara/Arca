@@ -17,8 +17,9 @@ namespace Automated.Arca.Extensions.DependencyInjection
 		public override void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
 			var attributeTyped = (MultiInstantiateAttribute)attribute;
+			var interfaceType = attributeTyped.GetInterfaceOrDefault( typeWithAttribute );
 
-			D.M.Add( attributeTyped.InterfaceType, attributeTyped.ImplementationKey, typeWithAttribute );
+			D.M.Add( interfaceType, attributeTyped.ImplementationKey, typeWithAttribute );
 
 			D.R.InstantiatePerScope( typeWithAttribute, false );
 		}

@@ -4,14 +4,18 @@ using Automated.Arca.Abstractions.Core;
 namespace Automated.Arca.Attributes.DependencyInjection
 {
 	[AttributeUsage( validOn: AttributeTargets.Class, AllowMultiple = false )]
-	public abstract class MultiInstantiateAttribute : ProcessableAttribute
+	public abstract class MultiInstantiateAttribute : ProcessableWithInterfaceAttribute
 	{
-		public Type InterfaceType { get; protected set; }
 		public string ImplementationKey { get; protected set; }
 
-		public MultiInstantiateAttribute( Type interfaceType, string implementationKey )
+		public MultiInstantiateAttribute( string implementationKey )
 		{
-			InterfaceType = interfaceType;
+			ImplementationKey = implementationKey;
+		}
+
+		public MultiInstantiateAttribute( Type interfaceType, string implementationKey )
+			: base( interfaceType )
+		{
 			ImplementationKey = implementationKey;
 		}
 	}

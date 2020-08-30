@@ -24,9 +24,25 @@ namespace Automated.Arca.Tests
 		}
 
 		[Fact]
+		public void GetDefaultInterface_SomeClassDerivedFromInterfaceWithInterface_Succeeds()
+		{
+			var interfaceType = typeof( SomeClassDerivedFromInterfaceWithInterface ).GetDefaultInterface();
+
+			Assert.Equal( typeof( ISomeInterfaceDerivedFromInterface ), interfaceType );
+		}
+
+		[Fact]
 		public void GetDefaultInterface_SomeClassDerivedFromClassWithInterfaceAndInterface_Succeeds()
 		{
 			var interfaceType = typeof( SomeClassDerivedFromClassWithInterfaceAndInterface ).GetDefaultInterface();
+
+			Assert.Equal( typeof( ISomeInterfaceDerivedFromInterface ), interfaceType );
+		}
+
+		[Fact]
+		public void GetDefaultInterface_SomeClassDerivedFromClassDerivedFromClassWithInterfaceAndInterface_Succeeds()
+		{
+			var interfaceType = typeof( SomeClassDerivedFromClassDerivedFromClassWithInterfaceAndInterface ).GetDefaultInterface();
 
 			Assert.Equal( typeof( ISomeInterfaceDerivedFromInterface ), interfaceType );
 		}
@@ -101,8 +117,17 @@ namespace Automated.Arca.Tests
 		{
 		}
 
-		private class SomeClassDerivedFromClassWithInterfaceAndInterface : SomeClassDerivedFromInterface
-			, ISomeInterfaceDerivedFromInterface
+		private class SomeClassDerivedFromInterfaceWithInterface : ISomeInterfaceDerivedFromInterface
+		{
+		}
+
+		private class SomeClassDerivedFromClassWithInterfaceAndInterface : SomeClassDerivedFromInterface,
+			ISomeInterfaceDerivedFromInterface
+		{
+		}
+
+		private class SomeClassDerivedFromClassDerivedFromClassWithInterfaceAndInterface :
+			SomeClassDerivedFromClassWithInterfaceAndInterface
 		{
 		}
 
@@ -122,8 +147,8 @@ namespace Automated.Arca.Tests
 		{
 		}
 
-		private class SomeClassDerivedFromInterfaceWithInterfaceAndInterface : ISomeInterfaceDerivedFromInterface
-			, ISomeInterfaceToFail
+		private class SomeClassDerivedFromInterfaceWithInterfaceAndInterface : ISomeInterfaceDerivedFromInterface,
+			ISomeInterfaceToFail
 		{
 		}
 
