@@ -253,7 +253,9 @@ In applications which are not based on client requests, like test projects and d
 * Retrieved from a scope, which is recommended.
 * Registered to be instantiated per container. This can be done when you call `Register`, by passing `true` to the `instantiatePerContainerInsteadOfScope` parameter of the `InstantiationRegistry` constructor.
 
-Scopes can be managed with an implementation of `ScopeManager`; you also have to implement either `IScopeNameProvider` (if the scope name is set from outside the provider) or `IScopeNameResolver` (if the scope name is set from inside the resolver). On the implementation, apply the `ScopeManagerAttribute` attribute so that ARCA can automatically add it to the dependency injection registry. See the `SampleForTenantScope` test for an example.
+Scopes can be managed with an implementation of `ScopeManager`; you also have to implement either `IScopeNameProvider` (if the scope name is set from outside the provider) or `IScopeNameResolver` (if the scope name is set from inside the resolver). On the implementation, apply the `ScopeManagerAttribute` attribute so that ARCA can automatically add it to the dependency injection registry.
+
+See the `SampleForTenantScope` test for an example.
 
 Note: Every client request from a WebApi application gets its own scope; this is accessible (and even replaceable) through `IHttpContextAccessor.HttpContext.RequestServices`.
 
@@ -331,7 +333,7 @@ All you have to do is add one of the above attributes to each implementation of 
 
 Then, in code, you'll have to manually get an instance of that interface, base on an implementation key which is determined at runtime, from a user's choice. The easiest way to do this would be to use an instance of the `IDependencyInjectionProxy` interface from the `Abstractions.DependencyInjection` package; simply inject this type in the constructor of the consumer class. When you do this, all the constructor parameters of the implementation class are automatically instantiated, regardless of the level of nesting, so you only have to do one manual operation.
 
-See the tests from the `MultiImplementationTests` class for examples.
+See the `SampleForMultiImplementation` test for an example.
 
 
 ## THREAD SAFETY

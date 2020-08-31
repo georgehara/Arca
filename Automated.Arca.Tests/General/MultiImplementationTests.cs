@@ -25,6 +25,12 @@ namespace Automated.Arca.Tests
 			Assert.Equal( leftInstance.SomeComponent, rightInstance.SomeComponent );
 		}
 
+		[Fact]
+		public void SampleForMultiImplementation()
+		{
+			MultiImplementationInstance_Succeeds();
+		}
+
 		[InstantiatePerContainerAttribute]
 		public class SomeComponent : IProcessable
 		{

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Automated.Arca.Abstractions.Core;
-using Automated.Arca.Abstractions.DependencyInjection;
 using Automated.Arca.Libraries;
 
-namespace Automated.Arca.Implementations.ForMicrosoft
+namespace Automated.Arca.Abstractions.DependencyInjection
 {
 	public class MultiImplementationRegistry : IMultiImplementationRegistry
 	{
