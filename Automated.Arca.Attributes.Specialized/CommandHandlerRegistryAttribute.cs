@@ -4,15 +4,7 @@ using Automated.Arca.Abstractions.Core;
 namespace Automated.Arca.Attributes.Specialized
 {
 	[AttributeUsage( validOn: AttributeTargets.Class, AllowMultiple = false )]
-	public class CommandHandlerRegistryAttribute : ProcessableWithInterfaceAttribute
+	public class CommandHandlerRegistryAttribute : ProcessableAttribute
 	{
-		public CommandHandlerRegistryAttribute()
-		{
-		}
-
-		public CommandHandlerRegistryAttribute( Type interfaceType )
-			: base( interfaceType )
-		{
-		}
 	}
 }

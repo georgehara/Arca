@@ -278,6 +278,11 @@ namespace Automated.Arca.Tests
 			Assert.NotNull( applicationPipeline.D.P.GetRequiredInstance<IIntegrationEventHandlerRegistry>() );
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeIntegrationEventHandler>() );
 
+			var someMessageBus = (ISomeMessageBus)applicationPipeline.D.P.GetRequiredInstance<IMessageBus>();
+			someMessageBus.Subscribe<SomeMessage, SomeMessageListener>( "Some exchange", "Some queue" );
+			Assert.Equal( "Some exchange", someMessageBus.Exchange );
+			Assert.Equal( "Some queue", someMessageBus.Queue );
+
 			var someMessageBusConnection = applicationPipeline.D.P.GetRequiredInstance<ISomeMessageBusConnection>();
 			Assert.NotNull( someMessageBusConnection.Connection );
 

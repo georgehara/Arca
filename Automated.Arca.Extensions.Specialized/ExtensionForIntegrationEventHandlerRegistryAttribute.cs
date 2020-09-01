@@ -17,10 +17,7 @@ namespace Automated.Arca.Extensions.Specialized
 
 		public override void Register( IRegistrationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
-			var attributeTyped = (ProcessableWithInterfaceAttribute)attribute;
-			var interfaceType = attributeTyped.GetInterfaceOrDefault( typeWithAttribute );
-
-			D.R.InstantiatePerContainer( interfaceType, typeWithAttribute, false );
+			D.R.InstantiatePerContainer( BaseInterfaceOfTypeWithAttribute!, typeWithAttribute, false );
 		}
 
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )

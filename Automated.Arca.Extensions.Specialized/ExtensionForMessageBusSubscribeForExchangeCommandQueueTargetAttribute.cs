@@ -21,7 +21,7 @@ namespace Automated.Arca.Extensions.Specialized
 
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
-			var attributeTyped = (MessageBusSubscribeForExchangePublicationQueueBetweenAttribute)attribute;
+			var attributeTyped = (MessageBusSubscribeForExchangeCommandQueueTargetAttribute)attribute;
 
 			var messageBus = D.P.GetRequiredInstance<IMessageBus>();
 			var messageTypes = attributeTyped.MessageTypes;
