@@ -1,6 +1,7 @@
 ﻿using System;
 using Automated.Arca.Abstractions.Core;
 using Automated.Arca.Abstractions.DependencyInjection;
+using Automated.Arca.Abstractions.Specialized;
 using Automated.Arca.Libraries;
 using Automated.Arca.Tests.Dummies;
 using NSubstitute;
@@ -16,7 +17,8 @@ namespace Automated.Arca.Tests
 			return
 				!type.IsInterface ||
 				type.DerivesFromInterfaceOrGenericInterfaceWithUntypedParameter( typeof( ITenantManager ) ) ||
-				type.DerivesFromInterfaceOrGenericInterfaceWithUntypedParameter( typeof( ITenantNameProvider ) );
+				type.DerivesFromInterfaceOrGenericInterfaceWithUntypedParameter( typeof( ITenantNameProvider ) ) ||
+				type.DerivesFromInterfaceOrGenericInterfaceWithUntypedParameter( typeof( IMessageBus ) );
 		}
 
 		public object GetMock( IManager manager, Type type )
