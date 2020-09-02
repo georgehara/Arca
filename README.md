@@ -495,7 +495,7 @@ namespace Automated.Arca.Tests.Dummies
 Here is a sample output:
 
 ```
-Created instance of 'CollectorLogger' at 2020-08-29T16:10:28
+Created instance of 'CollectorLogger' at 2020-09-03T01:55:52
 Using the assembly name prefix list: 'Automated.Arca.'
 Assembly names to exclude: 
 Excluded types: 
@@ -507,9 +507,9 @@ Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Abstractions.Core' ex
 Cached assembly 'Automated.Arca.Abstractions.Core'
 Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Libraries' executed in 0 ms.
 Cached assembly 'Automated.Arca.Libraries'
-Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.Specialized' executed in 18 ms.
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.Specialized' executed in 19 ms.
 Cached assembly 'Automated.Arca.Attributes.Specialized'
-Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.DependencyInjection' executed in 19 ms.
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.DependencyInjection' executed in 18 ms.
 Cached assembly 'Automated.Arca.Attributes.DependencyInjection'
 Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Extensions.DependencyInjection' executed in 0 ms.
 Cached assembly 'Automated.Arca.Extensions.DependencyInjection'
@@ -546,14 +546,17 @@ Cached extension 'ExtensionForExternalServiceAttribute' for attribute 'ExternalS
 Cached extension 'ExtensionForHostedServiceAttribute' for attribute 'HostedServiceAttribute'
 Cached extension 'ExtensionForIntegrationEventHandlerAttribute' for attribute 'IntegrationEventHandlerAttribute'
 Cached extension 'ExtensionForIntegrationEventHandlerRegistryAttribute' for attribute 'IntegrationEventHandlerRegistryAttribute'
-Cached extension 'ExtensionForMessageBusSubscribeForExchangeCommandQueueTargetAttribute' for attribute 'MessageBusSubscribeForExchangeCommandQueueTargetAttribute'
-Cached extension 'ExtensionForMessageBusSubscribeForExchangePublicationQueueBetweenAttribute' for attribute 'MessageBusSubscribeForExchangePublicationQueueBetweenAttribute'
-Cached extension 'ExtensionForOutboxAttribute' for attribute 'OutboxAttribute'
+Cached extension 'ExtensionForMessageBusAttribute' for attribute 'MessageBusAttribute'
+Cached extension 'ExtensionForMessageForExchangeCommandQueueTargetAttribute' for attribute 'MessageForExchangeCommandQueueTargetAttribute'
+Cached extension 'ExtensionForMessageForExchangePublicationQueueBetweenAttribute' for attribute 'MessageForExchangePublicationQueueBetweenAttribute'
+Cached extension 'ExtensionForMessageListenerAttribute' for attribute 'MessageListenerAttribute'
+Cached extension 'ExtensionForOutboxForInvokeAttribute' for attribute 'OutboxForInvokeAttribute'
+Cached extension 'ExtensionForOutboxForPublishAttribute' for attribute 'OutboxForPublishAttribute'
 Cached extension 'ExtensionForOutboxProcessorAttribute' for attribute 'OutboxProcessorAttribute'
-Method 'CacheReferencedAssembliesAndTypesAndExtensions' for assembly 'Automated.Arca.Demo.WebApi' executed in 49 ms.
+Method 'CacheReferencedAssembliesAndTypesAndExtensions' for assembly 'Automated.Arca.Demo.WebApi' executed in 52 ms.
 Registered class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Registered class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
-Method 'Register' executed in 3 ms. Registered 2 classes out of 144 cached types.
+Method 'Register' executed in 3 ms. Registered 2 classes out of 153 cached types.
 Configured class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Configured class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
 Method 'Configure' executed in 1 ms.

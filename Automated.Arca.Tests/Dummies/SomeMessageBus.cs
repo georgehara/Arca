@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using Automated.Arca.Abstractions.Specialized;
 using Automated.Arca.Attributes.Specialized;
 
@@ -6,32 +6,35 @@ namespace Automated.Arca.Tests.Dummies
 {
 	public interface ISomeMessageBus : IMessageBus
 	{
-		string? Exchange { get; }
-		string? Queue { get; }
+		IDictionary<string, string> Registrations { get; }
 	}
 
 	[MessageBusAttribute]
 	public class SomeMessageBus : ISomeMessageBus
 	{
-		public string? Exchange { get; private set; }
-		public string? Queue { get; private set; }
+		public IDictionary<string, string> Registrations { get; } = new Dictionary<string, string>();
 
-		public void Subscribe<TMessage, TMessageListener>( string exchange, string queue )
-			where TMessage : class
+		public void Register<TMessage, TMessageListener>( string exchange, string queue )
+			where TMessage : IMessage
 			where TMessageListener : IMessageListener<TMessage>
 		{
-			Exchange = exchange;
-			Queue = queue;
+			Registrations.Add( exchange, queue );
 		}
 	}
 
-	public class SomeMessage
+	[MessageForExchangeCommandQueueTargetAttribute( "Some target bounded context", typeof( SomeMessageListener ) )]
+	public class SomeMessage : IMessage
 	{
 	}
 
-	[MessageBusSubscribeForExchangePublicationQueueBetweenAttribute( "Some source bounded context", "Some target bounded context",
-		new Type[] { typeof( SomeMessage ) } )]
-	public class SomeMessageListener : IMessageListener<SomeMessage>
+	[MessageForExchangePublicationQueueBetweenAttribute( "Some other source bounded context", "Some other target bounded context",
+		typeof( SomeMessageListener ) )]
+	public class SomeOtherMessage : IMessage
+	{
+	}
+
+	[MessageListenerAttribute]
+	public class SomeMessageListener : IMessageListener<SomeMessage>, IMessageListener<SomeOtherMessage>
 	{
 	}
 }

@@ -4,8 +4,8 @@ namespace Automated.Arca.Abstractions.Specialized
 {
 	public interface IMessageBus : IProcessable
 	{
-		void Subscribe<TMessage, TMessageListener>( string exchange, string queue )
-			where TMessage : class
+		void Register<TMessage, TMessageListener>( string exchange, string queue )
+			where TMessage : IMessage
 			where TMessageListener : IMessageListener<TMessage>;
 	}
 }

@@ -5,12 +5,12 @@ using Automated.Arca.Attributes.Specialized;
 
 namespace Automated.Arca.Extensions.Specialized
 {
-	public class ExtensionForMessageBusSubscribeForExchangePublicationQueueBetweenAttribute :
+	public class ExtensionForMessageForExchangePublicationQueueBetweenAttribute :
 		ExtensionForSpecializedAttribute
 	{
-		public override Type AttributeType => typeof( MessageBusSubscribeForExchangePublicationQueueBetweenAttribute );
+		public override Type AttributeType => typeof( MessageForExchangePublicationQueueBetweenAttribute );
 
-		public ExtensionForMessageBusSubscribeForExchangePublicationQueueBetweenAttribute(
+		public ExtensionForMessageForExchangePublicationQueueBetweenAttribute(
 				IExtensionDependencyProvider extensionDependencyProvider )
 			: base( extensionDependencyProvider )
 		{
@@ -22,17 +22,17 @@ namespace Automated.Arca.Extensions.Specialized
 
 		public override void Configure( IConfigurationContext context, ProcessableAttribute attribute, Type typeWithAttribute )
 		{
-			var attributeTyped = (MessageBusSubscribeForExchangePublicationQueueBetweenAttribute)attribute;
+			var attributeTyped = (MessageForExchangePublicationQueueBetweenAttribute)attribute;
 
 			var messageBus = D.P.GetRequiredInstance<IMessageBus>();
-			var messageTypes = attributeTyped.MessageTypes;
+			var messageListenerType = attributeTyped.MessageListenerType;
 
 			var sourceBoundedContext = attributeTyped.SourceBoundedContext;
 			var targetBoundedContext = attributeTyped.TargetBoundedContext;
 			var exchangeName = Exchange.PublicationsFor( sourceBoundedContext );
 			var queueName = Queue.Between( sourceBoundedContext, targetBoundedContext );
 
-			GenericsHelper.SubscribeToMessageBus( messageBus, messageTypes, typeWithAttribute, exchangeName, queueName );
+			GenericsHelper.RegisterMessageToMessageBus( messageBus, typeWithAttribute, messageListenerType, exchangeName, queueName );
 		}
 	}
 }

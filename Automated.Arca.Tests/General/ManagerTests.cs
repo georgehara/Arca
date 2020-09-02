@@ -279,19 +279,26 @@ namespace Automated.Arca.Tests
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeIntegrationEventHandler>() );
 
 			var someMessageBus = (ISomeMessageBus)applicationPipeline.D.P.GetRequiredInstance<IMessageBus>();
-			someMessageBus.Subscribe<SomeMessage, SomeMessageListener>( "Some exchange", "Some queue" );
-			Assert.Equal( "Some exchange", someMessageBus.Exchange );
-			Assert.Equal( "Some queue", someMessageBus.Queue );
+			Assert.NotNull( someMessageBus );
+			AssertMessageRegistration( someMessageBus, "Some target bounded context" );
+			AssertMessageRegistration( someMessageBus, "Some other source bounded context", "Some other target bounded context" );
 
 			var someMessageBusConnection = applicationPipeline.D.P.GetRequiredInstance<ISomeMessageBusConnection>();
 			Assert.NotNull( someMessageBusConnection.Connection );
+
+			Assert.NotNull( applicationPipeline.D.P.GetRequiredInstance<SomeMessageListener>() );
 
 			Assert.NotNull( applicationPipeline.D.P.GetRequiredInstance<SomeMiddlewarePerContainer>() );
 			Assert.NotNull( applicationPipeline.D.P.GetRequiredInstance<SomeMiddlewarePerInjection>() );
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeMiddlewarePerScope>() );
 
-			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeOutbox>() );
-			Assert.NotNull( applicationPipeline.D.P.GetRequiredInstance<IOutboxProcessor>() );
+			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeOutboxForInvoke>() );
+			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeOutboxForPublish>() );
+
+			var someOutboxProcessor = (ISomeOutboxProcessor)applicationPipeline.D.P.GetRequiredInstance<IOutboxProcessor>();
+			Assert.NotNull( someOutboxProcessor );
+			AssertOutboxRegistration( someOutboxProcessor, "Some bounded context for invoke", OutboxPublicationType.Invoke );
+			AssertOutboxRegistration( someOutboxProcessor, "Some bounded context for publish", OutboxPublicationType.Publish );
 
 			Assert.NotNull( scopedProvider.GetRequiredInstance<SomeProcessableAttributeWithInstantiatePerScopeAttribute>() );
 
@@ -300,6 +307,32 @@ namespace Automated.Arca.Tests
 
 			if( includeDummyAssembly )
 				VerifyDummiesFromDummyAssembly( applicationPipeline );
+		}
+
+		private void AssertMessageRegistration( ISomeMessageBus someMessageBus, string targetBoundedContext )
+		{
+			var exchangeName = Exchange.CommandsFor( targetBoundedContext );
+			var queueName = Queue.For( targetBoundedContext );
+
+			Assert.True( someMessageBus.Registrations.ContainsKey( exchangeName ) );
+			Assert.Equal( queueName, someMessageBus.Registrations[ exchangeName ] );
+		}
+
+		private void AssertMessageRegistration( ISomeMessageBus someMessageBus, string sourceBoundedContext,
+			string targetBoundedContext )
+		{
+			var exchangeName = Exchange.PublicationsFor( sourceBoundedContext );
+			var queueName = Queue.Between( sourceBoundedContext, targetBoundedContext );
+
+			Assert.True( someMessageBus.Registrations.ContainsKey( exchangeName ) );
+			Assert.Equal( queueName, someMessageBus.Registrations[ exchangeName ] );
+		}
+
+		private void AssertOutboxRegistration( ISomeOutboxProcessor someOutboxProcessor, string boundedContext,
+			OutboxPublicationType outboxPublicationType )
+		{
+			Assert.True( someOutboxProcessor.Registrations.ContainsKey( boundedContext ) );
+			Assert.Equal<OutboxPublicationType>( outboxPublicationType, someOutboxProcessor.Registrations[ boundedContext ] );
 		}
 
 		private void VerifyDummiesFromDummyAssembly( ApplicationPipeline applicationPipeline )

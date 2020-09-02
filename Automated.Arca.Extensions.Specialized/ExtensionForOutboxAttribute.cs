@@ -5,10 +5,10 @@ using Automated.Arca.Attributes.Specialized;
 
 namespace Automated.Arca.Extensions.Specialized
 {
-	public class ExtensionForOutboxAttribute : ExtensionForSpecializedAttribute
+	public abstract class ExtensionForOutboxAttribute : ExtensionForSpecializedAttribute
 	{
-		public override Type AttributeType => typeof( OutboxAttribute );
 		public override Type? BaseInterfaceOfTypeWithAttribute => typeof( IOutbox );
+		public abstract OutboxPublicationType OutboxPublicationType { get; }
 
 		public ExtensionForOutboxAttribute( IExtensionDependencyProvider extensionDependencyProvider )
 			: base( extensionDependencyProvider )
@@ -28,7 +28,7 @@ namespace Automated.Arca.Extensions.Specialized
 			var outboxProcessor = D.P.GetRequiredInstance<IOutboxProcessor>();
 
 			GenericsHelper.RegisterOutboxToOutboxProcessor( outboxProcessor, typeWithAttribute, boundedContext,
-				OutboxPublicationType.Publish );
+				OutboxPublicationType );
 		}
 	}
 }

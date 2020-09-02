@@ -2,8 +2,7 @@
 
 namespace Automated.Arca.Abstractions.Specialized
 {
-	public interface IMessageListener<TMessage> : IProcessable
-		 where TMessage : IMessage
+	public interface IMessage : IProcessable
 	{
 	}
 }

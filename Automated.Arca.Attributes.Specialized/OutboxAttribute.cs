@@ -4,7 +4,7 @@ using Automated.Arca.Abstractions.Core;
 namespace Automated.Arca.Attributes.Specialized
 {
 	[AttributeUsage( validOn: AttributeTargets.Class, AllowMultiple = false )]
-	public class OutboxAttribute : ProcessableAttribute
+	public abstract class OutboxAttribute : ProcessableAttribute
 	{
 		public string BoundedContext { get; private set; }
 

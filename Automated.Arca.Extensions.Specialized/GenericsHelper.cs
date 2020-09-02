@@ -21,24 +21,18 @@ namespace Automated.Arca.Extensions.Specialized
 			generic!.Invoke( outboxProcessor, new object[] { boundedContext, publicationType } );
 		}
 
-		public static void SubscribeToMessageBus( IMessageBus messageBus, Type messageType, Type messageListenerType,
+		public static void RegisterMessageToMessageBus( IMessageBus messageBus, Type messageType, Type messageListenerType,
 			string exchange, string queue )
 		{
+			messageType.EnsureDerivesFromInterface( typeof( IMessage ) );
 			messageListenerType.EnsureDerivesFromGenericInterfaceNotEqual( typeof( IMessageListener<> ), messageType );
 
 			MethodInfo? method = messageBus.GetType()
-				.GetMethod( nameof( IMessageBus.Subscribe ), 2, new Type[] { typeof( string ), typeof( string ) } );
+				.GetMethod( nameof( IMessageBus.Register ), 2, new Type[] { typeof( string ), typeof( string ) } );
 
 			MethodInfo generic = method!.MakeGenericMethod( messageType, messageListenerType );
 
 			generic!.Invoke( messageBus, new object[] { exchange, queue } );
-		}
-
-		public static void SubscribeToMessageBus( IMessageBus messageBus, Type[] messageTypes, Type messageListenerType,
-			string exchange, string queue )
-		{
-			foreach( var messageType in messageTypes )
-				SubscribeToMessageBus( messageBus, messageType, messageListenerType, exchange, queue );
 		}
 	}
 }

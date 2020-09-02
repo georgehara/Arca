@@ -18,7 +18,8 @@ namespace Automated.Arca.Tests
 				!type.IsInterface ||
 				type.DerivesFromInterfaceOrGenericInterfaceWithUntypedParameter( typeof( ITenantManager ) ) ||
 				type.DerivesFromInterfaceOrGenericInterfaceWithUntypedParameter( typeof( ITenantNameProvider ) ) ||
-				type.DerivesFromInterfaceOrGenericInterfaceWithUntypedParameter( typeof( IMessageBus ) );
+				type.DerivesFromInterfaceOrGenericInterfaceWithUntypedParameter( typeof( IMessageBus ) ) ||
+				type.DerivesFromInterfaceOrGenericInterfaceWithUntypedParameter( typeof( IOutboxProcessor ) );
 		}
 
 		public object GetMock( IManager manager, Type type )

@@ -149,27 +149,27 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			return instantiationRegistry.WithManualMocking( manualMocker );
 		}
 
-		[Obsolete( "Use 'AddDependencies' instead" )]
+		[ObsoleteAttribute( "Use 'AddDependencies' instead" )]
 		public static IManager AddInstantiationRegistry( this IManager manager, IServiceCollection services,
 			bool instantiatePerContainerInsteadOfScope, bool addGlobalInstanceProvider )
 		{
 			return manager.AddDependencies( services, instantiatePerContainerInsteadOfScope, null );
 		}
 
-		[Obsolete( "Use 'AddInstantiationRegistry' instead" )]
+		[ObsoleteAttribute( "Use 'AddInstantiationRegistry' instead" )]
 		public static IManager AddDependencyInjectionInstantiationRegistry( this IManager manager, IServiceCollection services,
 			bool instantiatePerContainerInsteadOfScope, IAutomatedMocker? automatedMocker )
 		{
 			return AddInstantiationRegistry( manager, services, instantiatePerContainerInsteadOfScope, automatedMocker );
 		}
 
-		[Obsolete( "Use 'AddSpecializedRegistry' instead" )]
+		[ObsoleteAttribute( "Use 'AddSpecializedRegistry' instead" )]
 		public static IManager AddSpecializedInstantiationRegistry( this IManager manager, IServiceCollection services )
 		{
 			return AddSpecializedRegistry( manager, services );
 		}
 
-		[Obsolete( "Use 'AddDependencies' instead" )]
+		[ObsoleteAttribute( "Use 'AddDependencies' instead" )]
 		public static IManager AddInstantiationRegistries( this IManager manager, IServiceCollection services,
 				bool allowMultipleImplementationsPerBaseType = false, bool instantiatePerContainerInsteadOfScope = false,
 				IAutomatedMocker? automatedMocker = null, bool addGlobalInstanceProvider = true )
