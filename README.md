@@ -495,7 +495,7 @@ namespace Automated.Arca.Tests.Dummies
 Here is a sample output:
 
 ```
-Created instance of 'CollectorLogger' at 2020-09-03T01:55:52
+Created instance of 'CollectorLogger' at 2020-09-08T01:01:33
 Using the assembly name prefix list: 'Automated.Arca.'
 Assembly names to exclude: 
 Excluded types: 
@@ -507,9 +507,9 @@ Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Abstractions.Core' ex
 Cached assembly 'Automated.Arca.Abstractions.Core'
 Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Libraries' executed in 0 ms.
 Cached assembly 'Automated.Arca.Libraries'
-Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.Specialized' executed in 19 ms.
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.Specialized' executed in 18 ms.
 Cached assembly 'Automated.Arca.Attributes.Specialized'
-Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.DependencyInjection' executed in 18 ms.
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.DependencyInjection' executed in 19 ms.
 Cached assembly 'Automated.Arca.Attributes.DependencyInjection'
 Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Extensions.DependencyInjection' executed in 0 ms.
 Cached assembly 'Automated.Arca.Extensions.DependencyInjection'
@@ -553,7 +553,7 @@ Cached extension 'ExtensionForMessageListenerAttribute' for attribute 'MessageLi
 Cached extension 'ExtensionForOutboxForInvokeAttribute' for attribute 'OutboxForInvokeAttribute'
 Cached extension 'ExtensionForOutboxForPublishAttribute' for attribute 'OutboxForPublishAttribute'
 Cached extension 'ExtensionForOutboxProcessorAttribute' for attribute 'OutboxProcessorAttribute'
-Method 'CacheReferencedAssembliesAndTypesAndExtensions' for assembly 'Automated.Arca.Demo.WebApi' executed in 52 ms.
+Method 'CacheReferencedAssembliesAndTypesAndExtensions' for assembly 'Automated.Arca.Demo.WebApi' executed in 55 ms.
 Registered class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Registered class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
 Method 'Register' executed in 3 ms. Registered 2 classes out of 153 cached types.

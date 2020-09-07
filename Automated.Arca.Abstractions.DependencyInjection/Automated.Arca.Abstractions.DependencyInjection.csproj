@@ -17,7 +17,7 @@ Dependency injection abstractions.</Description>
 		<PackageTags>arca automatic automated registration configuration dependency injection cqrs</PackageTags>
 		<RepositoryUrl>https://github.com/georgehara/Arca</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<Version>2.0.0</Version>
+		<Version>2.0.1</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
