@@ -204,7 +204,7 @@ To create your own attribute, you only have to:
 * Create your attribute as a class which derives from `ProcessableAttribute`.
 * Create the extension which handles your attribute, as a class which derives from `ExtensionForProcessableAttribute` (which already contains a lot of reusable behavior). The extension must override `AttributeType`, `Register` and `Configure`.
 
-It doesn't matter in which assemblies you put these two classes, but the assembly which contains the extension will have to be processed by the manager, so you have to add it to the manager with one of the `AddXXX` manager methods, unless it's not already included in the scanned assemblies.
+It doesn't matter in which assemblies you put these two classes, but the assembly which contains the extension will have to be processed by the manager, so you have to add it to the manager with one of the `AddXXX` manager methods, unless it's already included in the scanned assemblies.
 
 Apply your attribute on the classes that you want to be registered and configured by the extension (that handles your attribute).
 
@@ -343,17 +343,17 @@ The manager (= the `Manager` class from the `Manager` package) and the scope man
 
 ## PERFORMANCE CONSIDERATIONS
 
-Any performance investigation has make a comparison between the automated processing that ARCA does and manual registration and configuration, to see if the extra processing required by the automated processing has a significant performance impact.
+Any performance investigation has to make a comparison between the automated processing that ARCA does and manual registration and configuration, to see if the extra processing required by the automated processing has a significant performance impact.
 
 ARCA has to load all the assemblies (referenced by an application) and has to use reflection to scan all the classes, at application startup, but this is done only once, no matter how many extensions are used. This means that the more extensions are used to perform all sorts of automated operations, the more effective ARCA becomes.
 
 The number of assemblies involved and their loading times are not relevant because the assemblies also have to be loaded during manual registration and configuration in order to perform assembly-local operations. So, from this point of view there is no performance advantage in doing manual registration and configuration, except for the occasional unnecessary loaded assembly. This means that the number of involved assemblies and their loading times can be ignored during a performance investigation.
 
-The performance-relevant time is the execution time for processing the unprocessable types, because the time spent doing this is not spent during manual registration and configuration. The time spent in the extensions to register and configure the processable classes has to also be spent during manual registration and configuration, so it's ignored by simulating the calls to the extensions, rather than actually making them.
+The performance-relevant time is the execution time for processing (= going over) the unprocessable types, because the time spent doing this is not spent during manual registration and configuration. The time spent in the extensions to register and configure the processable classes has to also be spent during manual registration and configuration, so it's ignored by simulating the calls to the extensions, rather than actually making them.
  
 An approximate performance can be viewed by executing the (release build of the) tests from the `ProcessingPerformanceTests` class. If you want to see the execution times without any caching from .Net, rebuild the solution before running each test separately.
 
-The tests process about 10'000 types. The relevant time is 10 ms if the `IProcessable` interface is used, and 15 ms if it's not used. This means that ARCA can process about 1'000'000 unprocessable types per second.
+The tests process about 10'000 types. The relevant time is 10 ms if the `IProcessable` interface is used, and 15 ms if it's not used. This means that ARCA can process (= go over) about 1'000'000 unprocessable types per second.
 
 To improve ARCA's performance:
 * Use specific assembly name prefixes in order to reduce the number of assemblies that have be loaded and scanned.
@@ -415,6 +415,7 @@ namespace FooCorp
 			ApplicationOptionsProvider = options;
 
 			var managerOptions = new ManagerOptions()
+				.UseLogger( new TraceLogger() ) // Easily see (in DebugView) what ARCA executes. Can ignore for production code.
 				.AddAssemblyNamePrefix( "FooCorp" );
 
 			Manager = new Manager.Manager( managerOptions )
