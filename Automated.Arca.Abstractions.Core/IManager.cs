@@ -15,6 +15,7 @@ namespace Automated.Arca.Abstractions.Core
 		IManager AddAssemblyContainingType( Type type );
 		IManager AddAssemblyContainingType<T>();
 		IManager AddEntryAssembly();
+		IManager AddCurrentAssembly();
 		IManager AddAssembliesLoadedInProcess();
 		IManager Register();
 		IManager Configure();

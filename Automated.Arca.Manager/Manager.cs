@@ -139,6 +139,20 @@ namespace Automated.Arca.Manager
 			}
 		}
 
+		public IManager AddCurrentAssembly()
+		{
+			lock( Lock )
+			{
+				var assembly = Assembly.GetExecutingAssembly()!;
+				var name = assembly.GetName().Name!;
+				Options.AddAssemblyNamePrefix( name );
+
+				CacheReferencedAssembliesAndTypesAndExtensions( assembly );
+
+				return this;
+			}
+		}
+
 		public IManager AddAssembliesLoadedInProcess()
 		{
 			lock( Lock )

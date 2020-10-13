@@ -19,6 +19,7 @@
 [Support for multi-implementation](#support-for-multi-implementation)<br/>
 [Thread safety](#thread-safety)<br/>
 [Performance considerations](#performance-considerations)<br/>
+[Troubleshooting](#troubleshooting)<br/>
 [Package descriptions](#package-descriptions)<br/>
 [Examples](#examples)<br/>
 [Demo](#demo)<br/>
@@ -360,6 +361,17 @@ To improve ARCA's performance:
 * The classes to register and configure should implement the `IProcessable` interface. This works because checking if a class implements an interface is much faster (50 times) than calling `Type.GetCustomAttributes` for each class. By default, the manager ignores this interface because its effect is small in the entire context, in the vast majority of cases.
 * Do not pass a logger to the manager options.
 * Don't split the classes to process over a large number of tiny assemblies because assembly loading may have an overhead.
+
+
+## TROUBLESHOOTING
+
+### SERVICES CAN'T BE RESOLVED DURING TESTING
+
+In a normal testing scenario, the tests are run by a specialized executable file that has no reference to the testing project, so ARCA can't process the testing project even if you were to add the correct assembly name prefix to its options.
+
+This specialized executable file is identified by .Net as the entry assembly.
+
+You have to manually add to the manager the assembly which contains the testing project, using any of the `AddXXX` manager methods. Since you are (likely) creating the manager in the testing project, the testing project is identified by .Net as the current / executing assembly (not the entry assembly).
 
 
 ## PACKAGE DESCRIPTIONS
