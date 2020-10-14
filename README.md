@@ -365,13 +365,16 @@ To improve ARCA's performance:
 
 ## TROUBLESHOOTING
 
-### SERVICES CAN'T BE RESOLVED DURING TESTING
+### SERVICES CAN'T BE RESOLVED
 
-In a normal testing scenario, the tests are run by a specialized executable file that has no reference to the testing project, so ARCA can't process the testing project even if you were to add the correct assembly name prefix to its options.
+When the dependency injection container throws an exception that it can't resolve a (dependency) service, the likely cause is that ARCA doesn't process or know about the assembly where the service is declared (with the instantiation attribute applied on it).
 
-This specialized executable file is identified by .Net as the entry assembly.
+In such a case, you have to manually add to the manager the assembly which contains the service, using any of the `AddXXX` manager methods. It's recommended to avoid adding the entry or current / executing assembly because the meaning of these has subtleties that can easily escape you.
 
-You have to manually add to the manager the assembly which contains the testing project, using any of the `AddXXX` manager methods. Since you are (likely) creating the manager in the testing project, the testing project is identified by .Net as the current / executing assembly (not the entry assembly).
+For example, in a testing scenario, the tests are run by a specialized executable file that has no (static) reference to the project that contains the tests, so ARCA can't process the test project even if you were to add the correct assembly name prefix (to its options). 
+This specialized executable file is identified by .Net as the entry assembly, which means that using the `AddEntryAssembly` method is useless because of the lack of reference.
+
+If you are creating the manager in the test project, the test project is identified by .Net as the current / executing assembly, not the entry assembly, so you add the current / executing assembly. But if the manager is created in an assembly which is used by both the production code and by the test projects, you should add the assembly that contains the unresolved service (using the `AddAssemblyContainingType` method).
 
 
 ## PACKAGE DESCRIPTIONS
