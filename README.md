@@ -37,6 +37,11 @@ The main use cases are the (parametrized) registration and configuration of clas
 ARCA doesn't depend on a dependency injection container. It doesn't even know what dependency injection is; that's known only to a few dedicated packages.
 
 
+### MIXING MANUAL AND AUTOMATED REGISTRATION
+
+ARCA can be introduced progressively into an existing project because it's possible to mix manual and automated dependency injection registration. You should not register the same class both manually and automatically.
+
+
 ## HOW IT WORKS
 
 Attributes are used to mark classes that have to be registered or configured, and to specify (complex) parameters for processing.
