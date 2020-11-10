@@ -190,6 +190,8 @@ Note about recursiveness:
 * Assembly processing is always recursive, so the assembly references of an assembly are also processed, and so on for references of references.
 * The compiler removes the references to the assemblies which are not used in code, so it's not enough to see an assembly reference in your IDE. Something from the referenced assembly must be used in code all the way (reference by reference) to the root assembly, or you can add an assembly with any of the `AddXXX` manager methods.
 
+Note about integration tests: `AddAssembliesLoadedInProcess` can be used in the production code (`Startup.cs`) to set up the manager when integration tests are run, tests which require access to the classes registered in the test projects. The problem is that the manager from the production code doesn't (normally) have access to the test assemblies, to process them, since it doesn't (and shouldn't) reference them statically. Calling `AddAssembliesLoadedInProcess` ensure that the manager knows dynamically (= at runtime) about the test assemblies.
+
 
 ## INTER-CLASS DEPENDENCIES
 
