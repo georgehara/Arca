@@ -2,7 +2,7 @@
 
 namespace Automated.Arca.Attributes.Specialized
 {
-	[AttributeUsage( validOn: AttributeTargets.Class, AllowMultiple = false )]
+	[AttributeUsage( validOn: AttributeTargets.Class, AllowMultiple = true )]
 	public class OutboxForInvokeAttribute : OutboxAttribute
 	{
 		public OutboxForInvokeAttribute( string boundedContext )

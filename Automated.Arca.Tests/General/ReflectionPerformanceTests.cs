@@ -164,7 +164,7 @@ namespace Automated.Arca.Tests
 		}
 	}
 
-	[AttributeUsage( validOn: AttributeTargets.Class, AllowMultiple = false )]
+	[AttributeUsage( validOn: AttributeTargets.Class, AllowMultiple = true )]
 	public class SomeProcessableAttribute : ProcessableAttribute
 	{
 	}

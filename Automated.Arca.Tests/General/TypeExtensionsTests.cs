@@ -101,8 +101,8 @@ namespace Automated.Arca.Tests
 		[Fact]
 		public void EnsureDerivesFromGenericInterface_SomeGenericClass_Succeeds()
 		{
-			typeof( SomeGenericClass ).EnsureDerivesFromGenericInterfaceNotEqual( typeof( ISomeGenericInterface<> )
-				, typeof( string ) );
+			typeof( SomeGenericClass ).EnsureDerivesFromGenericInterfaceNotEqual( typeof( ISomeGenericInterface<> ),
+				typeof( string ) );
 		}
 
 		[Fact]

@@ -4,7 +4,7 @@ using Automated.Arca.Abstractions.DependencyInjection;
 
 namespace Automated.Arca.Tests.Dummies
 {
-	[AttributeUsage( validOn: AttributeTargets.Class, AllowMultiple = false )]
+	[AttributeUsage( validOn: AttributeTargets.Class, AllowMultiple = true )]
 	public class SomeProcessableWithInterfaceAttribute : ProcessableWithInterfaceAttribute
 	{
 		public SomeProcessableWithInterfaceAttribute()

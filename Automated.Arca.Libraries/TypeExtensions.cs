@@ -12,8 +12,8 @@ namespace Automated.Arca.Libraries
 				throw new InvalidCastException( $"Type '{implementationType.Name}' must derive from '{baseType.Name}'" );
 		}
 
-		public static void EnsureDerivesFromGenericInterfaceNotEqual( this Type implementationType, Type genericInterfaceType
-			, Type genericParameterType )
+		public static void EnsureDerivesFromGenericInterfaceNotEqual( this Type implementationType, Type genericInterfaceType,
+			Type genericParameterType )
 		{
 			var realizedGenericType = genericInterfaceType.MakeGenericType( genericParameterType );
 

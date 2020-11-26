@@ -9,8 +9,8 @@ namespace Automated.Arca.Manager
 		internal string FullName { get; }
 
 		internal ProcessingState State { get; set; } = ProcessingState.None;
-		internal ProcessableAttribute? ProcessableAttribute { get; set; }
-		internal bool HasProcessableAttribute => ProcessableAttribute != null;
+		internal ProcessableAttribute[]? ProcessableAttributes { get; set; }
+		internal bool HasProcessableAttributes => ProcessableAttributes != null;
 		internal IRegistratorConfigurator? RegistratorConfigurator { get; set; }
 
 		internal CachedType( Type type )

@@ -258,6 +258,9 @@ namespace Automated.Arca.Tests
 				= applicationPipeline.D.P.GetRequiredInstance<ISomeComponentWithInterfaceSpecifiedInAttribute>();
 			Assert.True( someComponentWithInterfaceSpecifiedInAttribute.Configured );
 
+			Assert.NotNull( scopedProvider.GetRequiredInstance<ISomeComponentWithInterfaceSpecifiedInAttribute1>() );
+			Assert.NotNull( scopedProvider.GetRequiredInstance<ISomeComponentWithInterfaceSpecifiedInAttribute2>() );
+
 			var someComponentWithoutInterfaceSpecifiedInAttribute
 				= applicationPipeline.D.P.GetRequiredInstance<ISomeComponentWithoutInterfaceSpecifiedInAttribute>();
 			Assert.True( someComponentWithoutInterfaceSpecifiedInAttribute.Configured );

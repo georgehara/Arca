@@ -17,7 +17,7 @@ Dependency injection extensions for the dependency injection attributes.</Descri
 		<PackageTags>arca automatic automated registration configuration dependency injection cqrs</PackageTags>
 		<RepositoryUrl>https://github.com/georgehara/Arca</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<Version>2.0.1</Version>
+		<Version>2.0.2</Version>
 	</PropertyGroup>
 
 	<ItemGroup>

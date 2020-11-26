@@ -5,7 +5,7 @@ using Automated.Arca.Attributes.DependencyInjection;
 namespace Automated.Arca.Tests.Dummies
 {
 	[InstantiatePerScopeAttribute]
-	[AttributeUsage( validOn: AttributeTargets.Class, AllowMultiple = false )]
+	[AttributeUsage( validOn: AttributeTargets.Class, AllowMultiple = true )]
 	public class SomeAttributeWithInstantiatePerScopeAttribute : Attribute, IProcessable
 	{
 	}

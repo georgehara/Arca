@@ -476,21 +476,22 @@ namespace Automated.Arca.Manager
 				return;
 			}
 
-			if( cachedType.ProcessableAttribute != null )
+			if( cachedType.ProcessableAttributes != null )
 				throw new InvalidOperationException( $"The type '{cachedType.Type}' already has a cached processable attribute." );
 
-			// This also returns the attributes derived from "ProcessableAttribute".
-			var attribute = cachedType.Type.GetProcessableAttribute();
-			if( attribute == null || SimulateOnlyUnprocessableTypes )
+			// This returns the attributes *derived* from "ProcessableAttribute".
+			var attributes = cachedType.Type.GetProcessableAttributes();
+			if( attributes == null || SimulateOnlyUnprocessableTypes )
 			{
 				cachedType.State = ProcessingState.Registered;
 
 				return;
 			}
 
-			RegisterType( context, cachedType.Type, attribute );
+			foreach( var attribute in attributes )
+				RegisterType( context, cachedType.Type, attribute );
 
-			cachedType.ProcessableAttribute = attribute;
+			cachedType.ProcessableAttributes = attributes;
 			cachedType.State = ProcessingState.Registered;
 		}
 
@@ -539,14 +540,15 @@ namespace Automated.Arca.Manager
 				return;
 			}
 
-			if( !cachedType.HasProcessableAttribute || SimulateOnlyUnprocessableTypes )
+			if( !cachedType.HasProcessableAttributes || SimulateOnlyUnprocessableTypes )
 			{
 				cachedType.State = ProcessingState.Configured;
 
 				return;
 			}
 
-			ConfigureType( context, cachedType.Type, cachedType.ProcessableAttribute! );
+			foreach( var attribute in cachedType.ProcessableAttributes! )
+				ConfigureType( context, cachedType.Type, attribute );
 
 			cachedType.State = ProcessingState.Configured;
 		}

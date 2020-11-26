@@ -24,8 +24,7 @@ namespace Automated.Arca.Tests
 
 		public object GetMock( IManager manager, Type type )
 		{
-			if( type == typeof( ISomeComponentWithInterfaceSpecifiedInAttribute ) ||
-				type == typeof( ISomeComponentWithInterfaceSpecifiedInAttribute ) )
+			if( type == typeof( ISomeComponentWithInterfaceSpecifiedInAttribute ) )
 			{
 				return Substitute.For( new Type[] { type, typeof( ISomeConfigurable ) }, new object[ 0 ] );
 			}

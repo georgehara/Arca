@@ -3,7 +3,7 @@ using Automated.Arca.Abstractions.Core;
 
 namespace Automated.Arca.Attributes.Specialized
 {
-	[AttributeUsage( validOn: AttributeTargets.Class, AllowMultiple = false )]
+	[AttributeUsage( validOn: AttributeTargets.Class, AllowMultiple = true )]
 	public abstract class MessageAttribute : ProcessableAttribute
 	{
 		public string TargetBoundedContext { get; protected set; }

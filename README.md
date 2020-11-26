@@ -78,7 +78,7 @@ An attribute which marks a class for registration or configuration must derive f
 
 An attribute must be applied on the class that it marks for registration or configuration, it's not enough to be applied on an ancestor of the class.
 
-A class may have applied on it only one attribute (derived from the `ProcessableAttribute` attribute).
+A class may have applied on it multiple attributes (derived from the `ProcessableAttribute` attribute).
 
 Some attributes allow you to specify an interface with which the (dependency injection) registration has to be made. They also offer you the option to not specify the interface, in which case the registration will be made with the default interface of the class on which the attribute is applied. The default interface of a class is considered to be the interface that the class implements on the first ancestor level that has an interface; such an interface may be implemented either by the class itself, or by an ancestor class. Such an attribute has a constructor with an interface-type parameter, and another without the interface-type parameter.
 
@@ -532,7 +532,7 @@ namespace Automated.Arca.Tests.Dummies
 Here is a sample output:
 
 ```
-Created instance of 'CollectorLogger' at 2020-09-08T01:01:33
+Created instance of 'CollectorLogger' at 2020-11-27T00:32:28
 Using the assembly name prefix list: 'Automated.Arca.'
 Assembly names to exclude: 
 Excluded types: 
@@ -544,9 +544,9 @@ Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Abstractions.Core' ex
 Cached assembly 'Automated.Arca.Abstractions.Core'
 Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Libraries' executed in 0 ms.
 Cached assembly 'Automated.Arca.Libraries'
-Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.Specialized' executed in 18 ms.
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.Specialized' executed in 19 ms.
 Cached assembly 'Automated.Arca.Attributes.Specialized'
-Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.DependencyInjection' executed in 19 ms.
+Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Attributes.DependencyInjection' executed in 20 ms.
 Cached assembly 'Automated.Arca.Attributes.DependencyInjection'
 Method 'LoadAssemblyWithName' for assembly 'Automated.Arca.Extensions.DependencyInjection' executed in 0 ms.
 Cached assembly 'Automated.Arca.Extensions.DependencyInjection'
@@ -590,7 +590,7 @@ Cached extension 'ExtensionForMessageListenerAttribute' for attribute 'MessageLi
 Cached extension 'ExtensionForOutboxForInvokeAttribute' for attribute 'OutboxForInvokeAttribute'
 Cached extension 'ExtensionForOutboxForPublishAttribute' for attribute 'OutboxForPublishAttribute'
 Cached extension 'ExtensionForOutboxProcessorAttribute' for attribute 'OutboxProcessorAttribute'
-Method 'CacheReferencedAssembliesAndTypesAndExtensions' for assembly 'Automated.Arca.Demo.WebApi' executed in 55 ms.
+Method 'CacheReferencedAssembliesAndTypesAndExtensions' for assembly 'Automated.Arca.Demo.WebApi' executed in 52 ms.
 Registered class 'LoggingMiddleware' with attribute 'ChainMiddlewarePerScopeAttribute'
 Registered class 'LogsProvider' with attribute 'InstantiatePerScopeAttribute'
 Method 'Register' executed in 3 ms. Registered 2 classes out of 153 cached types.
@@ -600,7 +600,7 @@ Method 'Configure' executed in 1 ms.
 Invoked middleware 'LoggingMiddleware':
 	* URL: https://localhost:53712/logs
 	* Endpoint: Automated.Arca.Demo.WebApi.Controllers.LogsController.Get (Automated.Arca.Demo.WebApi)
-	* Request identifier: 80000010-0001-ff00-b63f-84710c7967bb
+	* Request identifier: 80000002-0001-fe00-b63f-84710c7967bb
 ```
 
 

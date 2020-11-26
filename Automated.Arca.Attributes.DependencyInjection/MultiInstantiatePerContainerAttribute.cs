@@ -2,7 +2,7 @@
 
 namespace Automated.Arca.Attributes.DependencyInjection
 {
-	[AttributeUsage( validOn: AttributeTargets.Class, AllowMultiple = false )]
+	[AttributeUsage( validOn: AttributeTargets.Class, AllowMultiple = true )]
 	public class MultiInstantiatePerContainerAttribute : MultiInstantiateAttribute
 	{
 		public MultiInstantiatePerContainerAttribute( string implementationKey )

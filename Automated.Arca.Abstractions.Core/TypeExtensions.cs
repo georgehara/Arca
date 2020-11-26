@@ -7,29 +7,19 @@ namespace Automated.Arca.Abstractions.Core
 {
 	public static class TypeExtensions
 	{
-		public static T? GetProcessableAttribute<T>( this Type type )
+		public static T[]? GetProcessableAttributes<T>( this Type type )
 			where T : ProcessableAttribute
 		{
 			var attributes = type.GetCustomAttributes<T>( false );
 			if( attributes == null )
 				return null;
 
-			var count = attributes.Count();
-			if( count <= 0 )
-				return null;
-
-			if( count > 1 )
-			{
-				throw new InvalidOperationException( $"Class '{type.Name}' may have applied on it only one attribute" +
-					$" derived from '{nameof( T )}', not {count}." );
-			}
-
-			return attributes.SingleOrDefault();
+			return attributes.ToArray();
 		}
 
-		public static ProcessableAttribute? GetProcessableAttribute( this Type type )
+		public static ProcessableAttribute[]? GetProcessableAttributes( this Type type )
 		{
-			return GetProcessableAttribute<ProcessableAttribute>( type );
+			return GetProcessableAttributes<ProcessableAttribute>( type );
 		}
 
 		public static Type GetDefaultInterface( this Type type )
