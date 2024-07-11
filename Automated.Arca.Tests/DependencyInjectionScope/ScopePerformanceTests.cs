@@ -13,7 +13,7 @@ namespace Automated.Arca.Tests
 			var applicationPipeline = ApplicationPipeline.GetInstanceAndCallRegisterAndConfigure( true, null, null, false,
 				null, Assembly.GetExecutingAssembly() );
 
-			Stopwatch sw = new Stopwatch();
+			var sw = new Stopwatch();
 			sw.Start();
 
 			const int iterations = 7000000;

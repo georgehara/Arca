@@ -17,10 +17,10 @@ namespace Automated.Arca.Tests
 			var implementsInterface = typeof( IExtensionForProcessableAttribute ).IsAssignableFrom(
 				typeof( ExtensionForSomeProcessableAttribute ) );
 
-			Stopwatch sw = new Stopwatch();
+			var sw = new Stopwatch();
 			sw.Start();
 
-			const int iterations = 70000000;
+			const int iterations = 2000000000;
 
 			for( int i = 0; i < iterations; i++ )
 				implementsInterface = typeof( IExtensionForProcessableAttribute ).IsAssignableFrom(
@@ -36,10 +36,10 @@ namespace Automated.Arca.Tests
 		{
 			var implementsInterface = typeof( IProcessable ).IsAssignableFrom( typeof( ExtensionForSomeProcessableAttribute ) );
 
-			Stopwatch sw = new Stopwatch();
+			var sw = new Stopwatch();
 			sw.Start();
 
-			const int iterations = 70000000;
+			const int iterations = 2000000000;
 
 			for( int i = 0; i < iterations; i++ )
 				implementsInterface = typeof( IProcessable ).IsAssignableFrom( typeof( ExtensionForSomeProcessableAttribute ) );
@@ -54,7 +54,7 @@ namespace Automated.Arca.Tests
 		{
 			var customAttributes = typeof( SomeInstantiatePerScopeComponent ).GetCustomAttributes<ProcessableAttribute>();
 
-			Stopwatch sw = new Stopwatch();
+			var sw = new Stopwatch();
 			sw.Start();
 
 			const int iterations = 1000000;
@@ -64,7 +64,7 @@ namespace Automated.Arca.Tests
 
 			Trace.WriteLine( $"Speed of '{nameof( GetCustomAttributesWhenExist )}' = {Speed( sw, iterations )}" );
 
-			Assert.True( customAttributes.Count() > 0 );
+			Assert.True( customAttributes.Any() );
 		}
 
 		[Fact]
@@ -72,17 +72,17 @@ namespace Automated.Arca.Tests
 		{
 			var customAttributes = typeof( ExtensionForSomeProcessableAttribute ).GetCustomAttributes<ProcessableAttribute>();
 
-			Stopwatch sw = new Stopwatch();
+			var sw = new Stopwatch();
 			sw.Start();
 
-			const int iterations = 1400000;
+			const int iterations = 1000000;
 
 			for( int i = 0; i < iterations; i++ )
 				customAttributes = typeof( ExtensionForSomeProcessableAttribute ).GetCustomAttributes<ProcessableAttribute>();
 
 			Trace.WriteLine( $"Speed of '{nameof( GetCustomAttributesWhenDontExist )}' = {Speed( sw, iterations )}" );
 
-			Assert.True( customAttributes.Count() <= 0 );
+			Assert.False( customAttributes.Any() );
 		}
 
 		[Fact]
@@ -90,7 +90,7 @@ namespace Automated.Arca.Tests
 		{
 			var registerMethod = ExtractExtensionForRegistrationMethod( typeof( ExtensionForSomeProcessableAttribute ) );
 
-			Stopwatch sw = new Stopwatch();
+			var sw = new Stopwatch();
 			sw.Start();
 
 			const int iterations = 1000000;
@@ -108,10 +108,10 @@ namespace Automated.Arca.Tests
 		{
 			var registerMethod = ExtractExtensionForRegistrationMethod( typeof( SomeInstantiatePerScopeComponent ) );
 
-			Stopwatch sw = new Stopwatch();
+			var sw = new Stopwatch();
 			sw.Start();
 
-			const int iterations = 14000000;
+			const int iterations = 12000000;
 
 			for( int i = 0; i < iterations; i++ )
 				registerMethod = ExtractExtensionForRegistrationMethod( typeof( SomeInstantiatePerScopeComponent ) );
@@ -126,7 +126,7 @@ namespace Automated.Arca.Tests
 		{
 			Type interfaceType;
 
-			Stopwatch sw = new Stopwatch();
+			var sw = new Stopwatch();
 			sw.Start();
 
 			const int iterations = 1400000;
@@ -158,7 +158,7 @@ namespace Automated.Arca.Tests
 				return null;
 
 			var registerMethod = implementationType.GetMethod( nameof( IExtensionForRegistration<int>.Register ),
-				new Type[] { typeof( IRegistrationContext ), genericArgumentType, typeof( Type ) } );
+				[ typeof( IRegistrationContext ), genericArgumentType, typeof( Type ) ] );
 
 			return registerMethod;
 		}

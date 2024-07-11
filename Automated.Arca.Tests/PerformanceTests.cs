@@ -11,7 +11,7 @@ namespace Automated.Arca.Tests
 			var elapsedMilliseconds = sw.ElapsedMilliseconds;
 			var iterationsPerSecond = elapsedMilliseconds > 0 ? iterations * 1000.0 / elapsedMilliseconds : 0;
 
-			return $"{(int)iterationsPerSecond} #/s ({elapsedMilliseconds} ms)";
+			return $"{(long)iterationsPerSecond} #/s ({elapsedMilliseconds} ms)";
 		}
 	}
 }

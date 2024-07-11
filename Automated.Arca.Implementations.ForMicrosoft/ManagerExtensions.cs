@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Automated.Arca.Implementations.ForMicrosoft
 {
 	/// <summary>
-	/// Don't call "IInstantiationRegistry.InstantiatePerXXX" in order to avoid the possibility of mocking.
+	/// Don't call "IInstantiationRegistry.InstantiatePerXXX", in order to avoid the (possibility of) mocking during testing.
 	/// </summary>
 	public static class ManagerExtensions
 	{

@@ -1,0 +1,1 @@
+Allow to process (register + configure) and mock dependencies based only on some specified interfaces, separate per type (container, scope, injection): ProcessInterfaceImplementors(container, scope, injection).

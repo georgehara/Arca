@@ -24,7 +24,7 @@ namespace Automated.Arca.Tests
 			DisplayTrace( "Performance without 'IProcessable'", statistics );
 		}
 
-		private IManagerStatistics GetManagerPerformance( bool processOnlyTypesDerivedFromIProcessable,
+		private static IManagerStatistics GetManagerPerformance( bool processOnlyTypesDerivedFromIProcessable,
 			bool simulateOnlyUnprocessableTypes )
 		{
 			static void a( IManagerOptions x ) => x
@@ -56,7 +56,7 @@ namespace Automated.Arca.Tests
 			return applicationPipeline.Statistics;
 		}
 
-		private void DisplayTrace( string testDescription, IManagerStatistics statistics )
+		private static void DisplayTrace( string testDescription, IManagerStatistics statistics )
 		{
 			Trace.WriteLine( $"{testDescription}:" +
 				$" Loaded {statistics.LoadedAssemblies} assemblies." +

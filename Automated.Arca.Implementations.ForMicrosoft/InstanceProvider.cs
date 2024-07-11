@@ -18,7 +18,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 			return ServiceProvider.GetRequiredService( type );
 		}
 
-		public T GetRequiredInstance<T>()
+		public T GetRequiredInstance<T>() where T : notnull
 		{
 			return ServiceProvider.GetRequiredService<T>();
 		}

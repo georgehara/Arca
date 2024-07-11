@@ -125,16 +125,16 @@ namespace Automated.Arca.Tests
 			return this;
 		}
 
-		private IConfiguration GetApplicationOptionsProvider()
+		private static IConfiguration GetApplicationOptionsProvider()
 		{
 			return new ConfigurationBuilder()
-				.SetBasePath( Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location ) )
+				.SetBasePath( Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location )! )
 				.AddJsonFile( "appsettings.json", optional: false, reloadOnChange: false )
 				.AddEnvironmentVariables()
 				.Build();
 		}
 
-		private IManager GetManager( IManagerOptions managerOptions, bool simulateOnlyUnprocessableTypes,
+		private static IManager GetManager( IManagerOptions managerOptions, bool simulateOnlyUnprocessableTypes,
 			IConfiguration applicationOptionsProvider, Assembly rootAssembly )
 		{
 			return new Manager.Manager( managerOptions, simulateOnlyUnprocessableTypes )
@@ -144,7 +144,9 @@ namespace Automated.Arca.Tests
 				.AddKeyedOptionsProvider( applicationOptionsProvider );
 		}
 
-		private IManagerOptions GetManagerOptions( Action<IManagerOptions> onCreateManagerOptions, bool useLogging,
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
+		private static IManagerOptions GetManagerOptions( Action<IManagerOptions> onCreateManagerOptions, bool useLogging,
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
 			bool processOnlyTypesDerivedFromIProcessable, ICollection<Type>? excludeTypes, IList<Type>? priorityTypes )
 		{
 			var managerOptions = new ManagerOptions();
@@ -172,7 +174,9 @@ namespace Automated.Arca.Tests
 			return managerOptions;
 		}
 
-		private IServiceProvider BuildServiceProvider( IServiceCollection services )
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
+		private static IServiceProvider BuildServiceProvider( IServiceCollection services )
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
 		{
 			var serviceProviderOptions = new ServiceProviderOptions
 			{
