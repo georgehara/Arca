@@ -29,9 +29,9 @@ namespace Automated.Arca.Demo.WebApi
 
 			Manager = new Manager.Manager( managerOptions )
 				.AddEntryAssembly()
-				.AddAssemblyContainingType( typeof( ExtensionForInstantiatePerContainerAttribute ) )
-				.AddAssemblyContainingType( typeof( ExtensionForBoundedContextAttribute ) )
-				.AddKeyedOptionsProvider( ApplicationOptionsProvider );
+				.AddAssemblyContainingType<ExtensionForInstantiatePerContainerAttribute>()
+                .AddAssemblyContainingType<ExtensionForBoundedContextAttribute>()
+                .AddKeyedOptionsProvider( ApplicationOptionsProvider );
 		}
 
 		// This method gets called by the runtime. Use this method to add services to the container.

@@ -4,7 +4,7 @@ namespace Automated.Arca.Tests
 {
 	public abstract class PerformanceTests
 	{
-		protected string Speed( Stopwatch sw, int iterations )
+		protected static string Speed( Stopwatch sw, int iterations )
 		{
 			sw.Stop();
 
