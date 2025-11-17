@@ -1,7 +1,7 @@
 echo off
 
 REM Change the path to match your environment
-cd "C:\Stuff\Program data\VS\GitHub\Arca\"
+cd "D:\Work\Visual Studio\GitHub\Arca\"
 
 echo Deleting the 'bin' folders...
 for /f "delims=," %%i in ('dir /a:d /s /b bin') do rd /s /q "%%i"

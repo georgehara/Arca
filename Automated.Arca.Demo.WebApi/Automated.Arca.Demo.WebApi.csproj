@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -9,10 +9,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Automated.Arca.Extensions.DependencyInjection" Version="2.1.0" />
-		<PackageReference Include="Automated.Arca.Extensions.Specialized" Version="2.1.0" />
-		<PackageReference Include="Automated.Arca.Implementations.ForMicrosoft" Version="2.1.0" />
-		<PackageReference Include="Automated.Arca.Manager" Version="2.1.0" />
+		<PackageReference Include="Automated.Arca.Extensions.DependencyInjection" Version="2.2.0" />
+		<PackageReference Include="Automated.Arca.Extensions.Specialized" Version="2.2.0" />
+		<PackageReference Include="Automated.Arca.Implementations.ForMicrosoft" Version="2.2.0" />
+		<PackageReference Include="Automated.Arca.Manager" Version="2.2.0" />
 	</ItemGroup>
 
 </Project>
