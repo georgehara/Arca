@@ -1,1 +1,6 @@
 Allow to process (register + configure) and mock dependencies based only on some specified interfaces, separate per type (container, scope, injection): ProcessInterfaceImplementors(container, scope, injection).
+
+Add StartRegistration, StopRegistration methods per class
+
+Add ServiceProvider.GetServices<T>() to get all services of type T
+(The GetServices method is part of the Microsoft.Extensions.DependencyInjection namespace and is available as an extension method on IServiceProvider)
