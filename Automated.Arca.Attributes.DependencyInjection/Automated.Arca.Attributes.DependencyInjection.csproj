@@ -15,10 +15,15 @@
 		<Description>Automated registration and configuration of classes for dependency injection, CQRS.
 Dependency injection attributes to apply on classes to register / configure.</Description>
 		<PackageTags>arca automatic automated registration configuration dependency injection cqrs</PackageTags>
+		<PackageReadmeFile>Package README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/georgehara/Arca</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<Version>2.2.0</Version>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\Package README.md" Link="Package README.md" Pack="true" PackagePath="" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Automated.Arca.Abstractions.Core\Automated.Arca.Abstractions.Core.csproj" />

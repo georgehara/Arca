@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30204.135
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11205.157 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automated.Arca.Abstractions.Core", "Automated.Arca.Abstractions.Core\Automated.Arca.Abstractions.Core.csproj", "{FAFC1165-AC25-44CF-90F9-B1C68323A74D}"
 EndProject
@@ -23,6 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automated.Arca.Tests", "Aut
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D21FEE7C-D2E1-4601-B344-53357F03038D}"
 	ProjectSection(SolutionItems) = preProject
+		Package README.md = Package README.md
 		README.md = README.md
 	EndProjectSection
 EndProject
