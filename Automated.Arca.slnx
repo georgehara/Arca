@@ -1,0 +1,20 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Package README.md" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="Automated.Arca.Abstractions.Core/Automated.Arca.Abstractions.Core.csproj" />
+  <Project Path="Automated.Arca.Libraries/Automated.Arca.Libraries.csproj" />
+  <Project Path="Automated.Arca.Abstractions.Specialized/Automated.Arca.Abstractions.Specialized.csproj" />
+  <Project Path="Automated.Arca.Attributes.DependencyInjection/Automated.Arca.Attributes.DependencyInjection.csproj" />
+  <Project Path="Automated.Arca.Attributes.Specialized/Automated.Arca.Attributes.Specialized.csproj" />
+  <Project Path="Automated.Arca.Extensions.DependencyInjection/Automated.Arca.Extensions.DependencyInjection.csproj" />
+  <Project Path="Automated.Arca.Extensions.Specialized/Automated.Arca.Extensions.Specialized.csproj" />
+  <Project Path="Automated.Arca.Manager/Automated.Arca.Manager.csproj" />
+  <Project Path="Automated.Arca.Tests/Automated.Arca.Tests.csproj" />
+  <Project Path="Automated.Arca.Implementations.ForMicrosoft/Automated.Arca.Implementations.ForMicrosoft.csproj" />
+  <Project Path="Automated.Arca.Abstractions.DependencyInjection/Automated.Arca.Abstractions.DependencyInjection.csproj" />
+  <Project Path="Automated.Arca.TestingConsole/Automated.Arca.TestingConsole.csproj" />
+  <Project Path="Tests.DummyAssembly/Tests.DummyAssembly.csproj" />
+  <Project Path="Automated.Arca.Single/Automated.Arca.Single.csproj" />
+</Solution>

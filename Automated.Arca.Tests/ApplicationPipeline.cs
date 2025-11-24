@@ -139,8 +139,8 @@ namespace Automated.Arca.Tests
 		{
 			return new Manager.Manager( managerOptions, simulateOnlyUnprocessableTypes )
 				.AddAssembly( rootAssembly )
-				.AddAssemblyContainingType( typeof( ExtensionForInstantiatePerScopeAttribute ) )
-				.AddAssemblyContainingType( typeof( ExtensionForBoundedContextAttribute ) )
+				.AddAssemblyContainingType<ExtensionForInstantiatePerScopeAttribute>()
+				.AddAssemblyContainingType<ExtensionForBoundedContextAttribute>()
 				.AddKeyedOptionsProvider( applicationOptionsProvider );
 		}
 

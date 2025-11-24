@@ -1,0 +1,60 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageOutputPath>$(MSBuildThisFileDirectory)..\OutputPackages</PackageOutputPath>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Authors>Automated.Arca</Authors>
+		<Company>Automated.Arca</Company>
+		<Product>Automated.Arca</Product>
+		<Description>Automated registration and configuration of classes for dependency injection.
+All other packages merged together. Use instead of the individual packages.</Description>
+		<PackageTags>arca automatic automated registration configuration dependency injection</PackageTags>
+		<PackageReadmeFile>Package README.md</PackageReadmeFile>
+		<RepositoryUrl>https://github.com/georgehara/Arca</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<Version>2.2.0</Version>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\Package README.md" Link="Package README.md" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Automated.Arca.Abstractions.Core\Automated.Arca.Abstractions.Core.csproj" PrivateAssets="All" />
+		<ProjectReference Include="..\Automated.Arca.Abstractions.DependencyInjection\Automated.Arca.Abstractions.DependencyInjection.csproj" PrivateAssets="All" />
+		<ProjectReference Include="..\Automated.Arca.Abstractions.Specialized\Automated.Arca.Abstractions.Specialized.csproj" PrivateAssets="All" />
+		<ProjectReference Include="..\Automated.Arca.Attributes.DependencyInjection\Automated.Arca.Attributes.DependencyInjection.csproj" PrivateAssets="All" />
+		<ProjectReference Include="..\Automated.Arca.Attributes.Specialized\Automated.Arca.Attributes.Specialized.csproj" PrivateAssets="All" />
+		<ProjectReference Include="..\Automated.Arca.Extensions.DependencyInjection\Automated.Arca.Extensions.DependencyInjection.csproj" PrivateAssets="All" />
+		<ProjectReference Include="..\Automated.Arca.Extensions.Specialized\Automated.Arca.Extensions.Specialized.csproj" PrivateAssets="All" />
+		<ProjectReference Include="..\Automated.Arca.Implementations.ForMicrosoft\Automated.Arca.Implementations.ForMicrosoft.csproj" PrivateAssets="All" />
+		<ProjectReference Include="..\Automated.Arca.Libraries\Automated.Arca.Libraries.csproj" PrivateAssets="All" />
+		<ProjectReference Include="..\Automated.Arca.Manager\Automated.Arca.Manager.csproj" PrivateAssets="All" />
+	</ItemGroup>
+
+	<!-- Fix for dotnet pack not including private (project) references. -->
+	<PropertyGroup>
+		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+	</PropertyGroup>
+
+	<Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
+		<ItemGroup>
+			<!-- Filter out unnecessary files. -->
+			<_ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference')->WithMetadataValue('PrivateAssets', 'All'))"/>
+		</ItemGroup>
+
+		<!-- Print batches for debug purposes. -->
+		<Message Text="Batch for .nupkg: ReferenceCopyLocalPaths = @(_ReferenceCopyLocalPaths), ReferenceCopyLocalPaths.DestinationSubDirectory = %(_ReferenceCopyLocalPaths.DestinationSubDirectory) Filename = %(_ReferenceCopyLocalPaths.Filename) Extension = %(_ReferenceCopyLocalPaths.Extension)"
+			Importance="High" Condition="'@(_ReferenceCopyLocalPaths)' != ''" />
+
+		<ItemGroup>
+			<!-- Add file to package with consideration of subfolder. If empty, the root folder is chosen. -->
+			<BuildOutputInPackage Include="@(_ReferenceCopyLocalPaths)" TargetPath="%(_ReferenceCopyLocalPaths.DestinationSubDirectory)"/>
+		</ItemGroup>
+	</Target>
+	<!-- End of dotnet pack fix. -->
+
+</Project>

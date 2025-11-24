@@ -21,6 +21,7 @@ namespace Automated.Arca.TestingConsole
 		{
 			var t = new ProcessingPerformanceTests();
 
+			// These tests must be run separately because .Net caches (reflection) data in the process.
 			t.ManagerPerformanceWithoutRegistrationAndConfigurationAndWithIProcessable();
 			//t.ManagerPerformanceWithoutRegistrationAndConfigurationAndWithoutIProcessable();
 		}

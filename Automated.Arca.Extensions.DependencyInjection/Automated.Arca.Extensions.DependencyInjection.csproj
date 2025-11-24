@@ -2,9 +2,6 @@
 
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
-	</PropertyGroup>
-
-	<PropertyGroup>
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageOutputPath>$(MSBuildThisFileDirectory)..\OutputPackages</PackageOutputPath>
@@ -12,9 +9,9 @@
 		<Authors>Automated.Arca</Authors>
 		<Company>Automated.Arca</Company>
 		<Product>Automated.Arca</Product>
-		<Description>Automated registration and configuration of classes for dependency injection, CQRS.
+		<Description>Automated registration and configuration of classes for dependency injection.
 Dependency injection extensions for the dependency injection attributes.</Description>
-		<PackageTags>arca automatic automated registration configuration dependency injection cqrs</PackageTags>
+		<PackageTags>arca automatic automated registration configuration dependency injection</PackageTags>
 		<PackageReadmeFile>Package README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/georgehara/Arca</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>

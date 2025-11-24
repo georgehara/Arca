@@ -410,6 +410,7 @@ If you are creating the manager in the test project, the test project is identif
 * `Automated.Arca.Implementations.ForMicrosoft` - Implementations for Microsoft's dependency injection.
 * `Automated.Arca.Libraries` - Libraries for other packages.
 * `Automated.Arca.Manager` - The ARCA manager. Use during the startup of an application.
+* `Automated.Arca.Single` - All other packages merged together. Use instead of the individual packages.
 
 The `ForMicrosoft` packages contain dependencies which are meant to be used in applications that use the Microsoft dependency injection container.
 
@@ -451,13 +452,13 @@ namespace FooCorp
 			ApplicationOptionsProvider = options;
 
 			var managerOptions = new ManagerOptions()
-				.UseLogger( new TraceLogger() ) // Easily see (in DebugView) what ARCA executes. Can ignore for production code.
+				.UseLogger( new TraceLogger() ) // Easily see (in DebugView) what ARCA does. Ignore for production code.
 				.AddAssemblyNamePrefix( "FooCorp" );
 
 			Manager = new Manager.Manager( managerOptions )
 				.AddEntryAssembly()
-				.AddAssemblyContainingType( typeof( ExtensionForInstantiatePerContainerAttribute ) )
-				.AddAssemblyContainingType( typeof( ExtensionForBoundedContextAttribute ) )
+				.AddAssemblyContainingType<ExtensionForInstantiatePerContainerAttribute>()
+				.AddAssemblyContainingType<ExtensionForBoundedContextAttribute>()
 				.AddKeyedOptionsProvider( ApplicationOptionsProvider );
 		}
 

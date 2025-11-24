@@ -2,9 +2,6 @@
 
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
-	</PropertyGroup>
-
-	<PropertyGroup>
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageOutputPath>$(MSBuildThisFileDirectory)..\OutputPackages</PackageOutputPath>
@@ -12,14 +9,18 @@
 		<Authors>Automated.Arca</Authors>
 		<Company>Automated.Arca</Company>
 		<Product>Automated.Arca</Product>
-		<Description>Automated registration and configuration of classes for dependency injection, CQRS.
+		<Description>Automated registration and configuration of classes for dependency injection.
 Implementations for Microsoft's dependency injection.</Description>
-		<PackageTags>arca automatic automated registration configuration dependency injection cqrs</PackageTags>
+		<PackageTags>arca automatic automated registration configuration dependency injection</PackageTags>
 		<PackageReadmeFile>Package README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/georgehara/Arca</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<Version>2.2.0</Version>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\Package README.md" Link="Package README.md" Pack="true" PackagePath="" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="AspNetCore.HealthChecks.Uris" Version="9.0.0" />
@@ -33,10 +34,6 @@ Implementations for Microsoft's dependency injection.</Description>
 		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="10.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Http.Polly" Version="10.0.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Include="..\Package README.md" Link="Package README.md" Pack="true" PackagePath="" />
 	</ItemGroup>
 
 	<ItemGroup>

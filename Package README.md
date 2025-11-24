@@ -41,6 +41,7 @@ Both attributes and extensions can be in the consumer code.
 * `Automated.Arca.Implementations.ForMicrosoft` - Implementations for Microsoft's dependency injection.
 * `Automated.Arca.Libraries` - Libraries for other packages.
 * `Automated.Arca.Manager` - The ARCA manager. Use during the startup of an application.
+* `Automated.Arca.Single` - All other packages merged together. Use instead of the individual packages.
 
 The `ForMicrosoft` packages contain dependencies which are meant to be used in applications that use the Microsoft dependency injection container.
 
