@@ -16,7 +16,7 @@ namespace Automated.Arca.Implementations.ForMicrosoft
 		public T GetRequiredValue<T>( string keyName )
 		{
 			if( string.IsNullOrEmpty( keyName ) )
-				throw new ArgumentNullException( $"Configuration key is missing." );
+				throw new ArgumentNullException( nameof( keyName ), $"Configuration key is missing." );
 
 			var value = ApplicationOptionsProvider.GetValue<T>( keyName );
 
