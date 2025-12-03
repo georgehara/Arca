@@ -16,5 +16,4 @@
   <Project Path="Automated.Arca.Abstractions.DependencyInjection/Automated.Arca.Abstractions.DependencyInjection.csproj" />
   <Project Path="Automated.Arca.TestingConsole/Automated.Arca.TestingConsole.csproj" />
   <Project Path="Tests.DummyAssembly/Tests.DummyAssembly.csproj" />
-  <Project Path="Automated.Arca.Single/Automated.Arca.Single.csproj" />
 </Solution>

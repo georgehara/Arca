@@ -15,7 +15,7 @@ All other packages merged together. Use instead of the individual packages.</Des
 		<PackageReadmeFile>Package README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/georgehara/Arca</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<Version>2.2.1</Version>
+		<Version>2.2.2</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -23,16 +23,16 @@ All other packages merged together. Use instead of the individual packages.</Des
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Automated.Arca.Abstractions.Core\Automated.Arca.Abstractions.Core.csproj" PrivateAssets="compile" />
-		<ProjectReference Include="..\Automated.Arca.Abstractions.DependencyInjection\Automated.Arca.Abstractions.DependencyInjection.csproj" PrivateAssets="compile" />
-		<ProjectReference Include="..\Automated.Arca.Abstractions.Specialized\Automated.Arca.Abstractions.Specialized.csproj" PrivateAssets="compile" />
-		<ProjectReference Include="..\Automated.Arca.Attributes.DependencyInjection\Automated.Arca.Attributes.DependencyInjection.csproj" PrivateAssets="compile" />
-		<ProjectReference Include="..\Automated.Arca.Attributes.Specialized\Automated.Arca.Attributes.Specialized.csproj" PrivateAssets="compile" />
-		<ProjectReference Include="..\Automated.Arca.Extensions.DependencyInjection\Automated.Arca.Extensions.DependencyInjection.csproj" PrivateAssets="compile" />
-		<ProjectReference Include="..\Automated.Arca.Extensions.Specialized\Automated.Arca.Extensions.Specialized.csproj" PrivateAssets="compile" />
-		<ProjectReference Include="..\Automated.Arca.Implementations.ForMicrosoft\Automated.Arca.Implementations.ForMicrosoft.csproj" PrivateAssets="compile" />
-		<ProjectReference Include="..\Automated.Arca.Libraries\Automated.Arca.Libraries.csproj" PrivateAssets="compile" />
-		<ProjectReference Include="..\Automated.Arca.Manager\Automated.Arca.Manager.csproj" PrivateAssets="compile" />
+		<PackageReference Include="Automated.Arca.Abstractions.Core" Version="2.2.0" />
+		<PackageReference Include="Automated.Arca.Abstractions.DependencyInjection" Version="2.2.0" />
+		<PackageReference Include="Automated.Arca.Abstractions.Specialized" Version="2.2.0" />
+		<PackageReference Include="Automated.Arca.Attributes.DependencyInjection" Version="2.2.0" />
+		<PackageReference Include="Automated.Arca.Attributes.Specialized" Version="2.2.0" />
+		<PackageReference Include="Automated.Arca.Extensions.DependencyInjection" Version="2.2.0" />
+		<PackageReference Include="Automated.Arca.Extensions.Specialized" Version="2.2.0" />
+		<PackageReference Include="Automated.Arca.Implementations.ForMicrosoft" Version="2.2.0" />
+		<PackageReference Include="Automated.Arca.Libraries" Version="2.2.0" />
+		<PackageReference Include="Automated.Arca.Manager" Version="2.2.0" />
 	</ItemGroup>
 
 </Project>

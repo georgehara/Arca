@@ -1,6 +1,6 @@
 echo off
 
-echo Restoring NuGet packages
+echo Restoring NuGet packages for Automated.Arca
 
 dotnet restore "../Automated.Arca.slnx" --force
 
@@ -9,8 +9,7 @@ if %ERRORLEVEL% NEQ 0 (
 	goto End
 )
 
-
-echo Building solution
+echo Building solution Automated.Arca
 
 "C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Current\Bin\MSBuild.exe" "../Automated.Arca.slnx" /property:Configuration=Release /property:Deterministic=True /t:rebuild /consoleloggerparameters:ErrorsOnly;WarningsOnly
 

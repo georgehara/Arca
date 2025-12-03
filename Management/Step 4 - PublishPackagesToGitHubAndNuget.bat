@@ -4,16 +4,11 @@ set PackageVersion=%1
 set GitHubApiKey=%2
 set NugetApiKey=%3
 
-REM set GitHubSource="github"
 set GitHubSource=https://nuget.pkg.github.com/georgehara/index.json
 set NugetSource=https://api.nuget.org/v3/index.json
 
 
 echo Publishing NuGet packages to GitHub
-
-
-REM dotnet nuget add source --username georgehara --password %GitHubApiKey% --store-password-in-clear-text --name github "%SourceUrl%"
-
 
 dotnet nuget push "../Arca/OutputPackages/Automated.Arca.Abstractions.Core.%PackageVersion%.nupkg" --source %GitHubSource% --api-key %GitHubApiKey% --skip-duplicate
 if %ERRORLEVEL% NEQ 0 (
